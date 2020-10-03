@@ -15,9 +15,10 @@ pub fn get_player(lane: usize) -> PlayerBundle {
         },
         attack: BaseAttack {
             attack_range: MELEE_RANGE,
-            attack_speed: BuffableStatistic::new(1500.),
+            attack_speed: BuffableStatistic::new(1.5),
             min_attack_damage: 10,
             max_attack_damage: 15,
+            crit_chance: 0.05,
             ..Default::default()
         },
         defence: Defence {

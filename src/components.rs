@@ -29,10 +29,10 @@ pub struct Enemy {
 
 impl Enemy {
     pub fn new(lane: usize) -> Self {
-        let target_loc = TARGET_LOCATIONS[lane];
+        let target_loc = Vec2::from(TARGET_LOCATIONS[lane]);
         Enemy {
             lane,
-            target: Vec2::from(target_loc),
+            target: target_loc,
         }
     }
 }

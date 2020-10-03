@@ -4,6 +4,7 @@ use spectre_random::RNG;
 use spectre_time::GameTime;
 
 use crate::components::*;
+use crate::constants::*;
 
 /// A combat system
 
@@ -72,8 +73,10 @@ pub fn resolve_combat(attack: &BaseAttack, defence: &Defence) -> CombatResult {
 pub fn player_auto_attack_system(
     game_time: Res<GameTime>,
     mut player_query: Query<(&Player, &mut BaseAttack)>,
-    mut enemy_query: Query<(&Enemy, &mut Health, &Defence)>,
+    mut enemy_query: Query<(&Enemy, &Transform, &mut Health, &Defence)>,
 ) {
+    let player_y_pos = TARGET_LOCATIONS[0].1 + PLAYER_OFFSET;
+
     for (player, mut attack) in &mut player_query.iter() {
         // attack cooldown
         if attack.next_attack > game_time.elapsed_time {
@@ -84,12 +87,16 @@ pub fn player_auto_attack_system(
         let mut target: Option<(Mut<Health>, &Defence)> = None;
 
         let enemy_query_instance = &mut enemy_query.iter();
-        for (enemy, health, defence) in enemy_query_instance {
+        for (enemy, transform, health, defence) in enemy_query_instance {
             if health.current_health <= 0. {
                 continue;
             }
 
             if player.current_lane != enemy.lane {
+                continue;
+            }
+
+            if (player_y_pos - transform.translation().y()).abs() > attack.attack_range {
                 continue;
             }
 
@@ -99,14 +106,16 @@ pub fn player_auto_attack_system(
 
         match target {
             None => {
-                println!("NO TARGET FOUND");
                 continue;
             }
             Some((mut health, defence)) => {
                 let result = resolve_combat(&attack, defence);
-
-                println!("COMBAT! {:?}", result);
                 health.target_health -= result.damage as f32;
+
+                println!(
+                    "COMBAT! {:?}, new health: {} --> {}",
+                    result, health.current_health, health.target_health
+                );
 
                 // update cooldown
                 attack.next_attack = game_time.elapsed_time + attack.attack_speed.value;
