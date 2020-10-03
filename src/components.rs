@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use spectre_core::Health;
+use spectre_core::*;
 
 use crate::constants::TARGET_LOCATIONS;
 
@@ -9,6 +9,15 @@ pub struct EnemyBundle {
     pub defence: Defence,
     pub enemy: Enemy,
     pub health: Health,
+}
+
+#[derive(Bundle)]
+pub struct PlayerBundle {
+    pub stats: Stats,
+    pub movement: Movement,
+    pub health: Health,
+    pub mana: Mana,
+    pub player: Player,
 }
 
 /// Tag component applied when a unit has its movement easing applied
@@ -28,6 +37,11 @@ impl Enemy {
             target: Vec2::new(target_loc.0, target_loc.1),
         }
     }
+}
+
+pub struct Player {
+    pub current_lane: usize,
+    pub target_lane: usize,
 }
 
 /// The base attack / defence of a unit. Can be enhanced over time

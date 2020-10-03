@@ -26,6 +26,7 @@ pub const GAME_ELEMENT_LAYER: f32 = 3.;
 // PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const SPAWN_LOCATIONS: [(f32, f32); 3] = [(-300., 365.), (0., 365.), (300., 365.)];
 pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-300., -300.), (0., -300.), (300., -300.)];
+pub const PLAYER_OFFSET: f32 = 40.;
 
 /// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const ENEMY_TWEEN_DURATION: u64 = 10000;

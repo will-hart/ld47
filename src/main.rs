@@ -13,6 +13,7 @@ mod data;
 mod enemy_factory;
 mod game_scenes;
 mod game_ui;
+mod player_factory;
 
 use game_scenes::*;
 

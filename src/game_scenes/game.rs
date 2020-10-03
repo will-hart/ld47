@@ -5,7 +5,7 @@ use spectre_animations::spawn_animated_spritesheet;
 use spectre_state::*;
 use spectre_time::GameSpeedRequest;
 
-use crate::{components::*, game_ui::spawn_ui};
+use crate::{components::*, game_ui::spawn_ui, player_factory::get_player};
 use crate::{constants::*, enemy_factory::get_wolf};
 
 use super::MyGameScenes;
@@ -53,6 +53,25 @@ pub fn setup_game_scene(
         ),
     );
     commands.insert(spawned, get_wolf());
+
+    // spawn a sample game entity with easing
+    let handle_player: Handle<Texture> = Handle::from_u128(CHARACTER_1_SPRITE);
+    let texture_player = textures.get(&handle_player).unwrap();
+    let texture_atlas_player = TextureAtlas::from_grid(handle_player, texture_player.size, 2, 1);
+    let texture_atlas_handle_player = texture_atlases.add(texture_atlas_player);
+    let spawned_player = spawn_animated_spritesheet(
+        &mut commands,
+        texture_atlas_handle_player,
+        0.3,
+        vec![(0, 1)],
+        Vec3::new(
+            TARGET_LOCATIONS[0].0,
+            TARGET_LOCATIONS[0].1 - PLAYER_OFFSET,
+            GAME_ELEMENT_LAYER,
+        ),
+    );
+
+    commands.insert(spawned_player, get_player(1));
 }
 
 pub fn apply_easing_to_enemy(

@@ -4,9 +4,6 @@ pub mod prelude {
     pub use crate::*;
 }
 
-pub struct Player;
-pub struct Npc;
-
 pub struct Side(usize);
 
 pub const SIDE_NEUTRAL: usize = 0;
