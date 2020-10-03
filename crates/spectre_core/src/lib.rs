@@ -184,10 +184,6 @@ fn health_regeneration(time: Res<GameTime>, mut health: Mut<Health>) {
             actual_delta = -actual_delta;
         }
 
-        println!(
-            "LERPING HEALTH. Before {}, target {}, delta {}, used_delta {}",
-            health.current_health, health.target_health, delta, actual_delta
-        );
         health.current_health += actual_delta;
     }
 

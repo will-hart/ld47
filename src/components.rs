@@ -65,3 +65,7 @@ pub struct Defence {
     pub poison_armour: i32,
     pub frost_armour: i32,
 }
+
+pub struct HealthBar {
+    pub entity: Entity,
+}

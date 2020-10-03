@@ -1,6 +1,9 @@
 /// The nine-patch UI sprite
 pub const UI_CONTAINER_ID: u128 = 324890576394765893475;
 
+/// The nine-patch health bar sprite
+pub const HEALTHBAR_SPRITE_ID: u128 = 43562893752235235;
+
 /// character 1 spritesheet
 pub const CHARACTER_1_SPRITE: u128 = 2340965832048509025;
 /// character 2 spritesheet
