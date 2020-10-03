@@ -153,21 +153,20 @@ pub fn health_bar_system(
             }
             Ok(tx) => {
                 health_transform.set_translation(tx.translation() + health_bar_offset);
+
+                // shrink the health bar
+                let health_res = enemy_query.get::<Health>(health_bar.entity);
+                match health_res {
+                    Err(_) => continue,
+                    Ok(health) => {
+                        health_transform.set_non_uniform_scale(Vec3::new(
+                            health.current_health / health.max_health.value,
+                            1.,
+                            1.,
+                        ));
+                    }
+                }
             }
         };
-
-        let health_res = enemy_query.get::<Health>(health_bar.entity);
-        match health_res {
-            Err(_) => continue,
-            Ok(health) => {
-                println!(
-                    "Setting size {}",
-                    32. * health.current_health / health.max_health.value
-                );
-                sprite
-                    .size
-                    .set_x(32. * health.current_health / health.max_health.value);
-            }
-        }
     }
 }
