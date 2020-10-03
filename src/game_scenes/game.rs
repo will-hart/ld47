@@ -39,7 +39,7 @@ fn spawn_player(
         0.75,
         vec![(0, 1)],
         Vec2::from(TARGET_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
-            + Vec3::new(0., 0., PLAYER_OFFSET),
+            - Vec3::new(0., PLAYER_OFFSET, 0.),
     );
 
     // TODO enum to specify enemy type
