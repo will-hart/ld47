@@ -82,7 +82,7 @@ pub fn spawn_animated_spritesheet(
     frame_duration: f32,
     animation_frames: Vec<(usize, usize)>,
     location: Vec3,
-) -> Entity {
+) -> &mut Commands {
     commands
         .spawn(SpriteSheetComponents {
             texture_atlas: texture_atlas_handle,
@@ -97,5 +97,6 @@ pub fn spawn_animated_spritesheet(
             is_playing: true,
         });
 
-    commands.current_entity().unwrap()
+    // commands.current_entity().unwrap()
+    commands
 }
