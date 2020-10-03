@@ -2,9 +2,9 @@ use crate::components::*;
 /// Do this from data files in a real game
 use spectre_core::{BuffableStatistic, Health};
 
-pub fn get_wolf() -> EnemyBundle {
+pub fn get_wolf(lane: usize) -> EnemyBundle {
     EnemyBundle {
-        enemy: Enemy::new(0),
+        enemy: Enemy::new(lane),
         health: Health {
             max_health: BuffableStatistic::new(10.),
             current_health: 10.,

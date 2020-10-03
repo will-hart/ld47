@@ -12,6 +12,48 @@ use super::MyGameScenes;
 
 pub struct GameSceneEntity;
 
+fn spawn_enemy(
+    mut commands: &mut Commands,
+    texture_atlas_handle: Handle<TextureAtlas>,
+    lane: usize,
+) {
+    let spawned = spawn_animated_spritesheet(
+        &mut commands,
+        texture_atlas_handle,
+        0.3,
+        vec![(0, 3)],
+        Vec3::new(
+            SPAWN_LOCATIONS[lane].0,
+            SPAWN_LOCATIONS[lane].1,
+            GAME_ELEMENT_LAYER,
+        ),
+    );
+
+    // TODO enum to specify enemy type
+    commands.insert(spawned, get_wolf(lane));
+}
+
+fn spawn_player(
+    mut commands: &mut Commands,
+    texture_atlas_handle: Handle<TextureAtlas>,
+    lane: usize,
+) {
+    let spawned = spawn_animated_spritesheet(
+        &mut commands,
+        texture_atlas_handle,
+        0.75,
+        vec![(0, 1)],
+        Vec3::new(
+            TARGET_LOCATIONS[lane].0,
+            TARGET_LOCATIONS[lane].1 - PLAYER_OFFSET,
+            GAME_ELEMENT_LAYER,
+        ),
+    );
+
+    // TODO enum to specify enemy type
+    commands.insert(spawned, get_player(lane));
+}
+
 pub fn setup_game_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
@@ -35,43 +77,25 @@ pub fn setup_game_scene(
     let entity = spawn_ui(&mut commands, nine_patches, materials);
     commands.insert_one(entity, GameSceneEntity);
 
-    // spawn a sample game entity with easing
+    // spawn three enemies
     let handle: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);
     let texture = textures.get(&handle).unwrap();
     let texture_atlas = TextureAtlas::from_grid(handle, texture.size, 4, 1);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    let spawned = spawn_animated_spritesheet(
-        &mut commands,
-        texture_atlas_handle,
-        0.3,
-        vec![(0, 3)],
-        Vec3::new(
-            SPAWN_LOCATIONS[0].0,
-            SPAWN_LOCATIONS[0].1,
-            GAME_ELEMENT_LAYER,
-        ),
-    );
-    commands.insert(spawned, get_wolf());
+    spawn_enemy(&mut commands, texture_atlas_handle, 0);
+    spawn_enemy(&mut commands, texture_atlas_handle, 1);
+    spawn_enemy(&mut commands, texture_atlas_handle, 2);
 
     // spawn a sample game entity with easing
     let handle_player: Handle<Texture> = Handle::from_u128(CHARACTER_1_SPRITE);
     let texture_player = textures.get(&handle_player).unwrap();
     let texture_atlas_player = TextureAtlas::from_grid(handle_player, texture_player.size, 2, 1);
     let texture_atlas_handle_player = texture_atlases.add(texture_atlas_player);
-    let spawned_player = spawn_animated_spritesheet(
-        &mut commands,
-        texture_atlas_handle_player,
-        0.3,
-        vec![(0, 1)],
-        Vec3::new(
-            TARGET_LOCATIONS[0].0,
-            TARGET_LOCATIONS[0].1 - PLAYER_OFFSET,
-            GAME_ELEMENT_LAYER,
-        ),
-    );
 
-    commands.insert(spawned_player, get_player(1));
+    spawn_player(&mut commands, texture_atlas_handle_player, 0);
+    spawn_player(&mut commands, texture_atlas_handle_player, 1);
+    spawn_player(&mut commands, texture_atlas_handle_player, 2);
 }
 
 pub fn apply_easing_to_enemy(
