@@ -1,4 +1,5 @@
 use crate::constants::*;
+use crate::game_ui::health_bar_system;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
@@ -48,7 +49,7 @@ fn main() {
         .add_stage_after("update", "dead_removal")
         .add_system(player_auto_attack_system.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
-        // .add_plugin(EasingsPlugin)
+        .add_system(health_bar_system.system())
         .run();
 }
 

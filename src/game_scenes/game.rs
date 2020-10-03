@@ -35,6 +35,11 @@ fn spawn_enemy(
             style: Style {
                 margin: Rect::all(Val::Auto),
                 position_type: PositionType::Absolute,
+                position: Rect {
+                    top: Val::Px(0.),
+                    left: Val::Px(0.),
+                    ..Default::default()
+                },
                 ..Default::default()
             },
             nine_patch_data: NinePatchData {

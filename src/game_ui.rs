@@ -1,4 +1,5 @@
-use crate::constants::UI_SPRITE_MARGIN;
+use crate::components::Enemy;
+use crate::{components::HealthBar, constants::UI_SPRITE_MARGIN};
 use bevy::prelude::*;
 use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
 
@@ -133,4 +134,28 @@ pub fn spawn_ui(
         });
 
     commands.current_entity().unwrap()
+}
+
+pub fn health_bar_system(
+    mut commands: Commands,
+    mut health_bar_query: Query<(Entity, &HealthBar, &mut Style)>,
+    enemy_query: Query<(&Enemy, &Transform)>,
+) {
+    for (entity, health_bar, mut style) in &mut health_bar_query.iter() {
+        let enemy = enemy_query.get::<Transform>(health_bar.entity);
+
+        match enemy {
+            Err(_) => {
+                // usually here because the linked entity has been removed, e.g. dead.
+                // this seems (game jam) easier than parenting the healthbar to the sprite
+                commands.despawn_recursive(entity);
+            }
+            Ok(tx) => {
+                style.position.top = Val::Px(tx.translation().y() - 10.);
+                style.position.left = Val::Px(tx.translation().x());
+
+                // transform.set_translation(tx.translation() + health_bar_offset);
+            }
+        }
+    }
 }
