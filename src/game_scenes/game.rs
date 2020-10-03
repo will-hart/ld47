@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
+use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
 use spectre_state::*;
 use spectre_time::GameSpeedRequest;
@@ -15,8 +15,7 @@ fn spawn_enemy(
     mut commands: &mut Commands,
     lane: usize,
     texture_atlas_handle: Handle<TextureAtlas>,
-    health_bar_nine_patch_handle: Handle<NinePatchBuilder>,
-    health_bar_texture_handle: Handle<Texture>,
+    health_bar_full: Handle<ColorMaterial>,
 ) {
     let spawned = spawn_animated_spritesheet(
         &mut commands,
@@ -31,23 +30,10 @@ fn spawn_enemy(
     .unwrap();
 
     commands
-        .spawn(NinePatchComponents {
-            style: Style {
-                margin: Rect::all(Val::Auto),
-                position_type: PositionType::Absolute,
-                position: Rect {
-                    top: Val::Px(0.),
-                    left: Val::Px(0.),
-                    ..Default::default()
-                },
-                ..Default::default()
-            },
-            nine_patch_data: NinePatchData {
-                nine_patch: health_bar_nine_patch_handle,
-                texture: health_bar_texture_handle,
-                ..Default::default()
-            },
-            nine_patch_size: NinePatchSize(Vec2::new(32., 12.)),
+        .spawn(SpriteComponents {
+            material: health_bar_full,
+            // spawn off screen
+            transform: Transform::from_translation(Vec3::new(-1000., -1000., GAME_ELEMENT_LAYER)),
             ..Default::default()
         })
         .with(HealthBar { entity: spawned });
@@ -76,8 +62,8 @@ fn spawn_player(
 pub fn setup_game_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
-    materials: ResMut<Assets<ColorMaterial>>,
+    nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     textures: ResMut<Assets<Texture>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
@@ -92,13 +78,10 @@ pub fn setup_game_scene(
         new_game_speed: 1.0,
     },));
 
-    // create a health bar texture, do it before spawning_ui to prevent weird borrowing?
-    let health_bar_texture_handle = Handle::from_u128(HEALTHBAR_SPRITE_ID);
-    let health_bar_nine_patch_handle =
-        nine_patches.add(NinePatchBuilder::by_margins(3., 3., 3., 3., ()));
+    let transparent_material = materials.add(Color::NONE.into());
 
     // spawn the UI
-    let entity = spawn_ui(&mut commands, nine_patches, materials);
+    let entity = spawn_ui(&mut commands, nine_patches, transparent_material);
     commands.insert_one(entity, GameSceneEntity);
 
     // spawn three enemies
@@ -107,27 +90,12 @@ pub fn setup_game_scene(
     let texture_atlas = TextureAtlas::from_grid(handle, texture.size, 4, 1);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    spawn_enemy(
-        &mut commands,
-        0,
-        texture_atlas_handle,
-        health_bar_nine_patch_handle,
-        health_bar_texture_handle,
-    );
-    spawn_enemy(
-        &mut commands,
-        1,
-        texture_atlas_handle,
-        health_bar_nine_patch_handle,
-        health_bar_texture_handle,
-    );
-    spawn_enemy(
-        &mut commands,
-        2,
-        texture_atlas_handle,
-        health_bar_nine_patch_handle,
-        health_bar_texture_handle,
-    );
+    let health_bar_handle = Handle::from_u128(HEALTHBAR_SPRITE_ID);
+    let health_bar_material = materials.add(health_bar_handle.into());
+
+    spawn_enemy(&mut commands, 0, texture_atlas_handle, health_bar_material);
+    spawn_enemy(&mut commands, 1, texture_atlas_handle, health_bar_material);
+    spawn_enemy(&mut commands, 2, texture_atlas_handle, health_bar_material);
 
     // spawn a sample game entity with easing
     let handle_player: Handle<Texture> = Handle::from_u128(CHARACTER_1_SPRITE);

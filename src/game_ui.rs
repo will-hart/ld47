@@ -2,6 +2,7 @@ use crate::components::Enemy;
 use crate::{components::HealthBar, constants::UI_SPRITE_MARGIN};
 use bevy::prelude::*;
 use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
+use spectre_core::Health;
 
 use crate::constants::UI_CONTAINER_ID;
 
@@ -50,7 +51,7 @@ pub fn get_node_components(
 pub fn spawn_ui(
     commands: &mut Commands,
     mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    transparent_material: Handle<ColorMaterial>,
 ) -> Entity {
     let texture_handle: Handle<Texture> = Handle::from_u128(UI_CONTAINER_ID);
     // TODO: store on a resource and get only once?
@@ -61,8 +62,6 @@ pub fn spawn_ui(
         UI_SPRITE_MARGIN,
         (),
     ));
-
-    let transparent_material = materials.add(Color::NONE.into());
 
     // spawn a 75% full height box on the left
     // then spawn a sidebar on the right
@@ -138,23 +137,36 @@ pub fn spawn_ui(
 
 pub fn health_bar_system(
     mut commands: Commands,
-    mut health_bar_query: Query<(Entity, &HealthBar, &mut Style)>,
-    enemy_query: Query<(&Enemy, &Transform)>,
+    mut health_bar_query: Query<(Entity, &HealthBar, &mut Transform, &mut Sprite)>,
+    enemy_query: Query<(&Enemy, &Health, &Transform)>,
 ) {
-    for (entity, health_bar, mut style) in &mut health_bar_query.iter() {
-        let enemy = enemy_query.get::<Transform>(health_bar.entity);
+    let health_bar_offset = Vec3::new(0., 24., 0.);
 
-        match enemy {
+    for (entity, health_bar, mut health_transform, mut sprite) in &mut health_bar_query.iter() {
+        let tx_res = enemy_query.get::<Transform>(health_bar.entity);
+        match tx_res {
             Err(_) => {
                 // usually here because the linked entity has been removed, e.g. dead.
                 // this seems (game jam) easier than parenting the healthbar to the sprite
                 commands.despawn_recursive(entity);
+                continue;
             }
             Ok(tx) => {
-                style.position.top = Val::Px(tx.translation().y() - 10.);
-                style.position.left = Val::Px(tx.translation().x());
+                health_transform.set_translation(tx.translation() + health_bar_offset);
+            }
+        };
 
-                // transform.set_translation(tx.translation() + health_bar_offset);
+        let health_res = enemy_query.get::<Health>(health_bar.entity);
+        match health_res {
+            Err(_) => continue,
+            Ok(health) => {
+                println!(
+                    "Setting size {}",
+                    32. * health.current_health / health.max_health.value
+                );
+                sprite
+                    .size
+                    .set_x(32. * health.current_health / health.max_health.value);
             }
         }
     }
