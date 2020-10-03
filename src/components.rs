@@ -20,9 +20,6 @@ pub struct PlayerBundle {
     pub player: Player,
 }
 
-/// Tag component applied when a unit has its movement easing applied
-pub struct HasEaseApplied;
-
 /// Contains data about an enemy unit
 pub struct Enemy {
     pub lane: usize,
@@ -34,7 +31,7 @@ impl Enemy {
         let target_loc = TARGET_LOCATIONS[lane];
         Enemy {
             lane,
-            target: Vec2::new(target_loc.0, target_loc.1),
+            target: Vec2::from(target_loc),
         }
     }
 }

@@ -29,4 +29,4 @@ pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-480., -300.), (-180., -300.), (
 pub const PLAYER_OFFSET: f32 = 40.;
 
 /// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
-pub const ENEMY_TWEEN_DURATION: u64 = 10000;
+pub const ENEMY_SPEED: f32 = 60.;

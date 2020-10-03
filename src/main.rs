@@ -1,7 +1,8 @@
 use crate::constants::*;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
-use bevy_easings::EasingsPlugin;
+// use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
+use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_core::CharacterStatsPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
@@ -13,6 +14,7 @@ mod data;
 mod enemy_factory;
 mod game_scenes;
 mod game_ui;
+mod movement;
 mod player_factory;
 
 use game_scenes::*;
@@ -39,7 +41,8 @@ fn main() {
         .add_plugin(AnimationPlugin)
         .add_plugin(GameStatePlugin)
         .add_plugin(NinePatchPlugin::<()>::default())
-        .add_plugin(EasingsPlugin)
+        .add_plugin(MovementPlugin)
+        // .add_plugin(EasingsPlugin)
         .run();
 }
 

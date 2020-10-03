@@ -1,12 +1,11 @@
 use bevy::prelude::*;
-use bevy_easings::{Ease, EaseFunction, EasingType};
 use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
 use spectre_state::*;
 use spectre_time::GameSpeedRequest;
 
-use crate::{components::*, game_ui::spawn_ui, player_factory::get_player};
 use crate::{constants::*, enemy_factory::get_wolf};
+use crate::{game_ui::spawn_ui, player_factory::get_player};
 
 use super::MyGameScenes;
 
@@ -22,11 +21,7 @@ fn spawn_enemy(
         texture_atlas_handle,
         0.3,
         vec![(0, 3)],
-        Vec3::new(
-            SPAWN_LOCATIONS[lane].0,
-            SPAWN_LOCATIONS[lane].1,
-            GAME_ELEMENT_LAYER,
-        ),
+        Vec2::from(SPAWN_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER),
     );
 
     // TODO enum to specify enemy type
@@ -43,11 +38,8 @@ fn spawn_player(
         texture_atlas_handle,
         0.75,
         vec![(0, 1)],
-        Vec3::new(
-            TARGET_LOCATIONS[lane].0,
-            TARGET_LOCATIONS[lane].1 - PLAYER_OFFSET,
-            GAME_ELEMENT_LAYER,
-        ),
+        Vec2::from(TARGET_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
+            + Vec3::new(0., 0., PLAYER_OFFSET),
     );
 
     // TODO enum to specify enemy type
@@ -96,27 +88,6 @@ pub fn setup_game_scene(
     spawn_player(&mut commands, texture_atlas_handle_player, 0);
     spawn_player(&mut commands, texture_atlas_handle_player, 1);
     spawn_player(&mut commands, texture_atlas_handle_player, 2);
-}
-
-pub fn apply_easing_to_enemy(
-    mut commands: Commands,
-    mut enemies_needing_init: Query<Without<HasEaseApplied, (Entity, &Transform, &Enemy)>>,
-) {
-    for (ent, transform, enemy) in &mut enemies_needing_init.iter() {
-        commands.insert(
-            ent,
-            (
-                transform.ease_to(
-                    Transform::default().with_translate(enemy.target.extend(GAME_ELEMENT_LAYER)),
-                    EaseFunction::QuadraticInOut,
-                    EasingType::Once {
-                        duration: std::time::Duration::from_millis(ENEMY_TWEEN_DURATION),
-                    },
-                ),
-                HasEaseApplied,
-            ),
-        );
-    }
 }
 
 // demonstrates spawning a player using the spawn_animated_spritesheet helper
