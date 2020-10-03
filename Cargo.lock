@@ -402,6 +402,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_ninepatch"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "731f596f38ced11daf115ccf5a20d6fa3e2f9953d53deac18a7e220056fbad30"
+dependencies = [
+ "bevy",
+ "rand",
+]
+
+[[package]]
 name = "bevy_pbr"
 version = "0.2.1"
 source = "git+https://github.com/bevyengine/bevy#4c753e258806999a69c680421ba3804148b4b33c"
@@ -2663,6 +2673,7 @@ name = "spectre"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_ninepatch",
  "serde",
  "spectre_animations",
  "spectre_combat",

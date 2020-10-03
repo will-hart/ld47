@@ -1,16 +1,19 @@
 use bevy::prelude::*;
-use spectre_animations::prelude::spawn_animated_spritesheet;
+use bevy_ninepatch::NinePatchBuilder;
 use spectre_state::*;
+use spectre_time::GameSpeedRequest;
+
+use crate::game_ui::spawn_ui;
 
 use super::MyGameScenes;
-use crate::constants::ANIMATED_SPRITESHEED_ID;
 
 pub struct GameSceneEntity;
 
 pub fn setup_game_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    asset_server: Res<AssetServer>,
+    nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
+    materials: ResMut<Assets<ColorMaterial>>,
 ) {
     if !game_state.is_in_scene(&MyGameScenes::Game)
         || !game_state.is_in_status(&GameStatus::Entering)
@@ -18,55 +21,24 @@ pub fn setup_game_scene(
         return;
     }
 
-    let font_handle = asset_server.load("assets/fonts/teletactile.ttf").unwrap();
+    // start running the game when entering
+    commands.spawn((GameSpeedRequest {
+        new_game_speed: 1.0,
+    },));
 
-    commands
-        .spawn(TextComponents {
-            style: Style {
-                align_self: AlignSelf::FlexEnd,
-                ..Default::default()
-            },
-            text: Text {
-                value: "Press [SPACE] to spawn a unit".to_string(),
-                font: font_handle,
-                style: TextStyle {
-                    font_size: 20.0,
-                    color: Color::WHITE,
-                },
-            },
-            ..Default::default()
-        })
-        .with(GameSceneEntity);
+    spawn_ui(commands, nine_patches, materials);
 }
 
 // demonstrates spawning a player using the spawn_animated_spritesheet helper
 pub fn run_game_scene(
-    commands: Commands,
-    input: Res<Input<KeyCode>>,
+    // commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    textures: ResMut<Assets<Texture>>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    // textures: ResMut<Assets<Texture>>,
+    // mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     if !game_state.is_in_scene(&MyGameScenes::Game) {
         return;
     }
-
-    if !input.just_pressed(KeyCode::Space) {
-        return;
-    }
-
-    let handle: Handle<Texture> = Handle::from_u128(ANIMATED_SPRITESHEED_ID);
-    let texture = textures.get(&handle).unwrap();
-    let texture_atlas = TextureAtlas::from_grid(handle, texture.size, 9, 4);
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
-
-    spawn_animated_spritesheet(
-        commands,
-        texture_atlas_handle,
-        0.05,
-        vec![(0, 8), (9, 17), (18, 26), (27, 35)],
-        Vec3::new(0., 0., 0.),
-    )
 }
 
 pub fn teardown_game_scene(

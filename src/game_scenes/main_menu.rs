@@ -86,7 +86,7 @@ pub fn setup_menu_scene(
                         ..Default::default()
                     },
                     text: Text {
-                        value: "MY GAME MENU".to_string(),
+                        value: "OBELISK".to_string(),
                         font: font_handle,
                         style: TextStyle {
                             font_size: 20.0,

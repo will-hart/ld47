@@ -1,38 +1,41 @@
+use crate::constants::UI_CONTAINER_ID;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
+use bevy_ninepatch::NinePatchPlugin;
+use constants::{RESOLUTION_X, RESOLUTION_Y};
 use spectre_animations::prelude::AnimationPlugin;
-use spectre_combat::prelude::AllegiancePlugin;
-use spectre_core::prelude::{BuffableStatistic, CharacterStats, Health, Mana, Movement, Stats};
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
-use spectre_time::{GameSpeedRequest, GameTimePlugin};
+use spectre_time::GameTimePlugin;
 
 mod constants;
 mod data;
 mod game_scenes;
+mod game_ui;
 
-use constants::ANIMATED_SPRITESHEED_ID;
 use data::DataFileLoaderPlugin;
 use game_scenes::*;
 
 fn main() {
     App::build()
         .add_resource(WindowDescriptor {
-            title: "Spectre".to_string(),
-            width: 1024,
-            height: 768,
+            title: "Obelisk".to_string(),
+            width: RESOLUTION_X,
+            height: RESOLUTION_Y,
             vsync: true,
             resizable: false,
             mode: WindowMode::Windowed,
             ..Default::default()
         })
-        .add_resource(ClearColor(Color::rgb(0.005, 0.005, 0.005)))
+        // .add_resource(ClearColor(Color::rgb_u8(8, 20, 30))) // not sure why this colour is too bright?
+        .add_resource(ClearColor(Color::rgb_u8(1, 2, 3)))
         .add_default_plugins()
         .add_startup_system(setup.system())
         .add_plugin(GameTimePlugin)
         .add_plugin(ResourceLoaderPlugin)
         .add_plugin(DataFileLoaderPlugin)
-        .add_plugin(AllegiancePlugin)
+        // .add_plugin(AllegiancePlugin)
         .add_plugin(AnimationPlugin)
         .add_plugin(GameStatePlugin)
+        .add_plugin(NinePatchPlugin::<()>::default())
         .run();
 }
 
@@ -41,28 +44,13 @@ fn setup(mut commands: Commands) {
     commands
         .spawn(Camera2dComponents::default())
         .spawn(UiCameraComponents::default())
-        // spawn a "character" with stats
-        .spawn(CharacterStats {
-            stats: Stats {
-                strength: BuffableStatistic::new(10.),
-                agility: BuffableStatistic::new(10.),
-                intelligence: BuffableStatistic::new(10.),
-                is_changed: true,
-            },
-            health: Health::new(100.),
-            mana: Mana::new(200.),
-            movement: Movement {
-                movement_speed: BuffableStatistic::new(50.),
-            },
-        })
-        // this loaders approach requires at least one tick of the game loop before
-        // assets handles are available, therefore can't directly spawn player sprite here
         .spawn((LoadAssets {
-            assets: vec![("assets/walk_sprite_sheet.png", ANIMATED_SPRITESHEED_ID)]
+            assets: vec![("assets/ui.png", UI_CONTAINER_ID)]
                 .into_iter()
                 .map(|a| a.into())
                 .collect(),
-        },))
-        // start the game clock running
-        .spawn((GameSpeedRequest::new(1.0),));
+        },));
+
+    // start the game clock running
+    // .spawn((GameSpeedRequest::new(1.0),));
 }
