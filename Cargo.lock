@@ -2547,6 +2547,7 @@ dependencies = [
  "spectre_combat",
  "spectre_core",
  "spectre_loaders",
+ "spectre_random",
  "spectre_state",
  "spectre_time",
 ]

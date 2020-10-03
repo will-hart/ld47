@@ -17,8 +17,8 @@ impl Plugin for MovementPlugin {
 /// TODO: probably an easy way to remove this duplicate, but ... GAME JAM!
 pub fn player_movement(
     time: Res<GameTime>,
-    player: &Player,
     movement: &Movement,
+    mut player: Mut<Player>,
     mut transform: Mut<Transform>,
 ) {
     if player.current_lane == player.target_lane {
@@ -39,6 +39,11 @@ pub fn player_movement(
 
     // translate minimum of delta and max_delta
     transform.translate(Vec3::new(used_delta, 0., 0.));
+
+    // tick over the current lane once the player arrives
+    if delta < 3. {
+        player.current_lane = player.target_lane;
+    }
 }
 
 /// moves an enemy towards their target position.

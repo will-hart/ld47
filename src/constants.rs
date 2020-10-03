@@ -26,7 +26,12 @@ pub const GAME_ELEMENT_LAYER: f32 = 3.;
 // PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const SPAWN_LOCATIONS: [(f32, f32); 3] = [(-480., 365.), (-180., 365.), (120., 365.)];
 pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-480., -300.), (-180., -300.), (120., -300.)];
+
+/// how far the players set up from the target location
 pub const PLAYER_OFFSET: f32 = 40.;
+
+/// the range that is considered "melee"
+pub const MELEE_RANGE: f32 = PLAYER_OFFSET + 15.;
 
 /// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const ENEMY_SPEED: f32 = 60.;

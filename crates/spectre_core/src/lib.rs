@@ -19,6 +19,7 @@ pub struct Buff {
 }
 
 /// A statistic of an entity that that can be modified (temporarily or permanently)
+#[derive(Default)]
 pub struct BuffableStatistic {
     pub base_value: f32,
     pub value: f32,

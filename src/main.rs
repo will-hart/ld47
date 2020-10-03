@@ -2,12 +2,14 @@ use crate::constants::*;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
+use combat::player_auto_attack_system;
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_core::CharacterStatsPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
 use spectre_time::GameTimePlugin;
 
+mod combat;
 mod components;
 mod constants;
 mod data;
@@ -42,6 +44,7 @@ fn main() {
         .add_plugin(GameStatePlugin)
         .add_plugin(NinePatchPlugin::<()>::default())
         .add_plugin(MovementPlugin)
+        .add_system(player_auto_attack_system.system())
         // .add_plugin(EasingsPlugin)
         .run();
 }

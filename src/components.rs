@@ -13,10 +13,11 @@ pub struct EnemyBundle {
 
 #[derive(Bundle)]
 pub struct PlayerBundle {
-    pub stats: Stats,
     pub movement: Movement,
     pub health: Health,
     pub mana: Mana,
+    pub attack: BaseAttack,
+    pub defence: Defence,
     pub player: Player,
 }
 
@@ -44,6 +45,9 @@ pub struct Player {
 /// The base attack / defence of a unit. Can be enhanced over time
 #[derive(Default)]
 pub struct BaseAttack {
+    pub attack_range: f32,
+    pub attack_speed: BuffableStatistic,
+    pub next_attack: f32,
     pub min_attack_damage: i32,
     pub max_attack_damage: i32,
     pub crit_chance: f32,
@@ -55,7 +59,7 @@ pub struct BaseAttack {
 
 #[derive(Default)]
 pub struct Defence {
-    pub base_armour: i16,
+    pub base_armour: i32,
     pub fire_armour: i32,
     pub electricity_armour: i32,
     pub poison_armour: i32,

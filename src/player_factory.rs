@@ -1,15 +1,9 @@
 use spectre_core::*;
 
-use crate::components::{Player, PlayerBundle};
+use crate::{components::*, constants::MELEE_RANGE};
 
 pub fn get_player(lane: usize) -> PlayerBundle {
     PlayerBundle {
-        stats: Stats {
-            strength: BuffableStatistic::new(10.),
-            agility: BuffableStatistic::new(10.),
-            intelligence: BuffableStatistic::new(10.),
-            is_changed: true,
-        },
         health: Health::new(100.),
         mana: Mana::new(200.),
         movement: Movement {
@@ -18,6 +12,17 @@ pub fn get_player(lane: usize) -> PlayerBundle {
         player: Player {
             current_lane: lane,
             target_lane: lane,
+        },
+        attack: BaseAttack {
+            attack_range: MELEE_RANGE,
+            attack_speed: BuffableStatistic::new(1500.),
+            min_attack_damage: 10,
+            max_attack_damage: 15,
+            ..Default::default()
+        },
+        defence: Defence {
+            base_armour: 1,
+            ..Default::default()
         },
     }
 }
