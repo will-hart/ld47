@@ -51,6 +51,7 @@ fn setup(mut commands: Commands) {
                 ("assets/character1.png", CHARACTER_1_SPRITE),
                 ("assets/character2.png", CHARACTER_2_SPRITE),
                 ("assets/character3.png", CHARACTER_3_SPRITE),
+                ("assets/enemy_wolf.png", ENEMY_WOLF_SPRITE),
             ]
             .into_iter()
             .map(|a| a.into())

@@ -8,6 +8,9 @@ pub const CHARACTER_2_SPRITE: u128 = 135120965832048509025;
 /// character 3 spritesheet
 pub const CHARACTER_3_SPRITE: u128 = 768909245132048509025;
 
+/// enemy_wolf spritesheet
+pub const ENEMY_WOLF_SPRITE: u128 = 3456909345645132345625;
+
 /// The margin for 9-patch UI assets (16x16)
 pub const UI_SPRITE_MARGIN: f32 = 7.;
 
@@ -17,5 +20,13 @@ pub const RESOLUTION_Y: u32 = 720;
 pub const GAME_ELEMENT_LAYER: f32 = 3.;
 
 // location of top left corner in UI coords
-pub const GAME_OFFSET_X: f32 = -640.; // negative half RESOLUTION_X
-pub const GAME_OFFSET_Y: f32 = 360.; // half RESOLUTION_Y
+// pub const GAME_OFFSET_X: f32 = -640.; // negative half RESOLUTION_X
+// pub const GAME_OFFSET_Y: f32 = 360.; // half RESOLUTION_Y
+
+// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
+type SpawnData = ((f32, f32), (f32, f32), (f32, f32));
+pub const SPAWN_LOCATIONS: SpawnData = ((-300., 365.), (0., 365.), (300., 365.));
+pub const TARGET_LOCATIONS: SpawnData = ((-300., -300.), (0., -300.), (300., -300.));
+
+/// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
+pub const ENEMY_TWEEN_DURATION: u64 = 10000;
