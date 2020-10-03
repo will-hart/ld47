@@ -17,5 +17,6 @@ pub fn get_wolf(lane: usize) -> EnemyBundle {
             base_armour: 0,
             ..Default::default()
         },
+        attack_target: AttackTarget::default(),
     }
 }

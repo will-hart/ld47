@@ -137,12 +137,12 @@ pub fn spawn_ui(
 
 pub fn health_bar_system(
     mut commands: Commands,
-    mut health_bar_query: Query<(Entity, &HealthBar, &mut Transform, &mut Sprite)>,
+    mut health_bar_query: Query<(Entity, &HealthBar, &mut Transform)>,
     enemy_query: Query<(&Enemy, &Health, &Transform)>,
 ) {
     let health_bar_offset = Vec3::new(0., 24., 0.);
 
-    for (entity, health_bar, mut health_transform, mut sprite) in &mut health_bar_query.iter() {
+    for (entity, health_bar, mut health_transform) in &mut health_bar_query.iter() {
         let tx_res = enemy_query.get::<Transform>(health_bar.entity);
         match tx_res {
             Err(_) => {

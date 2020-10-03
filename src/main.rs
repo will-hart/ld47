@@ -1,9 +1,10 @@
+use crate::combat::enemy_target_selection_system;
 use crate::constants::*;
 use crate::game_ui::health_bar_system;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
-use combat::{dead_enemy_removal_system, player_auto_attack_system};
+use combat::{dead_enemy_removal_system, enemy_auto_attack_system, player_auto_attack_system};
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_core::CharacterStatsPlugin;
@@ -48,6 +49,8 @@ fn main() {
         // combat systems
         .add_stage_after("update", "dead_removal")
         .add_system(player_auto_attack_system.system())
+        .add_system(enemy_target_selection_system.system())
+        .add_system(enemy_auto_attack_system.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
         .add_system(health_bar_system.system())
         .run();

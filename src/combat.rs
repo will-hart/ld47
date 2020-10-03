@@ -112,15 +112,104 @@ pub fn player_auto_attack_system(
                 let result = resolve_combat(&attack, defence);
                 health.target_health -= result.damage as f32;
 
-                println!(
-                    "COMBAT! {:?}, new health: {} --> {}",
-                    result, health.current_health, health.target_health
-                );
+                // println!(
+                //     "COMBAT! {:?}, new health: {} --> {}",
+                //     result, health.current_health, health.target_health
+                // );
 
                 // update cooldown
                 attack.next_attack = game_time.elapsed_time + attack.attack_speed.value;
             }
         }
+    }
+}
+
+pub fn enemy_target_selection_system(
+    mut enemy_query: Query<(&Enemy, &mut AttackTarget)>,
+    mut player_query: Query<(Entity, &Player)>,
+) {
+    for (enemy, mut target) in &mut enemy_query.iter() {
+        match target.entity {
+            // just continue here, the auto attack system will reset to None if the player moves lane
+            Some(_) => continue,
+            None => {
+                // not quite sure how to filter queries yet, so do this slightly weird way
+                let players_in_lane: Vec<Entity> = player_query
+                    .iter()
+                    .iter()
+                    .filter(|result| {
+                        return result.1.current_lane == enemy.lane;
+                    })
+                    .map(|(e, _)| {
+                        return e.clone();
+                    })
+                    .collect::<Vec<_>>();
+
+                if players_in_lane.len() == 0 {
+                    continue;
+                }
+
+                println!("Selected new target for enemy");
+                target.entity =
+                    Some(players_in_lane[RNG::usize_between(0, players_in_lane.len())].clone());
+
+                // TODO could throttle checks here, e.g. if no players in the lane don't check every frame
+            }
+        };
+    }
+}
+
+pub fn enemy_auto_attack_system(
+    game_time: Res<GameTime>,
+    mut enemy_query: Query<(&Enemy, &Transform, &mut AttackTarget, &mut BaseAttack)>,
+    player_query: Query<(&Player, &Transform, &mut Health, &Defence)>,
+) {
+    for (enemy, enemy_tx, mut target, mut attack) in &mut enemy_query.iter() {
+        // attack cooldown
+        if attack.next_attack > game_time.elapsed_time {
+            continue;
+        }
+
+        // if we don't have a target, wait for the targeting system to apply one
+        if target.entity.is_none() {
+            continue;
+        }
+
+        // check if the target is still in the same lane
+        let target_player_result = player_query.get::<Player>(target.entity.unwrap());
+        match target_player_result {
+            Err(_) => {
+                target.entity = None;
+                continue;
+            }
+            Ok(target_player) => {
+                if target_player.current_lane != enemy.lane {
+                    target.entity = None;
+                    continue;
+                }
+            }
+        }
+
+        // check the target is in range
+        let target_entity = target.entity.unwrap();
+        let transform = player_query.get_mut::<Transform>(target_entity).unwrap();
+        if (enemy_tx.translation().y() - transform.translation().y()).abs() > attack.attack_range {
+            continue;
+        }
+
+        // now carry out the combat against the target player
+        let mut health = player_query.get_mut::<Health>(target_entity).unwrap();
+        let defence = player_query.get::<Defence>(target_entity).unwrap();
+        let result = resolve_combat(&attack, &defence);
+        health.target_health -= result.damage as f32;
+
+        // println!(
+        //     "COMBAT! {:?}, new health: {} --> {}",
+        //     result, health.current_health, health.target_health
+        // );
+
+        // update cooldown
+        attack.next_attack = game_time.elapsed_time + attack.attack_speed.value;
     }
 }
 

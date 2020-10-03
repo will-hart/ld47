@@ -25,5 +25,6 @@ pub fn get_player(lane: usize) -> PlayerBundle {
             base_armour: 1,
             ..Default::default()
         },
+        // attack_target: AttackTarget::default(),
     }
 }

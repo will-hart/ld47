@@ -9,6 +9,7 @@ pub struct EnemyBundle {
     pub defence: Defence,
     pub enemy: Enemy,
     pub health: Health,
+    pub attack_target: AttackTarget,
 }
 
 #[derive(Bundle)]
@@ -19,6 +20,7 @@ pub struct PlayerBundle {
     pub attack: BaseAttack,
     pub defence: Defence,
     pub player: Player,
+    // pub attack_target: AttackTarget, // TODO: post jam
 }
 
 /// Contains data about an enemy unit
@@ -68,4 +70,14 @@ pub struct Defence {
 
 pub struct HealthBar {
     pub entity: Entity,
+}
+
+pub struct AttackTarget {
+    pub entity: Option<Entity>,
+}
+
+impl Default for AttackTarget {
+    fn default() -> Self {
+        AttackTarget { entity: None }
+    }
 }
