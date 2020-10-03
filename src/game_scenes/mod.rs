@@ -56,6 +56,7 @@ impl Plugin for GameStatePlugin {
             .add_system(teardown_menu_scene.system())
             // game scene - TODO as plugin?
             .add_system(setup_game_scene.system())
+            .add_system(apply_easing_to_enemy.system())
             .add_system(run_game_scene.system())
             .add_system(teardown_game_scene.system());
     }

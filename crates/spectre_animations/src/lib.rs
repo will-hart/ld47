@@ -77,7 +77,7 @@ fn animate_sprites(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut A
 }
 
 pub fn spawn_animated_spritesheet(
-    mut commands: Commands,
+    commands: &mut Commands,
     texture_atlas_handle: Handle<TextureAtlas>,
     frame_duration: f32,
     animation_frames: Vec<(usize, usize)>,

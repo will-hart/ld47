@@ -1,10 +1,14 @@
 use bevy::prelude::*;
+use bevy_easings::{Ease, EaseFunction, EasingType};
 use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
 use spectre_state::*;
 use spectre_time::GameSpeedRequest;
 
-use crate::{components::*, constants::CHARACTER_1_SPRITE, game_ui::spawn_ui};
+use crate::{
+    components::*, constants::CHARACTER_1_SPRITE, constants::GAME_ELEMENT_LAYER,
+    constants::GAME_OFFSET_X, constants::GAME_OFFSET_Y, game_ui::spawn_ui,
+};
 
 use super::MyGameScenes;
 
@@ -39,19 +43,42 @@ pub fn setup_game_scene(
     let texture_atlas = TextureAtlas::from_grid(handle, texture.size, 2, 1);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    spawn_animated_spritesheet(
-        commands,
+    let spawned = spawn_animated_spritesheet(
+        &mut commands,
         texture_atlas_handle,
         0.05,
         vec![(0, 1)],
-        Vec3::new(0., 0., 0.),
+        Vec3::new(0., 0., GAME_ELEMENT_LAYER),
+    );
+    commands.insert_one(
+        spawned,
+        Enemy {
+            lane: 0,
+            target: Vec2::new(-GAME_OFFSET_X - 320., -GAME_OFFSET_Y),
+        },
     );
 }
 
 pub fn apply_easing_to_enemy(
     mut commands: Commands,
-    enemies_needing_init: Query<Without<HasEaseApplied, (&TextureAtlasSprite, Enemy)>>,
+    mut enemies_needing_init: Query<Without<HasEaseApplied, (Entity, &Transform, &Enemy)>>,
 ) {
+    for (ent, transform, enemy) in &mut enemies_needing_init.iter() {
+        println!("EASING ENEMY: {:?}", transform);
+        commands.insert(
+            ent,
+            (
+                transform.ease_to(
+                    Transform::default().with_translate(enemy.target.extend(GAME_ELEMENT_LAYER)),
+                    EaseFunction::QuadraticInOut,
+                    EasingType::Once {
+                        duration: std::time::Duration::from_millis(1500),
+                    },
+                ),
+                HasEaseApplied,
+            ),
+        );
+    }
 }
 
 // demonstrates spawning a player using the spawn_animated_spritesheet helper

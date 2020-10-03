@@ -1,5 +1,6 @@
 use crate::constants::*;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
+use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
@@ -35,6 +36,7 @@ fn main() {
         .add_plugin(AnimationPlugin)
         .add_plugin(GameStatePlugin)
         .add_plugin(NinePatchPlugin::<()>::default())
+        .add_plugin(EasingsPlugin)
         .run();
 }
 
