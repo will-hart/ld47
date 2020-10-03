@@ -123,3 +123,16 @@ pub fn player_auto_attack_system(
         }
     }
 }
+
+/// Removes dead enemies in post_update
+pub fn dead_enemy_removal_system(
+    mut commands: Commands,
+    mut enemy_query: Query<With<Enemy, (Entity, &Health)>>,
+) {
+    for (entity, health) in &mut enemy_query.iter() {
+        if health.current_health <= 0. {
+            println!("DESPAWNING");
+            commands.despawn_recursive(entity);
+        }
+    }
+}
