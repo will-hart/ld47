@@ -24,9 +24,8 @@ pub const GAME_ELEMENT_LAYER: f32 = 3.;
 // pub const GAME_OFFSET_Y: f32 = 360.; // half RESOLUTION_Y
 
 // PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
-type SpawnData = ((f32, f32), (f32, f32), (f32, f32));
-pub const SPAWN_LOCATIONS: SpawnData = ((-300., 365.), (0., 365.), (300., 365.));
-pub const TARGET_LOCATIONS: SpawnData = ((-300., -300.), (0., -300.), (300., -300.));
+pub const SPAWN_LOCATIONS: [(f32, f32); 3] = [(-300., 365.), (0., 365.), (300., 365.)];
+pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-300., -300.), (0., -300.), (300., -300.)];
 
 /// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const ENEMY_TWEEN_DURATION: u64 = 10000;

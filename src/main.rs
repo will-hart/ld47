@@ -3,16 +3,17 @@ use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
 use spectre_animations::prelude::AnimationPlugin;
+use spectre_core::CharacterStatsPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
 use spectre_time::GameTimePlugin;
 
 mod components;
 mod constants;
 mod data;
+mod enemy_factory;
 mod game_scenes;
 mod game_ui;
 
-use data::DataFileLoaderPlugin;
 use game_scenes::*;
 
 fn main() {
@@ -32,7 +33,8 @@ fn main() {
         .add_startup_system(setup.system())
         .add_plugin(GameTimePlugin)
         .add_plugin(ResourceLoaderPlugin)
-        .add_plugin(DataFileLoaderPlugin)
+        // .add_plugin(DataFileLoaderPlugin)
+        .add_plugin(CharacterStatsPlugin)
         .add_plugin(AnimationPlugin)
         .add_plugin(GameStatePlugin)
         .add_plugin(NinePatchPlugin::<()>::default())

@@ -5,8 +5,8 @@ use spectre_animations::spawn_animated_spritesheet;
 use spectre_state::*;
 use spectre_time::GameSpeedRequest;
 
-use crate::constants::*;
 use crate::{components::*, game_ui::spawn_ui};
+use crate::{constants::*, enemy_factory::get_wolf};
 
 use super::MyGameScenes;
 
@@ -46,15 +46,13 @@ pub fn setup_game_scene(
         texture_atlas_handle,
         0.3,
         vec![(0, 3)],
-        Vec3::new(SPAWN_LOCATIONS.0.0, SPAWN_LOCATIONS.0.1, GAME_ELEMENT_LAYER),
+        Vec3::new(
+            SPAWN_LOCATIONS[0].0,
+            SPAWN_LOCATIONS[0].1,
+            GAME_ELEMENT_LAYER,
+        ),
     );
-    commands.insert_one(
-        spawned,
-        Enemy {
-            lane: 0,
-            target: Vec2::new(TARGET_LOCATIONS.0.0, TARGET_LOCATIONS.0.1),
-        },
-    );
+    commands.insert(spawned, get_wolf());
 }
 
 pub fn apply_easing_to_enemy(
