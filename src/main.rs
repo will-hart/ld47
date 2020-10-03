@@ -1,11 +1,11 @@
-use crate::constants::UI_CONTAINER_ID;
+use crate::constants::*;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 use bevy_ninepatch::NinePatchPlugin;
-use constants::{RESOLUTION_X, RESOLUTION_Y};
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
 use spectre_time::GameTimePlugin;
 
+mod components;
 mod constants;
 mod data;
 mod game_scenes;
@@ -32,7 +32,6 @@ fn main() {
         .add_plugin(GameTimePlugin)
         .add_plugin(ResourceLoaderPlugin)
         .add_plugin(DataFileLoaderPlugin)
-        // .add_plugin(AllegiancePlugin)
         .add_plugin(AnimationPlugin)
         .add_plugin(GameStatePlugin)
         .add_plugin(NinePatchPlugin::<()>::default())
@@ -45,10 +44,15 @@ fn setup(mut commands: Commands) {
         .spawn(Camera2dComponents::default())
         .spawn(UiCameraComponents::default())
         .spawn((LoadAssets {
-            assets: vec![("assets/ui.png", UI_CONTAINER_ID)]
-                .into_iter()
-                .map(|a| a.into())
-                .collect(),
+            assets: vec![
+                ("assets/ui.png", UI_CONTAINER_ID),
+                ("assets/character1.png", CHARACTER_1_SPRITE),
+                ("assets/character2.png", CHARACTER_2_SPRITE),
+                ("assets/character3.png", CHARACTER_3_SPRITE),
+            ]
+            .into_iter()
+            .map(|a| a.into())
+            .collect(),
         },));
 
     // start the game clock running

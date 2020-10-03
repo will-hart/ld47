@@ -25,6 +25,7 @@ bevy = { git = "https://github.com/bevyengine/bevy"  }
 
 [dependencies]
 bevy = { git = "https://github.com/bevyengine/bevy" }
+bevy_easings = "0.1"
 bevy_ninepatch = "0.1"
 serde = { version = "1", features = ["derive"]}
 

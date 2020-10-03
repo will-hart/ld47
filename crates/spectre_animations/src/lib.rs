@@ -82,7 +82,7 @@ pub fn spawn_animated_spritesheet(
     frame_duration: f32,
     animation_frames: Vec<(usize, usize)>,
     location: Vec3,
-) {
+) -> Entity {
     commands
         .spawn(SpriteSheetComponents {
             texture_atlas: texture_atlas_handle,
@@ -92,8 +92,10 @@ pub fn spawn_animated_spritesheet(
         .with(Timer::from_seconds(frame_duration, true))
         .with(AnimationState {
             animations: animation_frames,
-            current_animation: 1,
+            current_animation: 0,
             current_idx: 0,
             is_playing: true,
         });
+
+    commands.current_entity().unwrap()
 }

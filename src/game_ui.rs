@@ -47,10 +47,10 @@ pub fn get_node_components(
 }
 
 pub fn spawn_ui(
-    mut commands: Commands,
+    commands: &mut Commands,
     mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+) -> Entity {
     let texture_handle: Handle<Texture> = Handle::from_u128(UI_CONTAINER_ID);
     // TODO: store on a resource and get only once?
     let nine_patch_handle = nine_patches.add(NinePatchBuilder::by_margins(
@@ -61,11 +61,7 @@ pub fn spawn_ui(
         (),
     ));
 
-    let material = materials.add(Color::NONE.into());
-
-    // TODO remove
-    let material_red = materials.add(Color::rgb_u8(255, 0, 0).into());
-    let material_green = materials.add(Color::rgb_u8(0, 255, 0).into());
+    let transparent_material = materials.add(Color::NONE.into());
 
     // spawn a 75% full height box on the left
     // then spawn a sidebar on the right
@@ -73,14 +69,14 @@ pub fn spawn_ui(
     commands
         .spawn(get_node_components(
             Size::new(Val::Percent(100.), Val::Percent(100.)),
-            material,
+            transparent_material,
             false,
         ))
         .with_children(|outer_parent| {
             outer_parent
                 .spawn(get_node_components(
                     Size::new(Val::Percent(75.), Val::Percent(100.)),
-                    material,
+                    transparent_material,
                     false,
                 ))
                 .with_children(|main_parent| {
@@ -92,14 +88,14 @@ pub fn spawn_ui(
                 })
                 .spawn(get_node_components(
                     Size::new(Val::Percent(25.), Val::Percent(100.)),
-                    material,
+                    transparent_material,
                     true,
                 ))
                 .with_children(|sidebar_parent| {
                     sidebar_parent
                         .spawn(get_node_components(
                             Size::new(Val::Percent(100.), Val::Percent(25.)),
-                            material_red,
+                            transparent_material,
                             true,
                         ))
                         .with_children(|sidebar_parent_inner| {
@@ -111,7 +107,7 @@ pub fn spawn_ui(
                         })
                         .spawn(get_node_components(
                             Size::new(Val::Percent(100.), Val::Percent(25.)),
-                            material_green,
+                            transparent_material,
                             true,
                         ))
                         .with_children(|sidebar_parent_inner| {
@@ -123,7 +119,7 @@ pub fn spawn_ui(
                         })
                         .spawn(get_node_components(
                             Size::new(Val::Percent(100.), Val::Percent(25.)),
-                            material_red,
+                            transparent_material,
                             true,
                         ))
                         .with_children(|sidebar_parent_inner| {
@@ -135,4 +131,6 @@ pub fn spawn_ui(
                         });
                 });
         });
+
+    commands.current_entity().unwrap()
 }
