@@ -5,6 +5,8 @@ pub mod prelude {
     pub use crate::*;
 }
 
+pub const HEALTH_LERP_RATE: f32 = 100.; // health per second
+
 /// Contains a description of a stat buff
 /// set expiry to a game time to automatically remove at that time.
 /// set expiry to 0 to never expire
@@ -174,6 +176,21 @@ fn refresh_stats(
 }
 
 fn health_regeneration(time: Res<GameTime>, mut health: Mut<Health>) {
+    // lerp towards target health
+    if health.current_health != health.target_health {
+        let delta = (health.current_health - health.target_health) * time.delta;
+        let mut actual_delta = delta.abs().min(time.delta * HEALTH_LERP_RATE);
+        if delta > 0. {
+            actual_delta = -actual_delta;
+        }
+
+        println!(
+            "LERPING HEALTH. Before {}, target {}, delta {}, used_delta {}",
+            health.current_health, health.target_health, delta, actual_delta
+        );
+        health.current_health += actual_delta;
+    }
+
     if health.current_health < 0.5 {
         // don't regen when dead
         return;
