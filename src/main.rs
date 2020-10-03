@@ -5,6 +5,7 @@ use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
 use combat::{dead_enemy_removal_system, enemy_auto_attack_system, player_auto_attack_system};
+use components::CurrentWave;
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_core::CharacterStatsPlugin;
@@ -20,8 +21,10 @@ mod game_scenes;
 mod game_ui;
 mod movement;
 mod player_factory;
+mod waves;
 
 use game_scenes::*;
+use waves::wave_spawning_system;
 
 fn main() {
     App::build()
@@ -36,6 +39,7 @@ fn main() {
         })
         // .add_resource(ClearColor(Color::rgb_u8(8, 20, 30))) // not sure why this colour is too bright?
         .add_resource(ClearColor(Color::rgb_u8(1, 2, 3)))
+        .init_resource::<CurrentWave>()
         .add_default_plugins()
         .add_startup_system(setup.system())
         .add_plugin(GameTimePlugin)
@@ -46,7 +50,8 @@ fn main() {
         .add_plugin(GameStatePlugin)
         .add_plugin(NinePatchPlugin::<()>::default())
         .add_plugin(MovementPlugin)
-        // combat systems
+        // random systems not properly organised into plugins yet
+        .add_system(wave_spawning_system.system())
         .add_stage_after("update", "dead_removal")
         .add_system(player_auto_attack_system.system())
         .add_system(enemy_target_selection_system.system())

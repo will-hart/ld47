@@ -2,7 +2,17 @@
 use crate::{components::*, constants::MELEE_RANGE};
 use spectre_core::{BuffableStatistic, Health};
 
-pub fn get_wolf(lane: usize) -> EnemyBundle {
+pub enum EnemyType {
+    Wolf,
+}
+
+pub fn get_enemy_bundle(enemy_type: EnemyType, lane: usize) -> EnemyBundle {
+    match enemy_type {
+        EnemyType::Wolf => get_wolf(lane),
+    }
+}
+
+fn get_wolf(lane: usize) -> EnemyBundle {
     EnemyBundle {
         enemy: Enemy::new(lane),
         health: Health::new(30.),

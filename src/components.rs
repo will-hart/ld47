@@ -81,3 +81,21 @@ impl Default for AttackTarget {
         AttackTarget { entity: None }
     }
 }
+
+/// A resource to store what wave is currently active
+pub struct CurrentWave {
+    // the index of the wave to spawn
+    pub wave_idx: usize,
+
+    // the next time a wave is due to be spawned
+    pub next_wave_time: f32,
+}
+
+impl FromResources for CurrentWave {
+    fn from_resources(_: &Resources) -> Self {
+        CurrentWave {
+            wave_idx: 0,
+            next_wave_time: 1.,
+        }
+    }
+}
