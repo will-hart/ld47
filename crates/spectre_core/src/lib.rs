@@ -108,12 +108,12 @@ pub struct Health {
 }
 
 impl Health {
-    pub fn new(health: f32) -> Self {
+    pub fn new(health: f32, regeneration: f32) -> Self {
         Health {
             max_health: BuffableStatistic::new(health),
             current_health: health,
             target_health: health,
-            regeneration: 3.,
+            regeneration,
         }
     }
 }

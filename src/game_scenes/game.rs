@@ -2,9 +2,9 @@ use bevy::prelude::*;
 use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
 use spectre_state::*;
-use spectre_time::GameSpeedRequest;
+use spectre_time::{GameSpeedRequest, GameTime};
 
-use crate::constants::*;
+use crate::{components::CurrentWave, constants::*};
 use crate::{game_ui::spawn_ui, player_factory::get_player};
 
 use super::MyGameScenes;
@@ -33,6 +33,8 @@ fn spawn_player(
 
 pub fn setup_game_scene(
     mut commands: Commands,
+    mut waves: ResMut<CurrentWave>,
+    game_time: Res<GameTime>,
     game_state: Res<GameState<MyGameScenes>>,
     nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -49,6 +51,9 @@ pub fn setup_game_scene(
     commands.spawn((GameSpeedRequest {
         new_game_speed: 1.0,
     },));
+
+    // start spawning waves some time in the future
+    waves.next_wave_time = game_time.elapsed_time + 2.;
 
     let transparent_material = materials.add(Color::NONE.into());
 

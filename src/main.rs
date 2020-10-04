@@ -73,6 +73,7 @@ fn setup(mut commands: Commands) {
                 ("assets/character2.png", CHARACTER_2_SPRITE),
                 ("assets/character3.png", CHARACTER_3_SPRITE),
                 ("assets/enemy_wolf.png", ENEMY_WOLF_SPRITE),
+                ("assets/enemy_bear.png", ENEMY_BEAR_SPRITE),
                 ("assets/health_bar_full.png", HEALTHBAR_SPRITE_ID),
             ]
             .into_iter()

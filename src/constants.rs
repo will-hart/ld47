@@ -11,8 +11,9 @@ pub const CHARACTER_2_SPRITE: u128 = 135120965832048509025;
 /// character 3 spritesheet
 pub const CHARACTER_3_SPRITE: u128 = 768909245132048509025;
 
-/// enemy_wolf spritesheet
+/// enemy spritesheets
 pub const ENEMY_WOLF_SPRITE: u128 = 3456909345645132345625;
+pub const ENEMY_BEAR_SPRITE: u128 = 32406238029835205826734;
 
 /// The margin for 9-patch UI assets (16x16)
 pub const UI_SPRITE_MARGIN: f32 = 7.;

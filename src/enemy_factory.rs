@@ -15,7 +15,7 @@ pub fn get_enemy_bundle(enemy_type: EnemyType, lane: usize) -> EnemyBundle {
 fn get_wolf(lane: usize) -> EnemyBundle {
     EnemyBundle {
         enemy: Enemy::new(lane),
-        health: Health::new(30.),
+        health: Health::new(30., 0.),
         attack: BaseAttack {
             attack_range: MELEE_RANGE,
             attack_speed: BuffableStatistic::new(1.),

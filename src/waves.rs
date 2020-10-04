@@ -10,7 +10,8 @@ use spectre_time::GameTime;
 /// e.g. wolves might be item 1 in the top level tuple. The number of wolves to spawn is given
 /// by the inner tuple values, e.g. ((lane 1 count, lane 2 count, lane 3 count), ...)
 
-const WAVE_DATA: [[[isize; 3]; 1]; 1] = [[[1, 1, 1]]];
+const WAVE_DATA: [[[isize; 3]; 2]; 2] = [[[1, 1, 1], [0, 0, 0]], [[1, 0, 1], [0, 1, 0]]];
+const WAVE_DELAYS: [f32; 2] = [15., 15.];
 
 fn spawn_enemy(
     mut commands: &mut Commands,
@@ -51,7 +52,7 @@ pub fn wave_spawning_system(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     // not ready to spawn
-    if waves.next_wave_time < game_time.elapsed_time {
+    if waves.next_wave_time > game_time.elapsed_time {
         return;
     }
 
@@ -66,8 +67,17 @@ pub fn wave_spawning_system(
     }
 
     let wave_to_spawn = WAVE_DATA[waves.wave_idx];
-    waves.next_wave_time = game_time.elapsed_time + 5.;
+    println!(
+        "Spawning wave {} at {} (expected at {})",
+        waves.wave_idx, game_time.elapsed_time, waves.next_wave_time
+    );
+
+    waves.next_wave_time = game_time.elapsed_time + WAVE_DELAYS[waves.wave_idx];
     waves.wave_idx += 1;
+    println!(
+        "Wave {} should spawn at {}",
+        waves.wave_idx, waves.next_wave_time
+    );
 
     // just assume a wolf for now
     let wolves = wave_to_spawn[0];

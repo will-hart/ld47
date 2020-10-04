@@ -4,7 +4,7 @@ use crate::{components::*, constants::MELEE_RANGE};
 
 pub fn get_player(lane: usize) -> PlayerBundle {
     PlayerBundle {
-        health: Health::new(100.),
+        health: Health::new(100., 0.),
         mana: Mana::new(200.),
         movement: Movement {
             movement_speed: BuffableStatistic::new(50.),
