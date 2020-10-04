@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use spectre_state::*;
 
+use crate::components::{CurrentWave, PlayerScore};
+
 use super::{ButtonMaterials, MyGameScenes};
 
 pub struct GameOverSceneEntity;
@@ -27,6 +29,8 @@ pub fn run_gameover_scene(
 pub fn setup_gameover_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
+    mut player_score: ResMut<PlayerScore>,
+    mut waves: ResMut<CurrentWave>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     button_materials: Res<ButtonMaterials>,
     asset_server: Res<AssetServer>,
@@ -36,6 +40,12 @@ pub fn setup_gameover_scene(
     {
         return;
     }
+
+    // reset state to allow replay
+    player_score.xp = 0;
+    player_score.obelisk_health = 1000;
+    waves.wave_idx = 0;
+    waves.next_wave_time = 0.;
 
     let font_handle = asset_server.load("assets/fonts/teletactile.ttf").unwrap();
     commands
@@ -70,7 +80,7 @@ pub fn setup_gameover_scene(
                 .with_children(|button_parent| {
                     button_parent.spawn(TextComponents {
                         text: Text {
-                            value: "Go To Menu".to_string(),
+                            value: "To Menu".to_string(),
                             font: font_handle,
                             style: TextStyle {
                                 font_size: 20.0,
