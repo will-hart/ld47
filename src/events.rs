@@ -1,7 +1,11 @@
 use bevy::prelude::*;
+use spectre_state::GameState;
 use spectre_time::GameSpeedRequest;
 
-use crate::{components::Enemy, components::ObeliskStatusImageUiLink, constants::*};
+use crate::{
+    components::CurrentWave, components::Enemy, components::ObeliskStatusImageUiLink, constants::*,
+    game_scenes::MyGameScenes, waves::WAVE_DATA,
+};
 
 pub struct WaveSpawnedEvent {
     pub wave_idx: usize,
@@ -23,6 +27,8 @@ pub struct EndOfDayEventListener {
 pub fn end_of_day_system(
     mut commands: Commands,
     mut state: ResMut<EndOfDayEventListener>,
+    mut game_state: ResMut<GameState<MyGameScenes>>,
+    waves: Res<CurrentWave>,
     events: Res<Events<EndOfDayEvent>>,
     mut enemies: Query<With<Enemy, Entity>>,
 ) {
@@ -43,13 +49,20 @@ pub fn end_of_day_system(
         new_game_speed: 0.0,
     },));
 
-    // destroying remaining enemies
-    for entity in &mut enemies.iter() {
-        commands.despawn_recursive(entity);
-    }
-
     // show the ability UI
-    println!("Showing end of day UI");
+    if waves.wave_idx >= WAVE_DATA.len() {
+        println!("Showing victory UI");
+        game_state.set_transition(MyGameScenes::GameOver);
+    } else {
+        // destroying remaining enemies
+        // TODO - set a target back near the spawn, then remove
+        for entity in &mut enemies.iter() {
+            commands.despawn_recursive(entity);
+        }
+
+        println!("Showing end of day UI");
+        game_state.set_transition(MyGameScenes::Abilities);
+    }
 }
 
 pub fn wave_spawned_event_system(

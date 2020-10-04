@@ -1,3 +1,4 @@
+use crate::{components::GameSceneConfigured, waves::WAVE_DATA};
 use bevy::prelude::*;
 use spectre_state::*;
 
@@ -31,6 +32,7 @@ pub fn setup_gameover_scene(
     game_state: Res<GameState<MyGameScenes>>,
     mut player_score: ResMut<PlayerScore>,
     mut waves: ResMut<CurrentWave>,
+    mut is_configured: ResMut<GameSceneConfigured>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     button_materials: Res<ButtonMaterials>,
     asset_server: Res<AssetServer>,
@@ -40,12 +42,6 @@ pub fn setup_gameover_scene(
     {
         return;
     }
-
-    // reset state to allow replay
-    player_score.xp = 0;
-    player_score.obelisk_health = 1000;
-    waves.wave_idx = 0;
-    waves.next_wave_time = 0.;
 
     let font_handle = asset_server.load("assets/fonts/teletactile.ttf").unwrap();
     commands
@@ -96,7 +92,11 @@ pub fn setup_gameover_scene(
                         ..Default::default()
                     },
                     text: Text {
-                        value: "Game Over!".to_string(),
+                        value: if waves.wave_idx >= WAVE_DATA.len() {
+                            "You Surived and broke the loop!".to_string()
+                        } else {
+                            "The obelisk was destroyed. We may never know its secrets.".to_string()
+                        },
                         font: font_handle,
                         style: TextStyle {
                             font_size: 20.0,
@@ -108,6 +108,13 @@ pub fn setup_gameover_scene(
                 .with(MenuButtonText);
         })
         .with(GameOverSceneEntity);
+
+    // reset state to allow replay
+    player_score.xp = 0;
+    player_score.obelisk_health = 1000;
+    waves.wave_idx = 0;
+    waves.next_wave_time = 0.;
+    is_configured.0 = false;
 }
 
 pub fn teardown_gameover_scene(

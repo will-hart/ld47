@@ -2,11 +2,13 @@ use bevy::prelude::*;
 use spectre_loaders::LoadingStatus;
 use spectre_state::*;
 
+mod abilities;
 mod game;
 mod game_over;
 mod loading;
 mod main_menu;
 
+use abilities::*;
 use game::*;
 use game_over::*;
 use loading::*;
@@ -65,7 +67,11 @@ impl Plugin for GameStatePlugin {
             // game over scene - TODO as plugin
             .add_system(setup_gameover_scene.system())
             .add_system(run_gameover_scene.system())
-            .add_system(teardown_gameover_scene.system());
+            .add_system(teardown_gameover_scene.system())
+            // ability gui scene - TODO as plugin
+            .add_system(setup_ability_scene.system())
+            // .add_system(run_ability_scene.system())
+            .add_system(teardown_ability_scene.system());
     }
 }
 

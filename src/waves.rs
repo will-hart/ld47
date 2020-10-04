@@ -26,7 +26,7 @@ pub struct WaveData {
     pub post_wave_delay: f32,
 }
 
-const WAVE_DATA: [WaveData; 4] = [
+pub const WAVE_DATA: [WaveData; 8] = [
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([0, 0, 0]),
@@ -41,6 +41,26 @@ const WAVE_DATA: [WaveData; 4] = [
         wolves: Wave([1, 1, 1]),
         bears: Wave([0, 0, 0]),
         post_wave_delay: 8.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([1, 1, 1]),
+        post_wave_delay: 5.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([1, 1, 1]),
+        post_wave_delay: 5.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([1, 1, 1]),
+        post_wave_delay: 5.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([1, 1, 1]),
+        post_wave_delay: 5.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),

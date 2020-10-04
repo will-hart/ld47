@@ -1,4 +1,4 @@
-use crate::components::Enemy;
+use crate::components::{Enemy, MainGameSidebarUi};
 use crate::player_ui::{spawn_obelisk_ui, spawn_player_ui};
 use crate::{components::HealthBar, constants::*};
 use bevy::prelude::*;
@@ -52,7 +52,7 @@ pub fn get_node_components(
 pub fn spawn_ui(
     commands: &mut Commands,
     asset_server: ResMut<AssetServer>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    materials: ResMut<Assets<ColorMaterial>>,
     mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
     transparent_material: Handle<ColorMaterial>,
 ) -> Entity {
@@ -68,6 +68,70 @@ pub fn spawn_ui(
         (),
     ));
 
+    // spawn a 75% full height box on the left
+    // then spawn a sidebar on the right
+    // the right hand sidebar should have the three character portraits
+    let mut sidebar_entity = Entity::new(0);
+    let root_entity = commands
+        .spawn(NodeComponents {
+            style: Style {
+                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                justify_content: JustifyContent::SpaceBetween,
+                align_items: AlignItems::FlexStart,
+                position_type: PositionType::Absolute,
+                position: Rect::all(Val::Px(0.)),
+                ..Default::default()
+            },
+            material: transparent_material,
+            ..Default::default()
+        })
+        .with_children(|outer_parent| {
+            outer_parent
+                // main content
+                .spawn(get_node_components(
+                    Size::new(Val::Percent(75.), Val::Percent(100.)),
+                    transparent_material,
+                    false,
+                ))
+                .with_children(|main_parent| {
+                    main_parent.spawn(get_ui_box(
+                        nine_patch_handle,
+                        texture_handle,
+                        Vec2::new(960., 720.),
+                    ));
+                });
+            // sidebar
+            sidebar_entity = outer_parent
+                .spawn(get_node_components(
+                    Size::new(Val::Percent(25.), Val::Percent(100.)),
+                    transparent_material,
+                    true,
+                ))
+                .with(MainGameSidebarUi)
+                .current_entity()
+                .unwrap();
+        })
+        .current_entity()
+        .unwrap();
+
+    spawn_player_sidebar(
+        sidebar_entity,
+        commands,
+        materials,
+        transparent_material,
+        font_handle,
+    );
+
+    root_entity
+}
+
+pub fn spawn_player_sidebar(
+    parent: Entity,
+    commands: &mut Commands,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    transparent_material: Handle<ColorMaterial>,
+    font_handle: Handle<Font>,
+) {
     // get the portrait handle for the UI headers
     let char1_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_1_PORTRAIT);
     let character1_portrait_material = materials.add(char1_port_handle.into());
@@ -82,72 +146,36 @@ pub fn spawn_ui(
     let handle_timeofday: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE1_ID);
     let initial_time_of_day_material = materials.add(handle_timeofday.into());
 
-    // spawn a 75% full height box on the left
-    // then spawn a sidebar on the right
-    // the right hand sidebar should have the three character portraits
-    commands
-        .spawn(NodeComponents {
-            style: Style {
-                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::FlexStart,
-                ..Default::default()
-            },
-            material: transparent_material,
-            ..Default::default()
-        })
-        .with_children(|outer_parent| {
-            outer_parent
-                .spawn(get_node_components(
-                    Size::new(Val::Percent(75.), Val::Percent(100.)),
-                    transparent_material,
-                    false,
-                ))
-                .with_children(|main_parent| {
-                    main_parent.spawn(get_ui_box(
-                        nine_patch_handle,
-                        texture_handle,
-                        Vec2::new(960., 720.),
-                    ));
-                })
-                .spawn(get_node_components(
-                    Size::new(Val::Percent(25.), Val::Percent(100.)),
-                    transparent_material,
-                    true,
-                ))
-                .with_children(|sidebar_parent| {
-                    spawn_obelisk_ui(
-                        sidebar_parent,
-                        transparent_material,
-                        initial_time_of_day_material,
-                        font_handle,
-                    );
-                    // player 2
-                    spawn_player_ui(
-                        sidebar_parent,
-                        transparent_material,
-                        character3_portrait_material,
-                        font_handle,
-                        2,
-                    );
-                    spawn_player_ui(
-                        sidebar_parent,
-                        transparent_material,
-                        character2_portrait_material,
-                        font_handle,
-                        1,
-                    );
-                    spawn_player_ui(
-                        sidebar_parent,
-                        transparent_material,
-                        character1_portrait_material,
-                        font_handle,
-                        0,
-                    );
-                });
-        });
+    let obelisk_ui = spawn_obelisk_ui(
+        commands,
+        transparent_material,
+        initial_time_of_day_material,
+        font_handle,
+    );
+    // player 2
+    let player_2 = spawn_player_ui(
+        commands,
+        transparent_material,
+        character3_portrait_material,
+        font_handle,
+        2,
+    );
+    let player_1 = spawn_player_ui(
+        commands,
+        transparent_material,
+        character2_portrait_material,
+        font_handle,
+        1,
+    );
+    let player_0 = spawn_player_ui(
+        commands,
+        transparent_material,
+        character1_portrait_material,
+        font_handle,
+        0,
+    );
 
-    commands.current_entity().unwrap()
+    commands.push_children(parent, &[obelisk_ui, player_2, player_1, player_0]);
 }
 
 pub fn health_bar_system(

@@ -6,7 +6,7 @@ use crate::{components::*, constants::*, game_scenes::MyGameScenes};
 use bevy::prelude::*;
 use spectre_core::{Health, Mana};
 use spectre_state::{GameState, GameStatus};
-use spectre_time::GameSpeedRequest;
+use spectre_time::{GameSpeedRequest, GameTime};
 
 fn spacer(font_handle: Handle<Font>) -> TextComponents {
     TextComponents {
@@ -25,13 +25,13 @@ fn spacer(font_handle: Handle<Font>) -> TextComponents {
 /// A function that creates the empty player ui and marks components for
 /// the init_player_ui system to set up
 pub fn spawn_player_ui(
-    parent: &mut ChildBuilder,
+    commands: &mut Commands,
     material: Handle<ColorMaterial>,
     portrait_material: Handle<ColorMaterial>,
     font_handle: Handle<Font>,
     player_id: u8,
-) {
-    parent
+) -> Entity {
+    commands
         .spawn(NodeComponents {
             style: Style {
                 size: Size::new(Val::Px(340.), Val::Px(180.)),
@@ -44,6 +44,7 @@ pub fn spawn_player_ui(
             material,
             ..Default::default()
         })
+        .with(GameRunningPlayerUi)
         .with_children(|ui_parent| {
             ui_parent
                 .spawn(NodeComponents {
@@ -152,6 +153,10 @@ pub fn spawn_player_ui(
                             material,
                             ..Default::default()
                         })
+                        .with(PlayerAbilityButtonInteraction {
+                            player_id,
+                            action_number: 1,
+                        })
                         .with_children(|button_parent| {
                             button_parent.spawn(TextComponents {
                                 text: Text {
@@ -177,60 +182,14 @@ pub fn spawn_player_ui(
                             material,
                             ..Default::default()
                         })
+                        .with(PlayerAbilityButtonInteraction {
+                            player_id,
+                            action_number: 2,
+                        })
                         .with_children(|button_parent| {
                             button_parent.spawn(TextComponents {
                                 text: Text {
                                     value: "2".to_string(),
-                                    font: font_handle,
-                                    style: TextStyle {
-                                        font_size: 12.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
-                                },
-                                ..Default::default()
-                            });
-                        })
-                        .spawn(ButtonComponents {
-                            style: Style {
-                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                ..Default::default()
-                            },
-                            material,
-                            ..Default::default()
-                        })
-                        .with_children(|button_parent| {
-                            button_parent.spawn(TextComponents {
-                                text: Text {
-                                    value: "3".to_string(),
-                                    font: font_handle,
-                                    style: TextStyle {
-                                        font_size: 12.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
-                                },
-                                ..Default::default()
-                            });
-                        })
-                        .spawn(ButtonComponents {
-                            style: Style {
-                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                ..Default::default()
-                            },
-                            material,
-                            ..Default::default()
-                        })
-                        .with_children(|button_parent| {
-                            button_parent.spawn(TextComponents {
-                                text: Text {
-                                    value: "4".to_string(),
                                     font: font_handle,
                                     style: TextStyle {
                                         font_size: 12.0,
@@ -313,16 +272,18 @@ pub fn spawn_player_ui(
                             delta: 1,
                         });
                 });
-        });
+        })
+        .current_entity()
+        .unwrap()
 }
 
 pub fn spawn_obelisk_ui(
-    parent: &mut ChildBuilder,
+    commands: &mut Commands,
     material: Handle<ColorMaterial>,
     initial_time_of_day_material: Handle<ColorMaterial>,
     font_handle: Handle<Font>,
-) {
-    parent
+) -> Entity {
+    commands
         .spawn(NodeComponents {
             style: Style {
                 size: Size::new(Val::Px(310.), Val::Px(100.)),
@@ -335,6 +296,7 @@ pub fn spawn_obelisk_ui(
             material,
             ..Default::default()
         })
+        .with(GameRunningPlayerUi)
         .with_children(|obelisk_parent| {
             obelisk_parent
                 .spawn(ImageComponents {
@@ -362,7 +324,9 @@ pub fn spawn_obelisk_ui(
                     ..Default::default()
                 })
                 .with(ObeliskStatusTextUiLink);
-        });
+        })
+        .current_entity()
+        .unwrap()
 }
 
 /// A system that updates player UI. UGLY
@@ -481,5 +445,30 @@ pub fn game_over_trigger(
         },));
 
         game_state.set_transition(MyGameScenes::GameOver);
+    }
+}
+
+pub fn close_ability_screen(
+    mut commands: Commands,
+    game_time: Res<GameTime>,
+    mut game_state: ResMut<GameState<MyGameScenes>>,
+    mut current_wave: ResMut<CurrentWave>,
+    mut interaction_query: Query<(&Button, Mutated<Interaction>, &CloseAbilitiesButtonLink)>,
+) {
+    for (_, interaction, _) in &mut interaction_query.iter() {
+        match *interaction {
+            Interaction::Clicked => {
+                println!("Restarting game");
+                game_state.set_transition(MyGameScenes::Game);
+
+                // stop the game
+                commands.spawn((GameSpeedRequest {
+                    new_game_speed: DEFAULT_GAME_SPEED,
+                },));
+
+                current_wave.next_wave_time = game_time.elapsed_time + 2.;
+            }
+            _ => {}
+        };
     }
 }

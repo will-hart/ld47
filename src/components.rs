@@ -146,3 +146,20 @@ impl FromResources for PlayerScore {
 
 /// Used to flag an item for destruction when the game is despawned
 pub struct GameSceneEntity;
+
+#[derive(Default)]
+pub struct GameSceneConfigured(pub bool);
+
+pub struct PlayerAbilityButtonInteraction {
+    pub player_id: u8,
+    pub action_number: u8,
+}
+
+/// Flags these components as displayed while the game is running
+pub struct GameRunningPlayerUi;
+
+/// Flags the main game sidebar GUI, where the ability menu is swapped in
+pub struct MainGameSidebarUi;
+
+/// Flags a button to close ability screen and transition back to the game screen
+pub struct CloseAbilitiesButtonLink;

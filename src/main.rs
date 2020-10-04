@@ -8,7 +8,7 @@ use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
 use combat::{dead_enemy_removal_system, enemy_auto_attack_system, player_auto_attack_system};
-use components::CurrentWave;
+use components::{CurrentWave, GameSceneConfigured};
 use events::*;
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
@@ -49,6 +49,7 @@ fn main() {
         .add_resource(ClearColor(Color::rgb_u8(1, 2, 3)))
         .init_resource::<AbilityDatabase>() // loaded using asset loader
         .init_resource::<CurrentWave>()
+        .init_resource::<GameSceneConfigured>()
         .init_resource::<PlayerScore>()
         // event registration
         .add_event::<WaveSpawnedEvent>()
@@ -80,6 +81,7 @@ fn main() {
         .add_system(update_obelisk_status_text.system())
         .add_system(player_lane_change_interaction.system())
         .add_system(ability_purchase_system.system())
+        .add_system(close_ability_screen.system())
         .add_system_to_stage("dead_removal", game_over_trigger.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
         .run();

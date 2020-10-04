@@ -1,4 +1,7 @@
-use crate::components::GameSceneEntity;
+use crate::{
+    components::{GameSceneConfigured, GameSceneEntity, MainGameSidebarUi},
+    game_ui::spawn_player_sidebar,
+};
 use bevy::prelude::*;
 use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
@@ -31,6 +34,7 @@ fn spawn_player(
 pub fn setup_game_scene(
     mut commands: Commands,
     mut waves: ResMut<CurrentWave>,
+    mut is_configured: ResMut<GameSceneConfigured>,
     asset_server: ResMut<AssetServer>,
     game_time: Res<GameTime>,
     game_state: Res<GameState<MyGameScenes>>,
@@ -38,6 +42,7 @@ pub fn setup_game_scene(
     mut materials: ResMut<Assets<ColorMaterial>>,
     textures: ResMut<Assets<Texture>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
 ) {
     if !game_state.is_in_scene(&MyGameScenes::Game)
         || !game_state.is_in_status(&GameStatus::Entering)
@@ -45,9 +50,32 @@ pub fn setup_game_scene(
         return;
     }
 
+    if is_configured.0 == true {
+        println!("Skipping full game scene configuration");
+
+        println!("Respawning player GUI");
+
+        for (parent, _) in &mut sidebar_components.iter() {
+            let transparent_material = materials.add(Color::NONE.into());
+            spawn_player_sidebar(
+                parent,
+                &mut commands,
+                materials,
+                transparent_material,
+                asset_server.load("assets/fonts/teletactile.ttf").unwrap(),
+            );
+
+            break; // really only should be one, need a neater way to do this
+        }
+
+        return;
+    }
+
+    is_configured.0 = true;
+
     // start running the game when entering
     commands.spawn((GameSpeedRequest {
-        new_game_speed: 3.0,
+        new_game_speed: DEFAULT_GAME_SPEED,
     },));
 
     // start spawning waves some time in the future
@@ -106,6 +134,19 @@ pub fn teardown_game_scene(
     if !game_state.is_in_scene(&MyGameScenes::Game)
         || !game_state.is_in_status(&GameStatus::Exiting)
     {
+        return;
+    }
+
+    // don't tear down if we are going to abilities screen
+    // can be *fairly* certain next is defined
+    let skip_despawning = match game_state.next.unwrap() {
+        MyGameScenes::Abilities => true,
+        _ => false,
+    };
+
+    println!("NEXT::: {:?} - {}", game_state.next, skip_despawning);
+    if skip_despawning {
+        println!("Skipping game scene teardown");
         return;
     }
 
