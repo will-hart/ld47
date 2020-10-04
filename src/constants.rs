@@ -39,10 +39,11 @@ pub const SPAWN_LOCATIONS: [(f32, f32); 3] = [(-480., 365.), (-180., 365.), (120
 pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-480., -300.), (-180., -300.), (120., -300.)];
 
 /// how far the players set up from the target location
-pub const PLAYER_OFFSET: f32 = 40.;
+pub const PLAYER_OFFSET_Y: f32 = 40.;
+pub const PLAYER_OFFSET_X: f32 = 40.;
 
 /// the range that is considered "melee"
-pub const MELEE_RANGE: f32 = PLAYER_OFFSET + 2.;
+pub const MELEE_RANGE: f32 = PLAYER_OFFSET_Y + 2.;
 
 /// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const ENEMY_SPEED: f32 = 60.;

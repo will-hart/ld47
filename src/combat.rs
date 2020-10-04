@@ -75,7 +75,7 @@ pub fn player_auto_attack_system(
     mut player_query: Query<(&Player, &mut BaseAttack)>,
     mut enemy_query: Query<(&Enemy, &Transform, &mut Health, &Defence)>,
 ) {
-    let player_y_pos = TARGET_LOCATIONS[0].1 + PLAYER_OFFSET;
+    let player_y_pos = TARGET_LOCATIONS[0].1 + PLAYER_OFFSET_Y;
 
     for (player, mut attack) in &mut player_query.iter() {
         // attack cooldown

@@ -23,7 +23,7 @@ fn spawn_player(
         0.75,
         vec![(0, 1)],
         Vec2::from(TARGET_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
-            - Vec3::new(0., PLAYER_OFFSET, 0.),
+            - Vec3::new(0., PLAYER_OFFSET_Y, 0.),
     )
     .current_entity()
     .unwrap();

@@ -22,7 +22,9 @@ pub fn player_movement(
     mut transform: Mut<Transform>,
 ) {
     // TODO: handle multiple players in the same lane
-    let target_pos = TARGET_LOCATIONS[player.target_lane].0;
+    let target_pos = TARGET_LOCATIONS[player.target_lane].0
+        + (player.player_id as f32) * PLAYER_OFFSET_X
+        - PLAYER_OFFSET_X;
     let current_pos = transform.translation().x();
 
     let delta = target_pos - current_pos;
