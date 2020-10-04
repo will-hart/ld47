@@ -40,3 +40,6 @@ pub const MELEE_RANGE: f32 = PLAYER_OFFSET + 2.;
 
 /// PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const ENEMY_SPEED: f32 = 60.;
+
+pub const MIN_LANE: usize = 0;
+pub const MAX_LANE: usize = 2;

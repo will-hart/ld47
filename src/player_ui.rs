@@ -1,4 +1,4 @@
-use crate::components::*;
+use crate::{components::*, constants::*};
 use bevy::prelude::*;
 use spectre_core::{Health, Mana};
 
@@ -206,6 +206,78 @@ pub fn spawn_player_ui(
                                 ..Default::default()
                             });
                         });
+                })
+                .spawn(NodeComponents {
+                    style: Style {
+                        size: Size::new(Val::Px(320.), Val::Px(80.)),
+                        flex_direction: FlexDirection::Row,
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Default::default()
+                    },
+                    material,
+                    ..Default::default()
+                })
+                .with_children(|lane_change_parent| {
+                    lane_change_parent
+                        .spawn(ButtonComponents {
+                            style: Style {
+                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                // horizontally center child text
+                                justify_content: JustifyContent::Center,
+                                // vertically center child text
+                                align_items: AlignItems::Center,
+                                ..Default::default()
+                            },
+                            material,
+                            ..Default::default()
+                        })
+                        .with_children(|button_parent| {
+                            button_parent.spawn(TextComponents {
+                                text: Text {
+                                    value: "<".to_string(),
+                                    font: font_handle,
+                                    style: TextStyle {
+                                        font_size: 20.0,
+                                        color: Color::rgb(0.8, 0.8, 0.8),
+                                    },
+                                },
+                                ..Default::default()
+                            });
+                        })
+                        .with(PlayerLaneChangeLink {
+                            player_id,
+                            delta: -1,
+                        })
+                        .spawn(ButtonComponents {
+                            style: Style {
+                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                // horizontally center child text
+                                justify_content: JustifyContent::Center,
+                                // vertically center child text
+                                align_items: AlignItems::Center,
+                                ..Default::default()
+                            },
+                            material,
+                            ..Default::default()
+                        })
+                        .with_children(|button_parent| {
+                            button_parent.spawn(TextComponents {
+                                text: Text {
+                                    value: ">".to_string(),
+                                    font: font_handle,
+                                    style: TextStyle {
+                                        font_size: 20.0,
+                                        color: Color::rgb(0.8, 0.8, 0.8),
+                                    },
+                                },
+                                ..Default::default()
+                            });
+                        })
+                        .with(PlayerLaneChangeLink {
+                            player_id,
+                            delta: 1,
+                        });
                 });
         });
 }
@@ -265,5 +337,34 @@ pub fn update_player_mana_ui(
             "Mana: {:.0} / {:.0}",
             mana.current_mana, mana.max_mana.value
         );
+    }
+}
+
+pub fn player_lane_change_interaction(
+    mut interaction_query: Query<(&Button, Mutated<Interaction>, &PlayerLaneChangeLink)>,
+    mut player_query: Query<&mut Player>,
+) {
+    for (_, interaction, link) in &mut interaction_query.iter() {
+        match *interaction {
+            Interaction::Clicked => {
+                println!(
+                    "Player {} requested lane change delta {}",
+                    link.player_id, link.delta
+                );
+
+                for mut player in &mut player_query.iter() {
+                    if player.player_id == link.player_id {
+                        let new_lane = player.current_lane as i8 + link.delta;
+                        if new_lane < MIN_LANE as i8 || new_lane > MAX_LANE as i8 {
+                            println!(" --> Invalid request, ignoring lane change");
+                        } else {
+                            player.target_lane = new_lane as usize;
+                        }
+                        break;
+                    }
+                }
+            }
+            _ => {}
+        };
     }
 }

@@ -112,3 +112,9 @@ pub struct PlayerManaLink {
     pub player_id: u8,
     pub entity: Option<Entity>,
 }
+
+/// Links player lane change button to a change lanes action
+pub struct PlayerLaneChangeLink {
+    pub player_id: u8,
+    pub delta: i8,
+}

@@ -25,6 +25,7 @@ pub fn player_movement(
         return;
     }
 
+    // TODO: handle multiple players in the same lane
     let target_pos = TARGET_LOCATIONS[player.target_lane].0;
     let current_pos = transform.translation().x();
 
@@ -41,7 +42,7 @@ pub fn player_movement(
     transform.translate(Vec3::new(used_delta, 0., 0.));
 
     // tick over the current lane once the player arrives
-    if delta < 3. {
+    if delta.abs() < 3. {
         player.current_lane = player.target_lane;
     }
 }
