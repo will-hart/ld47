@@ -149,7 +149,9 @@ pub fn enemy_target_selection_system(
                     })
                     .collect::<Vec<_>>();
 
-                if players_in_lane.len() == 0 {
+                // if nobody is in the lane, target the obelisk
+                target.is_obelisk = players_in_lane.len() == 0;
+                if target.is_obelisk {
                     continue;
                 }
 
@@ -165,6 +167,7 @@ pub fn enemy_target_selection_system(
 
 pub fn enemy_auto_attack_system(
     game_time: Res<GameTime>,
+    mut player_score: ResMut<PlayerScore>,
     mut enemy_query: Query<(&Enemy, &Transform, &mut AttackTarget, &mut BaseAttack)>,
     player_query: Query<(&Player, &Transform, &mut Health, &Defence)>,
 ) {
@@ -174,8 +177,24 @@ pub fn enemy_auto_attack_system(
             continue;
         }
 
-        // if we don't have a target, wait for the targeting system to apply one
+        // if we don't have a target, and aren't attacking the obelisk
         if target.entity.is_none() {
+            if !target.is_obelisk || player_score.obelisk_health == 0 {
+                continue;
+            }
+
+            // if we are attacking the obelisk, and are in range, attack with defence of 0
+            let dummy_defence = Defence::default();
+            let result = resolve_combat(&attack, &dummy_defence);
+            let damage = result.damage as usize / OBELISK_DAMAGE_MODIFIER;
+
+            if damage > player_score.obelisk_health {
+                // TODO Raise game over
+                player_score.obelisk_health = 0;
+            } else {
+                player_score.obelisk_health -= damage;
+            }
+
             continue;
         }
 

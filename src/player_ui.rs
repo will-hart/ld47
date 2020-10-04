@@ -449,3 +449,11 @@ pub fn player_lane_change_interaction(
         };
     }
 }
+
+pub fn update_obelisk_status_text(
+    player_score: Res<PlayerScore>,
+    _obelisk: &ObeliskStatusTextUiLink,
+    mut text: Mut<Text>,
+) {
+    text.value = format!("Obelisk health {} / 1000", player_score.obelisk_health);
+}

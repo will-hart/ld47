@@ -55,3 +55,6 @@ pub const ENEMY_SPEED: f32 = 60.;
 
 pub const MIN_LANE: usize = 0;
 pub const MAX_LANE: usize = 2;
+
+/// reduction in damage when attacking the obelisk
+pub const OBELISK_DAMAGE_MODIFIER: usize = 10;

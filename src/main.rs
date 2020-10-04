@@ -66,6 +66,7 @@ fn main() {
         .add_system(health_bar_system.system())
         .add_system(update_player_health_ui.system())
         .add_system(update_player_mana_ui.system())
+        .add_system(update_obelisk_status_text.system())
         .add_system(player_lane_change_interaction.system())
         .add_system(ability_purchase_system.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())

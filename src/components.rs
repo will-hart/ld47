@@ -79,11 +79,15 @@ pub struct HealthBar {
 
 pub struct AttackTarget {
     pub entity: Option<Entity>,
+    pub is_obelisk: bool,
 }
 
 impl Default for AttackTarget {
     fn default() -> Self {
-        AttackTarget { entity: None }
+        AttackTarget {
+            entity: None,
+            is_obelisk: false,
+        }
     }
 }
 
