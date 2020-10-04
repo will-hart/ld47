@@ -46,6 +46,7 @@ pub struct Player {
     pub current_lane: usize,
     pub target_lane: usize,
     pub is_moving: bool,
+    pub abilities: Vec<u16>,
 }
 
 /// The base attack / defence of a unit. Can be enhanced over time

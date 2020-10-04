@@ -3,6 +3,7 @@ use crate::components::PlayerScore;
 use crate::constants::*;
 use crate::game_ui::health_bar_system;
 use crate::player_ui::*;
+use abilities::ability_data::*;
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
@@ -14,6 +15,7 @@ use spectre_core::CharacterStatsPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
 use spectre_time::GameTimePlugin;
 
+mod abilities;
 mod combat;
 mod components;
 mod constants;
@@ -42,6 +44,7 @@ fn main() {
         })
         // .add_resource(ClearColor(Color::rgb_u8(8, 20, 30))) // not sure why this colour is too bright?
         .add_resource(ClearColor(Color::rgb_u8(1, 2, 3)))
+        .init_resource::<AbilityDatabase>() // loaded using asset loader
         .init_resource::<CurrentWave>()
         .init_resource::<PlayerScore>()
         .add_default_plugins()

@@ -14,6 +14,7 @@ pub fn get_player(player_id: u8, lane: usize) -> PlayerBundle {
             current_lane: lane,
             target_lane: lane,
             is_moving: false,
+            abilities: vec![],
         },
         attack: BaseAttack {
             attack_range: MELEE_RANGE,
