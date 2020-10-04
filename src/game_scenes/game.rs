@@ -72,20 +72,20 @@ pub fn setup_game_scene(
     // spawn a sample game entity with easing
     let handle_player: Handle<Texture> = Handle::from_u128(CHARACTER_1_SPRITE);
     let texture_player = textures.get(&handle_player).unwrap();
-    let texture_atlas_player = TextureAtlas::from_grid(handle_player, texture_player.size, 2, 1);
+    let texture_atlas_player = TextureAtlas::from_grid(handle_player, texture_player.size, 4, 1);
     let texture_atlas_handle_player = texture_atlases.add(texture_atlas_player);
 
     spawn_player(&mut commands, texture_atlas_handle_player, 0, 0);
 
     let handle_player2: Handle<Texture> = Handle::from_u128(CHARACTER_2_SPRITE);
     let texture_player2 = textures.get(&handle_player2).unwrap();
-    let texture_atlas_player2 = TextureAtlas::from_grid(handle_player2, texture_player2.size, 2, 1);
+    let texture_atlas_player2 = TextureAtlas::from_grid(handle_player2, texture_player2.size, 4, 1);
     let texture_atlas_handle_player2 = texture_atlases.add(texture_atlas_player2);
     spawn_player(&mut commands, texture_atlas_handle_player2, 1, 1);
 
     let handle_player3: Handle<Texture> = Handle::from_u128(CHARACTER_3_SPRITE);
     let texture_player3 = textures.get(&handle_player3).unwrap();
-    let texture_atlas_player3 = TextureAtlas::from_grid(handle_player3, texture_player3.size, 2, 1);
+    let texture_atlas_player3 = TextureAtlas::from_grid(handle_player3, texture_player3.size, 4, 1);
     let texture_atlas_handle_player3 = texture_atlases.add(texture_atlas_player3);
     spawn_player(&mut commands, texture_atlas_handle_player3, 2, 2);
 }
