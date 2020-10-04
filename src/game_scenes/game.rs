@@ -21,7 +21,7 @@ fn spawn_player(
         &mut commands,
         texture_atlas_handle,
         0.75,
-        vec![(0, 1)],
+        vec![(0, 1), (2, 3)], // idle, dead
         Vec2::from(TARGET_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
             - Vec3::new(0., PLAYER_OFFSET_Y, 0.),
     )
