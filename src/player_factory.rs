@@ -7,7 +7,7 @@ pub fn get_player(player_id: u8, lane: usize) -> PlayerBundle {
         health: Health::new(100., 0.),
         mana: Mana::new(200.),
         movement: Movement {
-            movement_speed: BuffableStatistic::new(50.),
+            movement_speed: BuffableStatistic::new(75.),
         },
         player: Player {
             player_id,
