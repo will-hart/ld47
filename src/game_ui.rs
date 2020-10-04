@@ -86,11 +86,16 @@ pub fn spawn_ui(
     // then spawn a sidebar on the right
     // the right hand sidebar should have the three character portraits
     commands
-        .spawn(get_node_components(
-            Size::new(Val::Percent(100.), Val::Percent(100.)),
-            transparent_material,
-            false,
-        ))
+        .spawn(NodeComponents {
+            style: Style {
+                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                justify_content: JustifyContent::SpaceBetween,
+                align_items: AlignItems::FlexStart,
+                ..Default::default()
+            },
+            material: transparent_material,
+            ..Default::default()
+        })
         .with_children(|outer_parent| {
             outer_parent
                 .spawn(get_node_components(

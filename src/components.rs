@@ -126,5 +126,16 @@ pub struct PlayerLaneChangeLink {
 pub struct ObeliskStatusTextUiLink;
 pub struct ObeliskStatusImageUiLink;
 
-#[derive(Default)]
-pub struct PlayerScore(pub usize);
+pub struct PlayerScore {
+    pub xp: usize,
+    pub obelisk_health: usize,
+}
+
+impl FromResources for PlayerScore {
+    fn from_resources(_: &Resources) -> Self {
+        PlayerScore {
+            xp: 0,
+            obelisk_health: 1000,
+        }
+    }
+}

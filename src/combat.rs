@@ -227,7 +227,7 @@ pub fn dead_enemy_removal_system(
         if health.current_health <= 0. {
             println!("Player killed enemy, gained {} XP", enemy.xp_reward);
 
-            player_score.0 += enemy.xp_reward;
+            player_score.xp += enemy.xp_reward;
             commands.despawn_recursive(entity);
         }
     }

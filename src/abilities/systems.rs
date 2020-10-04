@@ -20,7 +20,7 @@ pub fn ability_purchase_system(
     for (ent, request) in &mut purchase_requests.iter() {
         let ability = abilities.get(request.ability_id);
 
-        if ability.xp_cost > player_score.0 {
+        if ability.xp_cost > player_score.xp {
             println!(
                 "Unable to purchase ability {} for player {}, too expensive",
                 request.ability_id, request.player_id
@@ -88,7 +88,7 @@ pub fn ability_purchase_system(
             }
 
             // mark it as applied
-            player_score.0 -= ability.xp_cost;
+            player_score.xp -= ability.xp_cost;
             found = true;
             break;
         }
