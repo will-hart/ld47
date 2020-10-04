@@ -55,4 +55,9 @@ impl RNG {
     pub fn usize_between(min: usize, max: usize) -> usize {
         rand::thread_rng().gen_range(min, max)
     }
+
+    /// exclusive of the last element
+    pub fn f32_between(min: f32, max: f32) -> f32 {
+        rand::thread_rng().gen_range(min, max)
+    }
 }

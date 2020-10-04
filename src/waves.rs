@@ -4,13 +4,14 @@ use crate::{
 };
 use bevy::prelude::*;
 use spectre_animations::spawn_animated_spritesheet;
+use spectre_random::RNG;
 use spectre_time::GameTime;
 
 /// Defines the enemy waves in the game. Waves are stored by monster type, in tuples of tuples
 /// e.g. wolves might be item 1 in the top level tuple. The number of wolves to spawn is given
 /// by the inner tuple values, e.g. ((lane 1 count, lane 2 count, lane 3 count), ...)
 
-const WAVE_DATA: [[[isize; 3]; 2]; 2] = [[[1, 1, 1], [0, 0, 0]], [[1, 0, 1], [0, 1, 0]]];
+const WAVE_DATA: [[[isize; 3]; 2]; 2] = [[[1, 1, 2], [0, 0, 0]], [[1, 0, 1], [0, 1, 0]]];
 const WAVE_DELAYS: [f32; 2] = [15., 15.];
 
 fn spawn_enemy(
@@ -27,7 +28,8 @@ fn spawn_enemy(
         texture_atlas_handle,
         0.3,
         vec![(0, 3)],
-        Vec2::from(SPAWN_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER),
+        Vec2::from(SPAWN_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
+            + Vec3::new(RNG::f32_between(-10., 10.), RNG::f32_between(-30., 0.), 0.),
     )
     // TODO enum to specify enemy type
     .with_bundle(bundle)
