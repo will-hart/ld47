@@ -15,11 +15,12 @@ const WAVE_DELAYS: [f32; 2] = [15., 15.];
 
 fn spawn_enemy(
     mut commands: &mut Commands,
+    enemy_type: EnemyType,
     lane: usize,
     texture_atlas_handle: Handle<TextureAtlas>,
     health_bar_full: Handle<ColorMaterial>,
 ) {
-    let bundle = get_enemy_bundle(EnemyType::Wolf, 0);
+    let bundle = get_enemy_bundle(enemy_type, 0);
 
     let spawned = spawn_animated_spritesheet(
         &mut commands,
@@ -79,7 +80,7 @@ pub fn wave_spawning_system(
         waves.wave_idx, waves.next_wave_time
     );
 
-    // just assume a wolf for now
+    // just hack it out for now
     let wolves = wave_to_spawn[0];
 
     let handle: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);
@@ -94,8 +95,28 @@ pub fn wave_spawning_system(
         for _ in 0..num_to_spawn {
             spawn_enemy(
                 &mut commands,
+                EnemyType::Wolf,
                 lane,
                 texture_atlas_handle,
+                health_bar_material,
+            );
+        }
+    });
+
+    let bears = wave_to_spawn[1];
+
+    let handle_bear: Handle<Texture> = Handle::from_u128(ENEMY_BEAR_SPRITE);
+    let texture_bear = textures.get(&handle_bear).unwrap();
+    let texture_atlas_bear = TextureAtlas::from_grid(handle_bear, texture_bear.size, 4, 1);
+    let texture_atlas_handle_bear = texture_atlases.add(texture_atlas_bear);
+
+    bears.iter().enumerate().for_each(|(lane, &num_to_spawn)| {
+        for _ in 0..num_to_spawn {
+            spawn_enemy(
+                &mut commands,
+                EnemyType::Bear,
+                lane,
+                texture_atlas_handle_bear,
                 health_bar_material,
             );
         }
