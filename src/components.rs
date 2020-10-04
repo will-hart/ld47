@@ -123,5 +123,8 @@ pub struct PlayerLaneChangeLink {
     pub delta: i8,
 }
 
+pub struct ObeliskStatusTextUiLink;
+pub struct ObeliskStatusImageUiLink;
+
 #[derive(Default)]
 pub struct PlayerScore(pub usize);

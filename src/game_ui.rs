@@ -1,5 +1,5 @@
 use crate::components::Enemy;
-use crate::player_ui::spawn_player_ui;
+use crate::player_ui::{spawn_obelisk_ui, spawn_player_ui};
 use crate::{components::HealthBar, constants::*};
 use bevy::prelude::*;
 use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
@@ -78,6 +78,10 @@ pub fn spawn_ui(
     let char3_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_3_PORTRAIT);
     let character3_portrait_material = materials.add(char3_port_handle.into());
 
+    // get the time of day UI items
+    let handle_timeofday: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE1_ID);
+    let initial_time_of_day_material = materials.add(handle_timeofday.into());
+
     // spawn a 75% full height box on the left
     // then spawn a sidebar on the right
     // the right hand sidebar should have the three character portraits
@@ -107,6 +111,12 @@ pub fn spawn_ui(
                     true,
                 ))
                 .with_children(|sidebar_parent| {
+                    spawn_obelisk_ui(
+                        sidebar_parent,
+                        transparent_material,
+                        initial_time_of_day_material,
+                        font_handle,
+                    );
                     // player 2
                     spawn_player_ui(
                         sidebar_parent,

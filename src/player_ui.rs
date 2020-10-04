@@ -32,7 +32,7 @@ pub fn spawn_player_ui(
     parent
         .spawn(NodeComponents {
             style: Style {
-                size: Size::new(Val::Px(320.), Val::Px(180.)),
+                size: Size::new(Val::Px(340.), Val::Px(180.)),
                 flex_direction: FlexDirection::ColumnReverse,
                 justify_content: JustifyContent::FlexStart,
                 align_items: AlignItems::FlexStart,
@@ -311,6 +311,55 @@ pub fn spawn_player_ui(
                             delta: 1,
                         });
                 });
+        });
+}
+
+pub fn spawn_obelisk_ui(
+    parent: &mut ChildBuilder,
+    material: Handle<ColorMaterial>,
+    initial_time_of_day_material: Handle<ColorMaterial>,
+    font_handle: Handle<Font>,
+) {
+    parent
+        .spawn(NodeComponents {
+            style: Style {
+                size: Size::new(Val::Px(310.), Val::Px(100.)),
+                flex_direction: FlexDirection::Row,
+                justify_content: JustifyContent::SpaceBetween,
+                align_items: AlignItems::FlexStart,
+                margin: Rect::all(Val::Px(5.)),
+                ..Default::default()
+            },
+            material,
+            ..Default::default()
+        })
+        .with_children(|obelisk_parent| {
+            obelisk_parent
+                .spawn(ImageComponents {
+                    style: Style {
+                        size: Size::new(Val::Px(32.), Val::Px(32.)),
+                        ..Default::default()
+                    },
+                    material: initial_time_of_day_material,
+                    draw: Draw {
+                        is_transparent: true,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                })
+                .with(ObeliskStatusImageUiLink)
+                .spawn(TextComponents {
+                    text: Text {
+                        value: "Obelisk heath ? / ?".to_string(),
+                        font: font_handle,
+                        style: TextStyle {
+                            font_size: 12.0,
+                            color: Color::rgb(0.8, 0.8, 0.8),
+                        },
+                    },
+                    ..Default::default()
+                })
+                .with(ObeliskStatusTextUiLink);
         });
 }
 

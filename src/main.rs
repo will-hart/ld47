@@ -90,6 +90,10 @@ fn setup(mut commands: Commands) {
                 ("assets/enemy_bear.png", ENEMY_BEAR_SPRITE),
                 ("assets/enemy_troll.png", ENEMY_TROLL_SPRITE),
                 ("assets/health_bar_full.png", HEALTHBAR_SPRITE_ID),
+                ("assets/time_of_day.png", TIME_OF_DAY_SPRITE1_ID),
+                ("assets/time_of_day2.png", TIME_OF_DAY_SPRITE2_ID),
+                ("assets/time_of_day3.png", TIME_OF_DAY_SPRITE3_ID),
+                ("assets/time_of_day4.png", TIME_OF_DAY_SPRITE4_ID),
             ]
             .into_iter()
             .map(|a| a.into())
