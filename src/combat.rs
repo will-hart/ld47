@@ -83,6 +83,10 @@ pub fn player_auto_attack_system(
             continue;
         }
 
+        if player.is_moving {
+            continue;
+        }
+
         // just pick the first available target in the lane :shrug:
         let mut target: Option<(Mut<Health>, &Defence)> = None;
 

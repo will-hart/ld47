@@ -43,6 +43,7 @@ pub struct Player {
     pub player_id: u8,
     pub current_lane: usize,
     pub target_lane: usize,
+    pub is_moving: bool,
 }
 
 /// The base attack / defence of a unit. Can be enhanced over time

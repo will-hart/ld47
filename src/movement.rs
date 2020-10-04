@@ -21,15 +21,19 @@ pub fn player_movement(
     mut player: Mut<Player>,
     mut transform: Mut<Transform>,
 ) {
-    if player.current_lane == player.target_lane {
-        return;
-    }
-
     // TODO: handle multiple players in the same lane
     let target_pos = TARGET_LOCATIONS[player.target_lane].0;
     let current_pos = transform.translation().x();
 
     let delta = target_pos - current_pos;
+
+    // tick over the current lane once the player arrives
+    if delta.abs() < 3. {
+        player.current_lane = player.target_lane;
+        player.is_moving = false;
+        return;
+    }
+
     let max_delta = movement.movement_speed.value * time.delta;
 
     // use abs as delta may be negative, i.e. -665 from target, max is 1.3
@@ -39,12 +43,8 @@ pub fn player_movement(
     }
 
     // translate minimum of delta and max_delta
+    player.is_moving = true;
     transform.translate(Vec3::new(used_delta, 0., 0.));
-
-    // tick over the current lane once the player arrives
-    if delta.abs() < 3. {
-        player.current_lane = player.target_lane;
-    }
 }
 
 /// moves an enemy towards their target position.

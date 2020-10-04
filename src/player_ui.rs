@@ -386,7 +386,7 @@ pub fn player_lane_change_interaction(
 
                 for mut player in &mut player_query.iter() {
                     if player.player_id == link.player_id {
-                        let new_lane = player.current_lane as i8 + link.delta;
+                        let new_lane = player.target_lane as i8 + link.delta;
                         if new_lane < MIN_LANE as i8 || new_lane > MAX_LANE as i8 {
                             println!(" --> Invalid request, ignoring lane change");
                         } else {
