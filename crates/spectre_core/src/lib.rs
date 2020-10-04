@@ -16,7 +16,7 @@ pub const HEALTH_LERP_RATE: f32 = 100.; // health per second
 /// absolute buffs are added after percentage buffs, the formula is:
 ///     value = base_value * (1 + sum of percentages) + sum of amounts
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Copy, Deserialize, Serialize)]
 pub struct Buff {
     pub expiry: f32,
     pub percentage: f32,

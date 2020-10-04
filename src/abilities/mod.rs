@@ -37,8 +37,8 @@ pub enum DamageType {
 #[derive(Deserialize, Serialize)]
 pub enum AbilityDetail {
     Attack(AbilityAttackDetail),
-    AttackMultiple(AbilityAttackDetail, u32),
-    AOEAttack(AbilityAttackDetail, u32),
+    // TODO: AttackMultiple(AbilityAttackDetail, u32),
+    // TODO: AOEAttack(AbilityAttackDetail, u32),
     Buff(AbilityBuffDetail),
     Heal(AbilityHealDetail),
     Revive(AbilityReviveDetail),

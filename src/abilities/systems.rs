@@ -2,13 +2,14 @@ use super::*;
 use crate::components::*;
 use ability_data::AbilityDatabase;
 use bevy::prelude::*;
+use spectre_core::{Health, Mana, Movement};
 
 pub fn ability_purchase_system(
     mut commands: Commands,
     mut abilities: ResMut<AbilityDatabase>,
     mut player_score: ResMut<PlayerScore>,
     mut purchase_requests: Query<(Entity, &AbilityPurchaseRequest)>,
-    mut players: Query<&Player>,
+    mut players: Query<(&mut Player, &mut Health, &mut Mana, &mut Movement)>,
 ) {
     for (ent, request) in &mut purchase_requests.iter() {
         let ability = abilities.get(request.ability_id);
@@ -24,14 +25,63 @@ pub fn ability_purchase_system(
         }
 
         let mut found: bool = false;
-        for player in &mut players.iter() {
+        for (mut player, mut health, mut mana, mut movement) in &mut players.iter() {
             if player.player_id != request.player_id {
                 continue;
             }
 
             // check the player meets the prerequisites
+            let can_unlock = ability
+                .prerequisites
+                .iter()
+                .all(|pre| player.abilities.contains(pre));
 
-            // apply the ability
+            if !can_unlock {
+                println!(
+                    "Player {} does not have the correct prerequisite abilities to unlock {}",
+                    request.player_id, request.ability_id
+                );
+                break;
+            }
+
+            // register the ability
+            player.abilities.push(ability.id);
+
+            // apply the effects
+            for effect in ability.effects.iter() {
+                match effect {
+                    AbilityDetail::Attack(_) => {
+                        panic!("Not implemented");
+                    }
+                    AbilityDetail::Buff(detail) => {
+                        match detail.buff_type {
+                            BuffType::Health => {
+                                health.max_health.buffs.push(detail.buff.clone());
+                            }
+                            BuffType::Mana => {
+                                mana.max_mana.buffs.push(detail.buff.clone());
+                            }
+                            BuffType::Regeneration => {
+                                health.regeneration.buffs.push(detail.buff.clone());
+                            }
+                            BuffType::MovementSpeed => {
+                                movement.movement_speed.buffs.push(detail.buff.clone());
+                            }
+                        };
+                    }
+                    AbilityDetail::Heal(_) => {
+                        panic!("Not implemented");
+                    }
+                    AbilityDetail::Revive(_) => {
+                        panic!("Not implemented");
+                    }
+                };
+            }
+
+            // mark it as applied
+            player_score.0 -= ability.xp_cost;
+            found = true;
+            break;
         }
 
         if !found {

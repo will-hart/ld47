@@ -3,7 +3,7 @@ use crate::components::PlayerScore;
 use crate::constants::*;
 use crate::game_ui::health_bar_system;
 use crate::player_ui::*;
-use abilities::ability_data::*;
+use abilities::{ability_data::*, systems::ability_purchase_system};
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
@@ -67,6 +67,7 @@ fn main() {
         .add_system(update_player_health_ui.system())
         .add_system(update_player_mana_ui.system())
         .add_system(player_lane_change_interaction.system())
+        .add_system(ability_purchase_system.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
         .run();
 }
