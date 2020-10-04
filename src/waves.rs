@@ -45,7 +45,7 @@ const WAVE_DATA: [WaveData; 4] = [
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([1, 1, 1]),
-        post_wave_delay: 10.,
+        post_wave_delay: 5.,
     },
 ];
 
