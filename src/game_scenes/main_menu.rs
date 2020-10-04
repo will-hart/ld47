@@ -70,7 +70,7 @@ pub fn setup_menu_scene(
                 .with_children(|button_parent| {
                     button_parent.spawn(TextComponents {
                         text: Text {
-                            value: "Button".to_string(),
+                            value: "Start Game".to_string(),
                             font: font_handle,
                             style: TextStyle {
                                 font_size: 20.0,
