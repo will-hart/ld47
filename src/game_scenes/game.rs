@@ -35,6 +35,7 @@ fn spawn_player(
 pub fn setup_game_scene(
     mut commands: Commands,
     mut waves: ResMut<CurrentWave>,
+    asset_server: ResMut<AssetServer>,
     game_time: Res<GameTime>,
     game_state: Res<GameState<MyGameScenes>>,
     nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
@@ -59,7 +60,12 @@ pub fn setup_game_scene(
     let transparent_material = materials.add(Color::NONE.into());
 
     // spawn the UI
-    let entity = spawn_ui(&mut commands, nine_patches, transparent_material);
+    let entity = spawn_ui(
+        &mut commands,
+        asset_server,
+        nine_patches,
+        transparent_material,
+    );
     commands.insert_one(entity, GameSceneEntity); // mark for cleanup
 
     // spawn a sample game entity with easing

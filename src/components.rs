@@ -100,3 +100,15 @@ impl FromResources for CurrentWave {
         }
     }
 }
+
+/// Used to flag a text box that is linked to a player's health
+pub struct PlayerHealthLink {
+    pub player_id: u8,
+    pub entity: Option<Entity>,
+}
+
+/// Used to flag a text box that is linked to a player's health
+pub struct PlayerManaLink {
+    pub player_id: u8,
+    pub entity: Option<Entity>,
+}

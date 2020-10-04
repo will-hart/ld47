@@ -1,4 +1,5 @@
 use crate::components::Enemy;
+use crate::player_ui::spawn_player_ui;
 use crate::{components::HealthBar, constants::UI_SPRITE_MARGIN};
 use bevy::prelude::*;
 use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
@@ -50,9 +51,12 @@ pub fn get_node_components(
 
 pub fn spawn_ui(
     commands: &mut Commands,
+    asset_server: ResMut<AssetServer>,
     mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
     transparent_material: Handle<ColorMaterial>,
 ) -> Entity {
+    let font_handle = asset_server.load("assets/fonts/teletactile.ttf").unwrap();
+
     let texture_handle: Handle<Texture> = Handle::from_u128(UI_CONTAINER_ID);
     // TODO: store on a resource and get only once?
     let nine_patch_handle = nine_patches.add(NinePatchBuilder::by_margins(
@@ -92,43 +96,10 @@ pub fn spawn_ui(
                     true,
                 ))
                 .with_children(|sidebar_parent| {
-                    sidebar_parent
-                        .spawn(get_node_components(
-                            Size::new(Val::Percent(100.), Val::Percent(25.)),
-                            transparent_material,
-                            true,
-                        ))
-                        .with_children(|sidebar_parent_inner| {
-                            sidebar_parent_inner.spawn(get_ui_box(
-                                nine_patch_handle,
-                                texture_handle,
-                                Vec2::new(320., 180.),
-                            ));
-                        })
-                        .spawn(get_node_components(
-                            Size::new(Val::Percent(100.), Val::Percent(25.)),
-                            transparent_material,
-                            true,
-                        ))
-                        .with_children(|sidebar_parent_inner| {
-                            sidebar_parent_inner.spawn(get_ui_box(
-                                nine_patch_handle,
-                                texture_handle,
-                                Vec2::new(320., 180.),
-                            ));
-                        })
-                        .spawn(get_node_components(
-                            Size::new(Val::Percent(100.), Val::Percent(25.)),
-                            transparent_material,
-                            true,
-                        ))
-                        .with_children(|sidebar_parent_inner| {
-                            sidebar_parent_inner.spawn(get_ui_box(
-                                nine_patch_handle,
-                                texture_handle,
-                                Vec2::new(320., 180.),
-                            ));
-                        });
+                    // player 2
+                    spawn_player_ui(sidebar_parent, transparent_material, font_handle, 2);
+                    spawn_player_ui(sidebar_parent, transparent_material, font_handle, 1);
+                    spawn_player_ui(sidebar_parent, transparent_material, font_handle, 0);
                 });
         });
 

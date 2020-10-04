@@ -1,6 +1,7 @@
 use crate::combat::enemy_target_selection_system;
 use crate::constants::*;
 use crate::game_ui::health_bar_system;
+use crate::player_ui::{update_player_health_ui, update_player_mana_ui};
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
@@ -21,6 +22,7 @@ mod game_scenes;
 mod game_ui;
 mod movement;
 mod player_factory;
+mod player_ui;
 mod waves;
 
 use game_scenes::*;
@@ -56,8 +58,10 @@ fn main() {
         .add_system(player_auto_attack_system.system())
         .add_system(enemy_target_selection_system.system())
         .add_system(enemy_auto_attack_system.system())
-        .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
         .add_system(health_bar_system.system())
+        .add_system(update_player_health_ui.system())
+        .add_system(update_player_mana_ui.system())
+        .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
         .run();
 }
 
@@ -74,13 +78,11 @@ fn setup(mut commands: Commands) {
                 ("assets/character3.png", CHARACTER_3_SPRITE),
                 ("assets/enemy_wolf.png", ENEMY_WOLF_SPRITE),
                 ("assets/enemy_bear.png", ENEMY_BEAR_SPRITE),
+                ("assets/enemy_troll.png", ENEMY_TROLL_SPRITE),
                 ("assets/health_bar_full.png", HEALTHBAR_SPRITE_ID),
             ]
             .into_iter()
             .map(|a| a.into())
             .collect(),
         },));
-
-    // start the game clock running
-    // .spawn((GameSpeedRequest::new(1.0),));
 }
