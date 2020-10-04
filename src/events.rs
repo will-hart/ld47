@@ -12,7 +12,8 @@ pub struct WaveSpawnedEventListener {
     pub wave_spawned_reader: EventReader<WaveSpawnedEvent>,
 }
 
-pub struct EndOfDayEvent;
+/// Triggered on the end of day, passes true if all waves are complete (VICTORY!)
+pub struct EndOfDayEvent(pub bool);
 
 #[derive(Default)]
 pub struct EndOfDayEventListener {

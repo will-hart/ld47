@@ -97,18 +97,20 @@ pub fn wave_spawning_system(
         return;
     }
 
-    if waves.wave_idx > 0 && waves.wave_idx % 4 == 0 {
-        end_of_day.send(EndOfDayEvent);
-    }
-
-    // nothing else to spawn
-    if waves.wave_idx >= WAVE_DATA.len() {
-        return;
-    }
-
     // game paused
     if game_time.game_speed < 0.01 {
         return;
+    }
+
+    // nothing else to spawn, just set to max to effectively disable this system
+    if waves.wave_idx >= WAVE_DATA.len() {
+        end_of_day.send(EndOfDayEvent(true));
+        waves.next_wave_time = f32::MAX;
+        return;
+    }
+
+    if waves.wave_idx > 0 && waves.wave_idx % 4 == 0 {
+        end_of_day.send(EndOfDayEvent(false));
     }
 
     let wave_to_spawn = &WAVE_DATA[waves.wave_idx];
