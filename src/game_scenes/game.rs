@@ -14,6 +14,7 @@ pub struct GameSceneEntity;
 fn spawn_player(
     mut commands: &mut Commands,
     texture_atlas_handle: Handle<TextureAtlas>,
+    player_id: u8,
     lane: usize,
 ) {
     let spawned = spawn_animated_spritesheet(
@@ -28,7 +29,7 @@ fn spawn_player(
     .unwrap();
 
     // TODO enum to specify enemy type
-    commands.insert(spawned, get_player(lane));
+    commands.insert(spawned, get_player(player_id, lane));
 }
 
 pub fn setup_game_scene(
@@ -67,9 +68,9 @@ pub fn setup_game_scene(
     let texture_atlas_player = TextureAtlas::from_grid(handle_player, texture_player.size, 2, 1);
     let texture_atlas_handle_player = texture_atlases.add(texture_atlas_player);
 
-    spawn_player(&mut commands, texture_atlas_handle_player, 0);
-    spawn_player(&mut commands, texture_atlas_handle_player, 1);
-    spawn_player(&mut commands, texture_atlas_handle_player, 2);
+    spawn_player(&mut commands, texture_atlas_handle_player, 0, 0);
+    spawn_player(&mut commands, texture_atlas_handle_player, 1, 1);
+    spawn_player(&mut commands, texture_atlas_handle_player, 2, 2);
 }
 
 // demonstrates spawning a player using the spawn_animated_spritesheet helper

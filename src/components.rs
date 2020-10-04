@@ -40,6 +40,7 @@ impl Enemy {
 }
 
 pub struct Player {
+    pub player_id: u8,
     pub current_lane: usize,
     pub target_lane: usize,
 }

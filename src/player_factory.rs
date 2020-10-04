@@ -2,7 +2,7 @@ use spectre_core::*;
 
 use crate::{components::*, constants::MELEE_RANGE};
 
-pub fn get_player(lane: usize) -> PlayerBundle {
+pub fn get_player(player_id: u8, lane: usize) -> PlayerBundle {
     PlayerBundle {
         health: Health::new(100., 0.),
         mana: Mana::new(200.),
@@ -10,6 +10,7 @@ pub fn get_player(lane: usize) -> PlayerBundle {
             movement_speed: BuffableStatistic::new(50.),
         },
         player: Player {
+            player_id,
             current_lane: lane,
             target_lane: lane,
         },
