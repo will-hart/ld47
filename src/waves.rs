@@ -20,7 +20,7 @@ fn spawn_enemy(
     texture_atlas_handle: Handle<TextureAtlas>,
     health_bar_full: Handle<ColorMaterial>,
 ) {
-    let bundle = get_enemy_bundle(enemy_type, 0);
+    let bundle = get_enemy_bundle(enemy_type, lane);
 
     let spawned = spawn_animated_spritesheet(
         &mut commands,
