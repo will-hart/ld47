@@ -35,7 +35,7 @@ pub fn resolve_combat(attack: &BaseAttack, defence: &Defence) -> CombatResult {
 
     let mut result = CombatResult {
         is_crit,
-        damage: calc_damage(base_attack, defence.base_armour),
+        damage: calc_damage(base_attack, defence.base_armour.value as i32),
         frozen: false,
         poisoned: false,
         burning: false,

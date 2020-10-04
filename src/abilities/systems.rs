@@ -9,7 +9,13 @@ pub fn ability_purchase_system(
     mut abilities: ResMut<AbilityDatabase>,
     mut player_score: ResMut<PlayerScore>,
     mut purchase_requests: Query<(Entity, &AbilityPurchaseRequest)>,
-    mut players: Query<(&mut Player, &mut Health, &mut Mana, &mut Movement)>,
+    mut players: Query<(
+        &mut Player,
+        &mut Defence,
+        &mut Health,
+        &mut Mana,
+        &mut Movement,
+    )>,
 ) {
     for (ent, request) in &mut purchase_requests.iter() {
         let ability = abilities.get(request.ability_id);
@@ -25,7 +31,7 @@ pub fn ability_purchase_system(
         }
 
         let mut found: bool = false;
-        for (mut player, mut health, mut mana, mut movement) in &mut players.iter() {
+        for (mut player, mut defence, mut health, mut mana, mut movement) in &mut players.iter() {
             if player.player_id != request.player_id {
                 continue;
             }
@@ -55,6 +61,9 @@ pub fn ability_purchase_system(
                     }
                     AbilityDetail::Buff(detail) => {
                         match detail.buff_type {
+                            BuffType::Armour => {
+                                defence.base_armour.buffs.push(detail.buff.clone());
+                            }
                             BuffType::Health => {
                                 health.max_health.buffs.push(detail.buff.clone());
                             }

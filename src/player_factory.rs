@@ -25,7 +25,7 @@ pub fn get_player(player_id: u8, lane: usize) -> PlayerBundle {
             ..Default::default()
         },
         defence: Defence {
-            base_armour: 1,
+            base_armour: BuffableStatistic::new(1.),
             ..Default::default()
         },
         // attack_target: AttackTarget::default(),

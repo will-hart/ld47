@@ -19,6 +19,7 @@ pub mod systems;
 
 #[derive(Deserialize, Serialize)]
 pub enum BuffType {
+    Armour,
     Health,
     Mana,
     Regeneration,

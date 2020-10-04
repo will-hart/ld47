@@ -26,7 +26,7 @@ fn get_wolf(lane: usize) -> EnemyBundle {
             ..Default::default()
         },
         defence: Defence {
-            base_armour: 0,
+            base_armour: BuffableStatistic::new(0.),
             ..Default::default()
         },
         attack_target: AttackTarget::default(),
@@ -45,7 +45,7 @@ fn get_bear(lane: usize) -> EnemyBundle {
             ..Default::default()
         },
         defence: Defence {
-            base_armour: 1,
+            base_armour: BuffableStatistic::new(1.),
             ..Default::default()
         },
         attack_target: AttackTarget::default(),

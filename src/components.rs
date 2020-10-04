@@ -66,7 +66,7 @@ pub struct BaseAttack {
 
 #[derive(Default)]
 pub struct Defence {
-    pub base_armour: i32,
+    pub base_armour: BuffableStatistic,
     pub fire_armour: i32,
     pub electricity_armour: i32,
     pub poison_armour: i32,
