@@ -2,9 +2,11 @@
 // possible there are better ways to do this sort of thing. I'm going for dev speed here,
 // not nice code /shrug
 
-use crate::{components::*, constants::*};
+use crate::{components::*, constants::*, game_scenes::MyGameScenes};
 use bevy::prelude::*;
 use spectre_core::{Health, Mana};
+use spectre_state::{GameState, GameStatus};
+use spectre_time::GameSpeedRequest;
 
 fn spacer(font_handle: Handle<Font>) -> TextComponents {
     TextComponents {
@@ -456,4 +458,28 @@ pub fn update_obelisk_status_text(
     mut text: Mut<Text>,
 ) {
     text.value = format!("Obelisk health {} / 1000", player_score.obelisk_health);
+}
+
+pub fn game_over_trigger(
+    mut commands: Commands,
+    mut game_state: ResMut<GameState<MyGameScenes>>,
+    player_score: Res<PlayerScore>,
+) {
+    // only run this system if we are in the game state and running
+    if !game_state.is_in_scene(&MyGameScenes::Game) {
+        return;
+    }
+
+    if !game_state.is_in_status(&GameStatus::Running) {
+        return;
+    }
+
+    if player_score.obelisk_health <= 0 {
+        // stop the game
+        commands.spawn((GameSpeedRequest {
+            new_game_speed: 0.0,
+        },));
+
+        game_state.set_transition(MyGameScenes::GameOver);
+    }
 }

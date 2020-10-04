@@ -143,3 +143,6 @@ impl FromResources for PlayerScore {
         }
     }
 }
+
+/// Used to flag an item for destruction when the game is despawned
+pub struct GameSceneEntity;

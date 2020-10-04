@@ -68,6 +68,7 @@ fn spawn_enemy(
     )
     // TODO enum to specify enemy type
     .with_bundle(bundle)
+    .with(GameSceneEntity)
     .current_entity()
     .unwrap();
 
@@ -92,6 +93,11 @@ pub fn wave_spawning_system(
     // not ready to spawn
     if waves.next_wave_time > game_time.elapsed_time {
         return;
+    }
+
+    if waves.wave_idx > 0 && waves.wave_idx % 4 == 0 {
+        // TODO: end of day event
+        // println!("End of day!");
     }
 
     // nothing else to spawn

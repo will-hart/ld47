@@ -1,3 +1,4 @@
+use crate::components::GameSceneEntity;
 use bevy::prelude::*;
 use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
@@ -9,15 +10,13 @@ use crate::{game_ui::spawn_ui, player_factory::get_player};
 
 use super::MyGameScenes;
 
-pub struct GameSceneEntity;
-
 fn spawn_player(
     mut commands: &mut Commands,
     texture_atlas_handle: Handle<TextureAtlas>,
     player_id: u8,
     lane: usize,
 ) {
-    let spawned = spawn_animated_spritesheet(
+    spawn_animated_spritesheet(
         &mut commands,
         texture_atlas_handle,
         0.75,
@@ -25,11 +24,8 @@ fn spawn_player(
         Vec2::from(TARGET_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
             - Vec3::new(0., PLAYER_OFFSET_Y, 0.),
     )
-    .current_entity()
-    .unwrap();
-
-    // TODO enum to specify enemy type
-    commands.insert(spawned, get_player(player_id, lane));
+    .with_bundle(get_player(player_id, lane))
+    .with(GameSceneEntity);
 }
 
 pub fn setup_game_scene(
@@ -51,7 +47,7 @@ pub fn setup_game_scene(
 
     // start running the game when entering
     commands.spawn((GameSpeedRequest {
-        new_game_speed: 1.0,
+        new_game_speed: 3.0,
     },));
 
     // start spawning waves some time in the future
@@ -113,8 +109,8 @@ pub fn teardown_game_scene(
         return;
     }
 
-    println!("Tearing down loading screen");
+    println!("Tearing down game screen");
     for (entity, _) in &mut loading_scene_items.iter() {
-        commands.despawn(entity);
+        commands.despawn_recursive(entity);
     }
 }

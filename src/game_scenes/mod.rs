@@ -3,10 +3,12 @@ use spectre_loaders::LoadingStatus;
 use spectre_state::*;
 
 mod game;
+mod game_over;
 mod loading;
 mod main_menu;
 
 use game::*;
+use game_over::*;
 use loading::*;
 use main_menu::*;
 
@@ -16,6 +18,8 @@ pub enum MyGameScenes {
     Loading,
     Menu,
     Game,
+    GameOver,
+    Abilities,
 }
 
 pub struct ButtonMaterials {
@@ -57,7 +61,11 @@ impl Plugin for GameStatePlugin {
             // game scene - TODO as plugin?
             .add_system(setup_game_scene.system())
             .add_system(run_game_scene.system())
-            .add_system(teardown_game_scene.system());
+            .add_system(teardown_game_scene.system())
+            // game over scene - TODO as plugin
+            .add_system(setup_gameover_scene.system())
+            .add_system(run_gameover_scene.system())
+            .add_system(teardown_gameover_scene.system());
     }
 }
 
