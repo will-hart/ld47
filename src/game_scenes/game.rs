@@ -83,6 +83,10 @@ pub fn setup_game_scene(
 
     let transparent_material = materials.add(Color::NONE.into());
 
+    // Terrain items
+    let material_canyon = materials.add(Handle::from_u128(CANYON_SPRITE_ID).into());
+    let material_rock = materials.add(Handle::from_u128(ROCK_SPRITE_ID).into());
+
     // spawn the UI
     let entity = spawn_ui(
         &mut commands,
@@ -112,6 +116,25 @@ pub fn setup_game_scene(
     let texture_atlas_player3 = TextureAtlas::from_grid(handle_player3, texture_player3.size, 4, 1);
     let texture_atlas_handle_player3 = texture_atlases.add(texture_atlas_player3);
     spawn_player(&mut commands, texture_atlas_handle_player3, 2, 2);
+
+    // spawn "world"
+    commands
+        .spawn(SpriteComponents {
+            material: material_canyon,
+            transform: Transform::from_translation(Vec3::new(
+                -270.,
+                300.,
+                GAME_ELEMENT_LAYER - 0.5,
+            )),
+            ..Default::default()
+        })
+        .with(GameSceneEntity)
+        .spawn(SpriteComponents {
+            material: material_rock,
+            transform: Transform::from_translation(Vec3::new(50., 150., GAME_ELEMENT_LAYER - 0.5)),
+            ..Default::default()
+        })
+        .with(GameSceneEntity);
 }
 
 // demonstrates spawning a player using the spawn_animated_spritesheet helper

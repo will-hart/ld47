@@ -109,6 +109,8 @@ fn setup(mut commands: Commands) {
                 ("assets/time_of_day2.png", TIME_OF_DAY_SPRITE2_ID),
                 ("assets/time_of_day3.png", TIME_OF_DAY_SPRITE3_ID),
                 ("assets/time_of_day4.png", TIME_OF_DAY_SPRITE4_ID),
+                ("assets/canyon.png", CANYON_SPRITE_ID),
+                ("assets/rock.png", ROCK_SPRITE_ID),
             ]
             .into_iter()
             .map(|a| a.into())
