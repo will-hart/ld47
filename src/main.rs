@@ -9,6 +9,7 @@ use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 use bevy_ninepatch::NinePatchPlugin;
 use combat::{dead_enemy_removal_system, enemy_auto_attack_system, player_auto_attack_system};
 use components::CurrentWave;
+use events::*;
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_core::CharacterStatsPlugin;
@@ -21,6 +22,7 @@ mod components;
 mod constants;
 mod data;
 mod enemy_factory;
+mod events;
 mod game_scenes;
 mod game_ui;
 mod movement;
@@ -42,11 +44,19 @@ fn main() {
             mode: WindowMode::Windowed,
             ..Default::default()
         })
+        //resources
         // .add_resource(ClearColor(Color::rgb_u8(8, 20, 30))) // not sure why this colour is too bright?
         .add_resource(ClearColor(Color::rgb_u8(1, 2, 3)))
         .init_resource::<AbilityDatabase>() // loaded using asset loader
         .init_resource::<CurrentWave>()
         .init_resource::<PlayerScore>()
+        // event registration
+        .add_event::<WaveSpawnedEvent>()
+        .init_resource::<WaveSpawnedEventListener>()
+        .add_event::<EndOfDayEvent>()
+        .init_resource::<EndOfDayEventListener>()
+        .add_system(wave_spawned_event_system.system())
+        // setup and plugins
         .add_default_plugins()
         .add_startup_system(setup.system())
         .add_plugin(GameTimePlugin)

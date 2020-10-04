@@ -1,6 +1,6 @@
-use crate::CurrentWave;
 use crate::{
     components::*, constants::*, enemy_factory::get_enemy_bundle, enemy_factory::EnemyType,
+    events::*, CurrentWave,
 };
 use bevy::prelude::*;
 use spectre_animations::spawn_animated_spritesheet;
@@ -89,6 +89,8 @@ pub fn wave_spawning_system(
     mut materials: ResMut<Assets<ColorMaterial>>,
     textures: ResMut<Assets<Texture>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut wave_spawned: ResMut<Events<WaveSpawnedEvent>>,
+    mut end_of_day: ResMut<Events<EndOfDayEvent>>,
 ) {
     // not ready to spawn
     if waves.next_wave_time > game_time.elapsed_time {
@@ -96,8 +98,7 @@ pub fn wave_spawning_system(
     }
 
     if waves.wave_idx > 0 && waves.wave_idx % 4 == 0 {
-        // TODO: end of day event
-        // println!("End of day!");
+        end_of_day.send(EndOfDayEvent);
     }
 
     // nothing else to spawn
@@ -111,6 +112,10 @@ pub fn wave_spawning_system(
     }
 
     let wave_to_spawn = &WAVE_DATA[waves.wave_idx];
+    wave_spawned.send(WaveSpawnedEvent {
+        wave_idx: waves.wave_idx,
+    });
+
     println!(
         "Spawning wave {} at {} (expected at {})",
         waves.wave_idx, game_time.elapsed_time, waves.next_wave_time
