@@ -220,11 +220,14 @@ pub fn enemy_auto_attack_system(
 /// Removes dead enemies in post_update
 pub fn dead_enemy_removal_system(
     mut commands: Commands,
-    mut enemy_query: Query<With<Enemy, (Entity, &Health)>>,
+    mut player_score: ResMut<PlayerScore>,
+    mut enemy_query: Query<(Entity, &Enemy, &Health)>,
 ) {
-    for (entity, health) in &mut enemy_query.iter() {
+    for (entity, enemy, health) in &mut enemy_query.iter() {
         if health.current_health <= 0. {
-            println!("DESPAWNING");
+            println!("Player killed enemy, gained {} XP", enemy.xp_reward);
+
+            player_score.0 += enemy.xp_reward;
             commands.despawn_recursive(entity);
         }
     }

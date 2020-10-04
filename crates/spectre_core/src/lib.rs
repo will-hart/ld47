@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 use spectre_time::*;
 
 pub mod prelude {
@@ -14,6 +15,8 @@ pub const HEALTH_LERP_RATE: f32 = 100.; // health per second
 /// if both percentage and amount are non zero, then both will be used
 /// absolute buffs are added after percentage buffs, the formula is:
 ///     value = base_value * (1 + sum of percentages) + sum of amounts
+
+#[derive(Deserialize, Serialize)]
 pub struct Buff {
     pub expiry: f32,
     pub percentage: f32,
@@ -104,7 +107,7 @@ pub struct Health {
     pub max_health: BuffableStatistic,
     pub current_health: f32,
     pub target_health: f32,
-    pub regeneration: f32,
+    pub regeneration: BuffableStatistic,
 }
 
 impl Health {
@@ -113,7 +116,7 @@ impl Health {
             max_health: BuffableStatistic::new(health),
             current_health: health,
             target_health: health,
-            regeneration,
+            regeneration: BuffableStatistic::new(regeneration),
         }
     }
 }
@@ -160,6 +163,7 @@ fn refresh_stats(
     stats.update(game_time.elapsed_time);
     movement.movement_speed.update(game_time.elapsed_time);
     health.max_health.update(game_time.elapsed_time);
+    health.regeneration.update(game_time.elapsed_time);
     mana.max_mana.update(game_time.elapsed_time);
 
     if !stats.is_changed {
@@ -192,7 +196,7 @@ fn health_regeneration(time: Res<GameTime>, mut health: Mut<Health>) {
         return;
     }
 
-    health.target_health += health.regeneration * time.delta;
+    health.target_health += health.regeneration.value * time.delta;
 
     // check target isn't above max
     if health.target_health > health.max_health.value {

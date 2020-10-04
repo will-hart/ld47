@@ -16,7 +16,7 @@ pub fn get_enemy_bundle(enemy_type: EnemyType, lane: usize) -> EnemyBundle {
 
 fn get_wolf(lane: usize) -> EnemyBundle {
     EnemyBundle {
-        enemy: Enemy::new(lane),
+        enemy: Enemy::new(lane, 25),
         health: Health::new(30., 0.),
         attack: BaseAttack {
             attack_range: MELEE_RANGE,
@@ -35,7 +35,7 @@ fn get_wolf(lane: usize) -> EnemyBundle {
 
 fn get_bear(lane: usize) -> EnemyBundle {
     EnemyBundle {
-        enemy: Enemy::new(lane),
+        enemy: Enemy::new(lane, 50),
         health: Health::new(50., 0.1),
         attack: BaseAttack {
             attack_range: MELEE_RANGE,

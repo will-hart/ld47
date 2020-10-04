@@ -1,4 +1,5 @@
 use crate::combat::enemy_target_selection_system;
+use crate::components::PlayerScore;
 use crate::constants::*;
 use crate::game_ui::health_bar_system;
 use crate::player_ui::*;
@@ -42,6 +43,7 @@ fn main() {
         // .add_resource(ClearColor(Color::rgb_u8(8, 20, 30))) // not sure why this colour is too bright?
         .add_resource(ClearColor(Color::rgb_u8(1, 2, 3)))
         .init_resource::<CurrentWave>()
+        .init_resource::<PlayerScore>()
         .add_default_plugins()
         .add_startup_system(setup.system())
         .add_plugin(GameTimePlugin)

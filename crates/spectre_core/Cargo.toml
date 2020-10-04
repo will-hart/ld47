@@ -7,6 +7,7 @@ edition = "2018"
 
 [dependencies]
 bevy = "0.2" # override in consuming crate
+serde = { version = "1", features = ["derive"]}
 
 # Local dependencies
 

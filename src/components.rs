@@ -27,14 +27,16 @@ pub struct PlayerBundle {
 pub struct Enemy {
     pub lane: usize,
     pub target: Vec2,
+    pub xp_reward: usize,
 }
 
 impl Enemy {
-    pub fn new(lane: usize) -> Self {
+    pub fn new(lane: usize, xp_reward: usize) -> Self {
         let target_loc = Vec2::from(TARGET_LOCATIONS[lane]);
         Enemy {
             lane,
             target: target_loc,
+            xp_reward,
         }
     }
 }
@@ -119,3 +121,6 @@ pub struct PlayerLaneChangeLink {
     pub player_id: u8,
     pub delta: i8,
 }
+
+#[derive(Default)]
+pub struct PlayerScore(pub usize);
