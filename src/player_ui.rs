@@ -1,3 +1,7 @@
+// A lot of this code is pretty ugly, but UI is a bit underdone in Bevy and its
+// possible there are better ways to do this sort of thing. I'm going for dev speed here,
+// not nice code /shrug
+
 use crate::{components::*, constants::*};
 use bevy::prelude::*;
 use spectre_core::{Health, Mana};
@@ -21,6 +25,7 @@ fn spacer(font_handle: Handle<Font>) -> TextComponents {
 pub fn spawn_player_ui(
     parent: &mut ChildBuilder,
     material: Handle<ColorMaterial>,
+    portrait_material: Handle<ColorMaterial>,
     font_handle: Handle<Font>,
     player_id: u8,
 ) {
@@ -39,16 +44,43 @@ pub fn spawn_player_ui(
         })
         .with_children(|ui_parent| {
             ui_parent
-                .spawn(TextComponents {
-                    text: Text {
-                        value: format!("Player {}", player_id),
-                        font: font_handle,
-                        style: TextStyle {
-                            font_size: 12.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
+                .spawn(NodeComponents {
+                    style: Style {
+                        size: Size::new(Val::Px(320.), Val::Px(40.)),
+                        flex_direction: FlexDirection::Row,
+                        justify_content: JustifyContent::SpaceEvenly,
+                        align_items: AlignItems::Center,
+                        ..Default::default()
                     },
+                    material,
                     ..Default::default()
+                })
+                .with_children(|player_header_parent| {
+                    player_header_parent
+                        .spawn(ImageComponents {
+                            style: Style {
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
+                                ..Default::default()
+                            },
+                            material: portrait_material,
+                            draw: Draw {
+                                is_transparent: true,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        })
+                        .spawn(TextComponents {
+                            text: Text {
+                                // TODO: Player name
+                                value: format!("Player {}", player_id),
+                                font: font_handle,
+                                style: TextStyle {
+                                    font_size: 12.0,
+                                    color: Color::rgb(0.8, 0.8, 0.8),
+                                },
+                            },
+                            ..Default::default()
+                        });
                 })
                 .spawn(spacer(font_handle))
                 .spawn(TextComponents {
@@ -108,7 +140,7 @@ pub fn spawn_player_ui(
                     ability_button_parent
                         .spawn(ButtonComponents {
                             style: Style {
-                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
                                 // horizontally center child text
                                 justify_content: JustifyContent::Center,
                                 // vertically center child text
@@ -124,7 +156,7 @@ pub fn spawn_player_ui(
                                     value: "1".to_string(),
                                     font: font_handle,
                                     style: TextStyle {
-                                        font_size: 20.0,
+                                        font_size: 12.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
                                     },
                                 },
@@ -133,7 +165,7 @@ pub fn spawn_player_ui(
                         })
                         .spawn(ButtonComponents {
                             style: Style {
-                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
                                 // horizontally center child text
                                 justify_content: JustifyContent::Center,
                                 // vertically center child text
@@ -149,7 +181,7 @@ pub fn spawn_player_ui(
                                     value: "2".to_string(),
                                     font: font_handle,
                                     style: TextStyle {
-                                        font_size: 20.0,
+                                        font_size: 12.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
                                     },
                                 },
@@ -158,7 +190,7 @@ pub fn spawn_player_ui(
                         })
                         .spawn(ButtonComponents {
                             style: Style {
-                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
                                 // horizontally center child text
                                 justify_content: JustifyContent::Center,
                                 // vertically center child text
@@ -174,7 +206,7 @@ pub fn spawn_player_ui(
                                     value: "3".to_string(),
                                     font: font_handle,
                                     style: TextStyle {
-                                        font_size: 20.0,
+                                        font_size: 12.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
                                     },
                                 },
@@ -183,7 +215,7 @@ pub fn spawn_player_ui(
                         })
                         .spawn(ButtonComponents {
                             style: Style {
-                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
                                 // horizontally center child text
                                 justify_content: JustifyContent::Center,
                                 // vertically center child text
@@ -199,7 +231,7 @@ pub fn spawn_player_ui(
                                     value: "4".to_string(),
                                     font: font_handle,
                                     style: TextStyle {
-                                        font_size: 20.0,
+                                        font_size: 12.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
                                     },
                                 },

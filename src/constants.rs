@@ -10,6 +10,12 @@ pub const CHARACTER_1_SPRITE: u128 = 2340965832048509025;
 pub const CHARACTER_2_SPRITE: u128 = 135120965832048509025;
 /// character 3 spritesheet
 pub const CHARACTER_3_SPRITE: u128 = 768909245132048509025;
+/// character 1 portrait
+pub const CHARACTER_1_PORTRAIT: u128 = 24356234562462346236;
+/// character 2 portrait
+pub const CHARACTER_2_PORTRAIT: u128 = 13523462124;
+/// character 3 portrait
+pub const CHARACTER_3_PORTRAIT: u128 = 34334324526213383;
 
 /// enemy spritesheets
 pub const ENEMY_WOLF_SPRITE: u128 = 3456909345645132345625;

@@ -1,6 +1,6 @@
 use crate::components::Enemy;
 use crate::player_ui::spawn_player_ui;
-use crate::{components::HealthBar, constants::UI_SPRITE_MARGIN};
+use crate::{components::HealthBar, constants::*};
 use bevy::prelude::*;
 use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
 use spectre_core::Health;
@@ -52,6 +52,7 @@ pub fn get_node_components(
 pub fn spawn_ui(
     commands: &mut Commands,
     asset_server: ResMut<AssetServer>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
     transparent_material: Handle<ColorMaterial>,
 ) -> Entity {
@@ -66,6 +67,16 @@ pub fn spawn_ui(
         UI_SPRITE_MARGIN,
         (),
     ));
+
+    // get the portrait handle for the UI headers
+    let char1_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_1_PORTRAIT);
+    let character1_portrait_material = materials.add(char1_port_handle.into());
+
+    let char2_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_2_PORTRAIT);
+    let character2_portrait_material = materials.add(char2_port_handle.into());
+
+    let char3_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_3_PORTRAIT);
+    let character3_portrait_material = materials.add(char3_port_handle.into());
 
     // spawn a 75% full height box on the left
     // then spawn a sidebar on the right
@@ -97,9 +108,27 @@ pub fn spawn_ui(
                 ))
                 .with_children(|sidebar_parent| {
                     // player 2
-                    spawn_player_ui(sidebar_parent, transparent_material, font_handle, 2);
-                    spawn_player_ui(sidebar_parent, transparent_material, font_handle, 1);
-                    spawn_player_ui(sidebar_parent, transparent_material, font_handle, 0);
+                    spawn_player_ui(
+                        sidebar_parent,
+                        transparent_material,
+                        character3_portrait_material,
+                        font_handle,
+                        2,
+                    );
+                    spawn_player_ui(
+                        sidebar_parent,
+                        transparent_material,
+                        character2_portrait_material,
+                        font_handle,
+                        1,
+                    );
+                    spawn_player_ui(
+                        sidebar_parent,
+                        transparent_material,
+                        character1_portrait_material,
+                        font_handle,
+                        0,
+                    );
                 });
         });
 
