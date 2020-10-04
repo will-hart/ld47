@@ -11,8 +11,43 @@ use spectre_time::GameTime;
 /// e.g. wolves might be item 1 in the top level tuple. The number of wolves to spawn is given
 /// by the inner tuple values, e.g. ((lane 1 count, lane 2 count, lane 3 count), ...)
 
-const WAVE_DATA: [[[isize; 3]; 2]; 2] = [[[1, 1, 2], [0, 0, 0]], [[1, 0, 1], [0, 1, 0]]];
-const WAVE_DELAYS: [f32; 2] = [15., 15.];
+#[derive(Copy, Clone)]
+pub struct Wave([isize; 3]);
+
+impl Default for Wave {
+    fn default() -> Self {
+        Wave([0, 0, 0])
+    }
+}
+
+pub struct WaveData {
+    pub wolves: Wave,
+    pub bears: Wave,
+    pub post_wave_delay: f32,
+}
+
+const WAVE_DATA: [WaveData; 4] = [
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([0, 0, 0]),
+        post_wave_delay: 10.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([0, 1, 0]),
+        post_wave_delay: 10.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([0, 0, 0]),
+        post_wave_delay: 8.,
+    },
+    WaveData {
+        wolves: Wave([1, 1, 1]),
+        bears: Wave([1, 1, 1]),
+        post_wave_delay: 10.,
+    },
+];
 
 fn spawn_enemy(
     mut commands: &mut Commands,
@@ -69,13 +104,13 @@ pub fn wave_spawning_system(
         return;
     }
 
-    let wave_to_spawn = WAVE_DATA[waves.wave_idx];
+    let wave_to_spawn = &WAVE_DATA[waves.wave_idx];
     println!(
         "Spawning wave {} at {} (expected at {})",
         waves.wave_idx, game_time.elapsed_time, waves.next_wave_time
     );
 
-    waves.next_wave_time = game_time.elapsed_time + WAVE_DELAYS[waves.wave_idx];
+    waves.next_wave_time = game_time.elapsed_time + wave_to_spawn.post_wave_delay;
     waves.wave_idx += 1;
     println!(
         "Wave {} should spawn at {}",
@@ -83,7 +118,7 @@ pub fn wave_spawning_system(
     );
 
     // just hack it out for now
-    let wolves = wave_to_spawn[0];
+    let wolves = wave_to_spawn.wolves.clone();
 
     let handle: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);
     let texture = textures.get(&handle).unwrap();
@@ -93,34 +128,42 @@ pub fn wave_spawning_system(
     let health_bar_handle = Handle::from_u128(HEALTHBAR_SPRITE_ID);
     let health_bar_material = materials.add(health_bar_handle.into());
 
-    wolves.iter().enumerate().for_each(|(lane, &num_to_spawn)| {
-        for _ in 0..num_to_spawn {
-            spawn_enemy(
-                &mut commands,
-                EnemyType::Wolf,
-                lane,
-                texture_atlas_handle,
-                health_bar_material,
-            );
-        }
-    });
+    wolves
+        .0
+        .iter()
+        .enumerate()
+        .for_each(|(lane, &num_to_spawn)| {
+            for _ in 0..num_to_spawn {
+                spawn_enemy(
+                    &mut commands,
+                    EnemyType::Wolf,
+                    lane,
+                    texture_atlas_handle,
+                    health_bar_material,
+                );
+            }
+        });
 
-    let bears = wave_to_spawn[1];
+    let bears = wave_to_spawn.bears.clone();
 
     let handle_bear: Handle<Texture> = Handle::from_u128(ENEMY_BEAR_SPRITE);
     let texture_bear = textures.get(&handle_bear).unwrap();
     let texture_atlas_bear = TextureAtlas::from_grid(handle_bear, texture_bear.size, 4, 1);
     let texture_atlas_handle_bear = texture_atlases.add(texture_atlas_bear);
 
-    bears.iter().enumerate().for_each(|(lane, &num_to_spawn)| {
-        for _ in 0..num_to_spawn {
-            spawn_enemy(
-                &mut commands,
-                EnemyType::Bear,
-                lane,
-                texture_atlas_handle_bear,
-                health_bar_material,
-            );
-        }
-    });
+    bears
+        .0
+        .iter()
+        .enumerate()
+        .for_each(|(lane, &num_to_spawn)| {
+            for _ in 0..num_to_spawn {
+                spawn_enemy(
+                    &mut commands,
+                    EnemyType::Bear,
+                    lane,
+                    texture_atlas_handle_bear,
+                    health_bar_material,
+                );
+            }
+        });
 }
