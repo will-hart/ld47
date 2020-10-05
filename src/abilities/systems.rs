@@ -59,8 +59,8 @@ pub fn ability_purchase_system(
 
             // register a slot if not passive
             if !ability.passive {
-                actions.actions[ability.slot_number].action = Some(ability.id);
-                actions.actions[ability.slot_number].next_available = 0.;
+                actions.actions[ability.slot_number - 1].action = Some(ability.id);
+                actions.actions[ability.slot_number - 1].next_available = 0.;
             }
 
             // apply the effects

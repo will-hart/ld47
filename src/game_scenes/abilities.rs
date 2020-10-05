@@ -1,5 +1,5 @@
-use crate::assets::MaterialsAndTextures;
 use crate::player_ui::text;
+use crate::{abilities::AbilityDefinition, assets::MaterialsAndTextures};
 use bevy::prelude::*;
 use spectre_state::GameState;
 use spectre_state::GameStatus;
@@ -21,7 +21,7 @@ pub fn setup_ability_scene(
     mut ability_data: ResMut<AbilityDatabase>,
     mut game_running_components: Query<(Entity, &GameRunningPlayerUi)>,
     mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
-    mut player_query: Query<&Player>,
+    mut player_query: Query<(&Player, &PlayerAbilityActions)>,
 ) {
     if !game_state.is_in_scene(&MyGameScenes::Abilities)
         || !game_state.is_in_status(&GameStatus::Entering)
@@ -40,9 +40,9 @@ pub fn setup_ability_scene(
         spawn_ability_sidebar(
             parent,
             &mut commands,
-            &mut player_query,
             &player_score,
             &assets,
+            &mut player_query,
             &mut ability_data,
         );
     }
@@ -51,15 +51,16 @@ pub fn setup_ability_scene(
 fn spawn_ability_sidebar(
     parent: Entity,
     mut commands: &mut Commands,
-    player_query: &mut Query<&Player>,
     player_score: &Res<PlayerScore>,
     assets: &Res<MaterialsAndTextures>,
+    player_query: &mut Query<(&Player, &PlayerAbilityActions)>,
     mut ability_data: &mut ResMut<AbilityDatabase>,
 ) {
     let mut player_uis: Vec<Entity> = Vec::default();
-    for player in &mut player_query.iter() {
+    for (player, actions) in &mut player_query.iter() {
         player_uis.push(spawn_player_ability_ui(
-            player,
+            &player,
+            &actions,
             &mut commands,
             &assets,
             &mut ability_data,
@@ -158,6 +159,7 @@ fn spawn_ability_sidebar(
 
 pub fn spawn_player_ability_ui(
     player: &Player,
+    actions: &PlayerAbilityActions,
     commands: &mut Commands,
     assets: &Res<MaterialsAndTextures>,
     ability_database: &mut ResMut<AbilityDatabase>,
@@ -188,68 +190,70 @@ pub fn spawn_player_ability_ui(
                 ..Default::default()
             });
 
+            let mut to_spawn: Vec<AbilityDefinition> = vec![];
+
+            if actions.actions[0].action.is_none() {
+                to_spawn.push(
+                    ability_database
+                        .get(get_ability_id(player.player_id, 1))
+                        .clone(),
+                );
+            }
+            if actions.actions[1].action.is_none() {
+                to_spawn.push(
+                    ability_database
+                        .get(get_ability_id(player.player_id, 2))
+                        .clone(),
+                );
+            }
+
             let next_level = player.get_next_level();
+            if next_level.is_some() {
+                to_spawn.push(ability_database.get(next_level.unwrap() - 2).clone());
+            }
 
-            match next_level {
-                Some(lvl) => {
-                    // level 2 ability is ability id 0
-                    let ability = ability_database.get(lvl - 2);
-
-                    parent
-                        .spawn(ButtonComponents {
-                            style: Style {
-                                size: Size::new(Val::Px(96.0), Val::Px(32.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                ..Default::default()
-                            },
-                            material: assets.button_material,
-                            ..Default::default()
-                        })
-                        .with(AbilityPurchaseInteraction {
-                            ability_id: ability.id,
-                            player_id: player.player_id,
-                        })
-                        .with_children(|parent| {
-                            parent.spawn(TextComponents {
-                                text: Text {
-                                    value: format!("Level {}", lvl), // random spacer
-                                    font: assets.main_font,
-                                    style: TextStyle {
-                                        font_size: 10.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
+            parent
+                .spawn(NodeComponents {
+                    style: Style {
+                        justify_content: JustifyContent::SpaceAround,
+                        align_items: AlignItems::Center,
+                        flex_direction: FlexDirection::Row,
+                        ..Default::default()
+                    },
+                    material: assets.ui_material,
+                    ..Default::default()
+                })
+                .with_children(|button_wrapper| {
+                    for ability in to_spawn.iter() {
+                        button_wrapper
+                            .spawn(ButtonComponents {
+                                style: Style {
+                                    size: Size::new(Val::Px(90.0), Val::Px(32.0)),
+                                    // horizontally center child text
+                                    justify_content: JustifyContent::Center,
+                                    // vertically center child text
+                                    align_items: AlignItems::Center,
+                                    flex_direction: FlexDirection::ColumnReverse,
+                                    ..Default::default()
                                 },
+                                material: assets.button_material,
                                 ..Default::default()
+                            })
+                            .with(AbilityPurchaseInteraction {
+                                ability_id: ability.id,
+                                player_id: player.player_id,
+                            })
+                            .with_children(|inner_parent| {
+                                inner_parent
+                                    .spawn(text(assets.main_font, ability.name.clone(), 8.))
+                                    .spawn(text(
+                                        assets.main_font,
+                                        format!("{} XP", ability.xp_cost),
+                                        8.,
+                                    ));
                             });
-                        })
-                        .spawn(TextComponents {
-                            text: Text {
-                                value: ability.description.clone(), // random spacer
-                                font: assets.main_font,
-                                style: TextStyle {
-                                    font_size: 10.0,
-                                    color: Color::rgb(0.8, 0.8, 0.8),
-                                },
-                            },
-                            ..Default::default()
-                        })
-                        .spawn(TextComponents {
-                            text: Text {
-                                value: format!("{} XP", ability.xp_cost), // random spacer
-                                font: assets.main_font,
-                                style: TextStyle {
-                                    font_size: 10.0,
-                                    color: Color::rgb(0.8, 0.8, 0.8),
-                                },
-                            },
-                            ..Default::default()
-                        });
-                }
-                _ => {}
-            };
+                    }
+                });
         })
         .current_entity()
         .unwrap()
@@ -301,7 +305,7 @@ pub fn redraw_ability_ui_on_event(
     mut ability_data: ResMut<AbilityDatabase>,
     mut existing_sidebar_items: Query<(Entity, &AbilityGuiSidebarMarker)>,
     mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
-    mut player_query: Query<&Player>,
+    mut player_query: Query<(&Player, &PlayerAbilityActions)>,
 ) {
     let mut found = false;
 
@@ -325,9 +329,9 @@ pub fn redraw_ability_ui_on_event(
         spawn_ability_sidebar(
             parent,
             &mut commands,
-            &mut player_query,
             &player_score,
             &assets,
+            &mut player_query,
             &mut ability_data,
         );
     }

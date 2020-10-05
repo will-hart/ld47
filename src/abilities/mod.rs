@@ -17,7 +17,7 @@ pub mod systems;
 /// TODO:
 ///   - side effects like stun, damage over time
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub enum BuffType {
     Armour,
     Health,
@@ -26,7 +26,7 @@ pub enum BuffType {
     MovementSpeed,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub enum DamageType {
     Pure,
     Posion,
@@ -35,7 +35,7 @@ pub enum DamageType {
     Fire,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub enum AbilityDetail {
     Attack(AbilityAttackDetail),
     // TODO: AttackMultiple(AbilityAttackDetail, u32),
@@ -46,31 +46,31 @@ pub enum AbilityDetail {
     SpawnAnimation(u128, usize, usize),
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AbilityAttackDetail {
     pub damage_type: DamageType,
     pub min_damage: i32,
     pub max_damage: i32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AbilityBuffDetail {
     pub buff_type: BuffType,
     pub buff: Buff,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AbilityHealDetail {
     /// use Buff for faster regen over time
     pub burst_heal: f32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AbilityReviveDetail {
     pub revive_time: f32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct AbilityDefinition {
     pub id: u16,
     pub prerequisites: Vec<u16>,

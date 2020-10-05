@@ -222,7 +222,7 @@ impl AbilityDatabase {
         abilities.insert(
             3000,
             AbilityDefinition {
-                id: 2001,
+                id: 3000,
                 xp_cost: 200,
                 prerequisites: vec![],
                 name: "Smash".to_string(),
@@ -241,9 +241,9 @@ impl AbilityDatabase {
 
         // detonate
         abilities.insert(
-            3000,
+            3001,
             AbilityDefinition {
-                id: 2001,
+                id: 3001,
                 xp_cost: 200,
                 prerequisites: vec![],
                 name: "Smash".to_string(),
