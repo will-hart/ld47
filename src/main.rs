@@ -114,6 +114,25 @@ fn setup(mut commands: Commands) {
                 ("assets/time_of_day4.png", TIME_OF_DAY_SPRITE4_ID),
                 ("assets/canyon.png", CANYON_SPRITE_ID),
                 ("assets/rock.png", ROCK_SPRITE_ID),
+                ("assets/splatter.png", SPLATTER_ID),
+            ]
+            .into_iter()
+            .map(|a| a.into())
+            .collect(),
+        },))
+        .spawn((LoadAssets {
+            assets: vec![
+                ("assets/audio/attacking_obelisk.mp3"),
+                ("assets/audio/clang.mp3"),
+                ("assets/audio/everywhere.mp3"),
+                ("assets/audio/here_they_come.mp3"),
+                ("assets/audio/leaving.mp3"),
+                ("assets/audio/more_of_them.mp3"),
+                ("assets/audio/moving.mp3"),
+                ("assets/audio/obelisk_fallen.mp3"),
+                ("assets/audio/protect_obelisk.mp3"),
+                ("assets/audio/swoosh1.mp3"),
+                ("assets/audio/swoosh2.mp3"),
             ]
             .into_iter()
             .map(|a| a.into())

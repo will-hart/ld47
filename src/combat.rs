@@ -167,6 +167,8 @@ pub fn enemy_target_selection_system(
 
 pub fn enemy_auto_attack_system(
     game_time: Res<GameTime>,
+    audio: Res<AudioOutput>,
+    assets: Res<MaterialsAndTextures>,
     mut player_score: ResMut<PlayerScore>,
     mut enemy_query: Query<(&Enemy, &Transform, &mut AttackTarget, &mut BaseAttack)>,
     player_query: Query<(&Player, &Transform, &mut Health, &Defence)>,
@@ -188,8 +190,18 @@ pub fn enemy_auto_attack_system(
             let result = resolve_combat(&attack, &dummy_defence);
             let damage = result.damage as usize / OBELISK_DAMAGE_MODIFIER;
 
+            // play audio annoucement
+            if player_score.last_obelisk_damage - game_time.elapsed_time > 10. {
+                if RNG::test(0.5) {
+                    audio.play(assets.protect_obelisk_audio);
+                } else {
+                    audio.play(assets.attacking_obelisk_audio);
+                }
+            }
+
+            // prevent underflow
             if damage > player_score.obelisk_health {
-                // TODO Raise game over
+                // Game over handled in a separate system
                 player_score.obelisk_health = 0;
             } else {
                 player_score.obelisk_health -= damage;

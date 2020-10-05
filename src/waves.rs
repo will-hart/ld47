@@ -105,10 +105,8 @@ fn spawn_enemy(
 pub fn wave_spawning_system(
     mut commands: Commands,
     mut waves: ResMut<CurrentWave>,
+    assets: Res<MaterialsAndTextures>,
     game_time: Res<GameTime>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    textures: ResMut<Assets<Texture>>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut wave_spawned: ResMut<Events<WaveSpawnedEvent>>,
     mut end_of_day: ResMut<Events<EndOfDayEvent>>,
 ) {
@@ -152,14 +150,6 @@ pub fn wave_spawning_system(
 
     // just hack it out for now
     let wolves = wave_to_spawn.wolves.clone();
-
-    let handle: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);
-    let texture = textures.get(&handle).unwrap();
-    let texture_atlas = TextureAtlas::from_grid(handle, texture.size, 4, 1);
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
-
-    let health_bar_material = materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into());
-
     wolves
         .0
         .iter()
@@ -170,19 +160,13 @@ pub fn wave_spawning_system(
                     &mut commands,
                     EnemyType::Wolf,
                     lane,
-                    texture_atlas_handle,
-                    health_bar_material,
+                    assets.wolf_atlas,
+                    assets.healthbar_material,
                 );
             }
         });
 
     let bears = wave_to_spawn.bears.clone();
-
-    let handle_bear: Handle<Texture> = Handle::from_u128(ENEMY_BEAR_SPRITE);
-    let texture_bear = textures.get(&handle_bear).unwrap();
-    let texture_atlas_bear = TextureAtlas::from_grid(handle_bear, texture_bear.size, 4, 1);
-    let texture_atlas_handle_bear = texture_atlases.add(texture_atlas_bear);
-
     bears
         .0
         .iter()
@@ -193,8 +177,8 @@ pub fn wave_spawning_system(
                     &mut commands,
                     EnemyType::Bear,
                     lane,
-                    texture_atlas_handle_bear,
-                    health_bar_material,
+                    assets.bear_atlas,
+                    assets.healthbar_material,
                 );
             }
         });

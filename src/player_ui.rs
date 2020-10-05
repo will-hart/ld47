@@ -149,7 +149,7 @@ pub fn spawn_player_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material: assets.ui_material,
+                            material: assets.button_material,
                             ..Default::default()
                         })
                         .with(PlayerAbilityButtonInteraction {
@@ -221,7 +221,7 @@ pub fn spawn_player_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material: assets.ui_material,
+                            material: assets.button_material,
                             ..Default::default()
                         })
                         .with_children(|button_parent| {
@@ -386,6 +386,8 @@ pub fn update_player_mana_ui(
 }
 
 pub fn player_lane_change_interaction(
+    audio: ResMut<AudioOutput>,
+    assets: Res<MaterialsAndTextures>,
     mut interaction_query: Query<(&Button, Mutated<Interaction>, &PlayerLaneChangeLink)>,
     mut player_query: Query<&mut Player>,
 ) {
@@ -404,6 +406,7 @@ pub fn player_lane_change_interaction(
                             println!(" --> Invalid request, ignoring lane change");
                         } else {
                             player.target_lane = new_lane as usize;
+                            audio.play(assets.moving_audio);
                         }
                         break;
                     }
@@ -424,6 +427,8 @@ pub fn update_obelisk_status_text(
 
 pub fn game_over_trigger(
     mut commands: Commands,
+    audio: Res<AudioOutput>,
+    assets: Res<MaterialsAndTextures>,
     mut game_state: ResMut<GameState<MyGameScenes>>,
     player_score: Res<PlayerScore>,
 ) {
@@ -437,6 +442,8 @@ pub fn game_over_trigger(
     }
 
     if player_score.obelisk_health <= 0 {
+        audio.play(assets.obelisk_fallen_audio);
+
         // stop the game
         commands.spawn((GameSpeedRequest {
             new_game_speed: 0.0,

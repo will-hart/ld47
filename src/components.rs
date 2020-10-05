@@ -147,6 +147,7 @@ pub struct ObeliskStatusImageUiLink;
 pub struct PlayerScore {
     pub xp: usize,
     pub obelisk_health: usize,
+    pub last_obelisk_damage: f32,
 }
 
 impl FromResources for PlayerScore {
@@ -154,6 +155,7 @@ impl FromResources for PlayerScore {
         PlayerScore {
             xp: 0,
             obelisk_health: 1000,
+            last_obelisk_damage: 0.,
         }
     }
 }
@@ -203,12 +205,29 @@ pub struct MaterialsAndTextures {
     pub char2_portrait_material: Handle<ColorMaterial>,
     pub char3_portrait_material: Handle<ColorMaterial>,
 
+    pub wolf_atlas: Handle<TextureAtlas>,
+    pub bear_atlas: Handle<TextureAtlas>,
+    pub troll_atlas: Handle<TextureAtlas>,
+
     pub canyon_material: Handle<ColorMaterial>,
     pub boulder_material: Handle<ColorMaterial>,
 
     pub healthbar_material: Handle<ColorMaterial>,
 
     pub main_font: Handle<Font>,
+
+    pub splatter_atlas: Handle<TextureAtlas>,
+
+    pub attacking_obelisk_audio: Handle<AudioSource>,
+    pub clang_audio: Handle<AudioSource>,
+    pub everywhere_audio: Handle<AudioSource>,
+    pub here_they_come_audio: Handle<AudioSource>,
+    pub leaving_audio: Handle<AudioSource>,
+    pub more_of_them_audio: Handle<AudioSource>,
+    pub obelisk_fallen_audio: Handle<AudioSource>,
+    pub protect_obelisk_audio: Handle<AudioSource>,
+    pub whoosh_audio: Handle<AudioSource>,
+    pub moving_audio: Handle<AudioSource>,
 }
 
 impl FromResources for MaterialsAndTextures {
@@ -233,6 +252,23 @@ impl FromResources for MaterialsAndTextures {
             TextureAtlas::from_grid(handle_player3, Vec2::new(128., 32.), 4, 1);
         let char3_atlas = texture_atlases.add(texture_atlas_player3);
 
+        let handle_splatter: Handle<Texture> = Handle::from_u128(SPLATTER_ID);
+        let atlas_splatter =
+            TextureAtlas::from_grid(handle_splatter, Vec2::new(32. * 6., 32.), 4, 1);
+        let splatter_atlas = texture_atlases.add(atlas_splatter);
+
+        let handle_wolf: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);
+        let atlas_wolf = TextureAtlas::from_grid(handle_wolf, Vec2::new(128., 32.), 4, 1);
+        let wolf_atlas = texture_atlases.add(atlas_wolf);
+
+        let handle_bear: Handle<Texture> = Handle::from_u128(ENEMY_BEAR_SPRITE);
+        let atlas_bear = TextureAtlas::from_grid(handle_bear, Vec2::new(128., 32.), 4, 1);
+        let bear_atlas = texture_atlases.add(atlas_bear);
+
+        let handle_troll: Handle<Texture> = Handle::from_u128(ENEMY_TROLL_SPRITE);
+        let atlas_troll = TextureAtlas::from_grid(handle_troll, Vec2::new(128., 32.), 4, 1);
+        let troll_atlas = texture_atlases.add(atlas_troll);
+
         MaterialsAndTextures {
             ui_material: materials.add(Color::NONE.into()),
             button_material: materials.add(Color::rgba_u8(70, 70, 70, 30).into()),
@@ -249,6 +285,10 @@ impl FromResources for MaterialsAndTextures {
             char2_atlas,
             char3_atlas,
 
+            wolf_atlas,
+            bear_atlas,
+            troll_atlas,
+
             char1_portrait_material: materials.add(Handle::from_u128(CHARACTER_1_PORTRAIT).into()),
             char2_portrait_material: materials.add(Handle::from_u128(CHARACTER_2_PORTRAIT).into()),
             char3_portrait_material: materials.add(Handle::from_u128(CHARACTER_3_PORTRAIT).into()),
@@ -256,6 +296,27 @@ impl FromResources for MaterialsAndTextures {
             canyon_material: materials.add(Handle::from_u128(CANYON_SPRITE_ID).into()),
             boulder_material: materials.add(Handle::from_u128(ROCK_SPRITE_ID).into()),
             healthbar_material: materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into()),
+
+            splatter_atlas,
+
+            attacking_obelisk_audio: asset_server
+                .load("assets/audio/attacking_obelisk.mp3")
+                .unwrap(),
+            clang_audio: asset_server.load("assets/audio/clang.mp3").unwrap(),
+            everywhere_audio: asset_server.load("assets/audio/everywhere.mp3").unwrap(),
+            here_they_come_audio: asset_server
+                .load("assets/audio/here_they_come.mp3")
+                .unwrap(),
+            leaving_audio: asset_server.load("assets/audio/leaving.mp3").unwrap(),
+            more_of_them_audio: asset_server.load("assets/audio/more_of_them.mp3").unwrap(),
+            moving_audio: asset_server.load("assets/audio/moving.mp3").unwrap(),
+            obelisk_fallen_audio: asset_server
+                .load("assets/audio/obelisk_fallen.mp3")
+                .unwrap(),
+            protect_obelisk_audio: asset_server
+                .load("assets/audio/protect_obelisk.mp3")
+                .unwrap(),
+            whoosh_audio: asset_server.load("assets/audio/whoosh1.mp3").unwrap(),
         }
     }
 }

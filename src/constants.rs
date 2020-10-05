@@ -30,6 +30,8 @@ pub const TIME_OF_DAY_SPRITE4_ID: u128 = 407656820985029385;
 pub const CANYON_SPRITE_ID: u128 = 3460983409834202;
 pub const ROCK_SPRITE_ID: u128 = 56098709234978;
 
+pub const SPLATTER_ID: u128 = 32409680346893434011111;
+
 /// The margin for 9-patch UI assets (16x16)
 pub const UI_SPRITE_MARGIN: f32 = 7.;
 
@@ -60,5 +62,5 @@ pub const MIN_LANE: usize = 0;
 pub const MAX_LANE: usize = 2;
 
 /// reduction in damage when attacking the obelisk
-pub const OBELISK_DAMAGE_MODIFIER: usize = 1; // 10;
-pub const DEFAULT_GAME_SPEED: f32 = 10.; // 1.;
+pub const OBELISK_DAMAGE_MODIFIER: usize = 5;
+pub const DEFAULT_GAME_SPEED: f32 = 1.;

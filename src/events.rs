@@ -1,9 +1,10 @@
+use crate::MaterialsAndTextures;
 use bevy::prelude::*;
 use spectre_state::GameState;
 use spectre_time::GameSpeedRequest;
 
 use crate::{
-    components::CurrentWave, components::Enemy, components::ObeliskStatusImageUiLink, constants::*,
+    components::CurrentWave, components::Enemy, components::ObeliskStatusImageUiLink,
     game_scenes::MyGameScenes, waves::WAVE_DATA,
 };
 
@@ -38,6 +39,8 @@ pub fn end_of_day_system(
     mut game_state: ResMut<GameState<MyGameScenes>>,
     waves: Res<CurrentWave>,
     events: Res<Events<EndOfDayEvent>>,
+    audio: Res<AudioOutput>,
+    assets: Res<MaterialsAndTextures>,
     mut enemies: Query<With<Enemy, Entity>>,
 ) {
     let mut found = false;
@@ -51,6 +54,8 @@ pub fn end_of_day_system(
     if !found {
         return;
     }
+
+    audio.play(assets.leaving_audio);
 
     // pause the game
     commands.spawn((GameSpeedRequest {
@@ -75,8 +80,9 @@ pub fn end_of_day_system(
 
 pub fn wave_spawned_event_system(
     mut state: ResMut<WaveSpawnedEventListener>,
+    audio: Res<AudioOutput>,
+    assets: Res<MaterialsAndTextures>,
     events: Res<Events<WaveSpawnedEvent>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     mut obelisk_images: Query<With<ObeliskStatusImageUiLink, &mut Handle<ColorMaterial>>>,
 ) {
     let mut idx: usize = 0;
@@ -90,28 +96,17 @@ pub fn wave_spawned_event_system(
         return;
     }
 
+    if idx == 0 {
+        audio.play(assets.here_they_come_audio);
+    }
+
     for mut material in &mut obelisk_images.iter() {
         *material = match idx {
-            0 => {
-                let handle: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE1_ID);
-                materials.add(handle.into())
-            }
-            1 => {
-                let handle: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE2_ID);
-                materials.add(handle.into())
-            }
-            2 => {
-                let handle: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE3_ID);
-                materials.add(handle.into())
-            }
-            3 => {
-                let handle: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE4_ID);
-                materials.add(handle.into())
-            }
-            _ => {
-                let handle: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE1_ID);
-                materials.add(handle.into())
-            }
+            0 => assets.time_of_day1_material,
+            1 => assets.time_of_day2_material,
+            2 => assets.time_of_day3_material,
+            3 => assets.time_of_day4_material,
+            _ => assets.time_of_day1_material,
         };
     }
 }
