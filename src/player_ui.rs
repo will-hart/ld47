@@ -95,7 +95,7 @@ pub fn spawn_player_ui(
                 .spawn(text(assets.main_font, "".to_string(), 12.))
                 .with(PlayerAbilityLink {
                     player_id,
-                    action_number: 1,
+                    action_number: 2,
                 })
                 .spawn(text(assets.main_font, "  ".to_string(), 10.))
                 .spawn(NodeComponents {

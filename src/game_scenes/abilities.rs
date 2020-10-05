@@ -429,7 +429,7 @@ pub fn ability_ui_updates(
                 continue;
             }
 
-            let slot_action = actions.actions[link.action_number];
+            let slot_action = actions.actions[link.action_number - 1];
             let ability_data =
                 ability_database.get(get_ability_id(link.player_id, link.action_number));
 
@@ -440,7 +440,7 @@ pub fn ability_ui_updates(
 
             text.value = format!(
                 "{} {}",
-                get_ability_prefix(link.player_id, link.action_number),
+                get_ability_prefix(link.player_id, link.action_number - 1),
                 if game_time.elapsed_time > slot_action.next_available {
                     ability_data.name.clone()
                 } else {
