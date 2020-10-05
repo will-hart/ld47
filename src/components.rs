@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use spectre_core::*;
 
-use crate::constants::*;
+use crate::{abilities::AbilityDetail, constants::*};
 
 #[derive(Bundle)]
 pub struct EnemyBundle {
@@ -202,4 +202,13 @@ pub struct Incapacitated {
     /// set to 0 to make indefinite
     pub end_time: f32,
     pub is_revived: bool,
+}
+
+pub struct SpawnedAbility {
+    pub lane: usize,
+    pub effects: Vec<AbilityDetail>,
+
+    // NOTE: this is a stop gap as commands.despawn in abilities::execute_abilities panics.
+    // TODO replace with proper respawning
+    pub applied: bool,
 }

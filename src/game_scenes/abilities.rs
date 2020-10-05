@@ -1,6 +1,12 @@
-use crate::player_ui::text;
-use crate::{abilities::AbilityDefinition, assets::MaterialsAndTextures};
+use crate::{
+    abilities::AbilityDefinition, assets::MaterialsAndTextures, combat::resolve_combat,
+    constants::FLAME_WALL_ID, constants::HEAL_ID, constants::MELEE_RANGE,
+    constants::TARGET_LOCATIONS,
+};
+use crate::{abilities::AbilityDetail, player_ui::text};
 use bevy::prelude::*;
+use spectre_animations::spawn_animated_spritesheet;
+use spectre_core::Health;
 use spectre_state::GameState;
 use spectre_state::GameStatus;
 use spectre_time::GameTime;
@@ -398,6 +404,182 @@ pub fn ability_ui_updates(
 
             // no need to keep searching
             break;
+        }
+    }
+}
+
+pub fn spawn_abilities(
+    mut commands: Commands,
+    game_time: Res<GameTime>,
+    input: ResMut<Input<KeyCode>>,
+    mut database: ResMut<AbilityDatabase>,
+    mut players: Query<Without<Incapacitated, (&Player, &PlayerAbilityActions)>>,
+) {
+    for (player, abilities) in &mut players.iter() {
+        let id = player.player_id;
+
+        let codes: (KeyCode, KeyCode) = match id {
+            0 => (KeyCode::Q, KeyCode::W),
+            1 => (KeyCode::E, KeyCode::R),
+            2 => (KeyCode::D, KeyCode::F),
+            _ => (KeyCode::Q, KeyCode::W),
+        };
+
+        let slot: Option<AbilityActionDetails> = if input.just_pressed(codes.0) {
+            Some(abilities.actions[0])
+        } else if input.just_pressed(codes.1) {
+            Some(abilities.actions[1])
+        } else {
+            None
+        };
+
+        if slot.is_none() {
+            continue;
+        }
+
+        let mut action = slot.unwrap();
+
+        if action.action.is_none() {
+            println!("Ability aborted - not equipped");
+            continue;
+        }
+        if action.next_available > game_time.elapsed_time {
+            println!("Ability aborted - not ready");
+            continue;
+        }
+
+        let definition = database.get(action.action.unwrap()).clone();
+        action.next_available = game_time.elapsed_time + definition.cooldown;
+
+        println!("Spawned ability {}", definition.name);
+        commands.spawn((SpawnedAbility {
+            lane: player.current_lane,
+            effects: definition.effects,
+            applied: false,
+        },));
+    }
+}
+
+/// Reeeeeeeeeee(factor)
+/// a lot of this stuff (i.e. resolving combat) really shouldn't be done here - should raise an event or something instead?
+pub fn execute_abilities(
+    mut commands: Commands,
+    assets: Res<MaterialsAndTextures>,
+    mut spawned_abilities: Query<(Entity, &mut SpawnedAbility)>,
+    mut players: Query<Without<Incapacitated, (&Player, &mut Health)>>,
+    mut incapacitated_players: Query<(&Player, &mut Incapacitated)>,
+    mut enemies: Query<(&Enemy, &Defence, &mut Health, &Transform)>,
+) {
+    for (_entityTODO_USE_TO_DESPAWN_AND_REMOVE_ABILITY_APPLIED, mut ability) in
+        &mut spawned_abilities.iter()
+    {
+        if ability.applied {
+            continue;
+        }
+
+        ability.applied = true;
+
+        for effect in &mut ability.effects.iter() {
+            match effect {
+                AbilityDetail::Buff(_) => todo!("Need a way to target a buff? No time!"),
+                AbilityDetail::Attack(data) => {
+                    for (enemy, defence, mut health, tx) in &mut enemies.iter() {
+                        // wrong lane
+                        if enemy.lane != ability.lane {
+                            continue;
+                        }
+
+                        // out of range
+                        // TODO - probably need to include player offset here as well?
+                        if (tx.translation().y() - TARGET_LOCATIONS[ability.lane].1).abs()
+                            > MELEE_RANGE
+                        {
+                            continue;
+                        }
+
+                        // resolve combat
+                        // TODO - don't do this in here, as its editing the health from too many places
+                        let result = resolve_combat(
+                            &BaseAttack {
+                                min_attack_damage: data.min_damage,
+                                max_attack_damage: data.max_damage,
+                                ..Default::default()
+                            },
+                            defence,
+                        );
+                        health.target_health -= result.damage as f32;
+
+                        // just apply to the first available
+                        break;
+                    }
+                }
+                AbilityDetail::AttackArea(data, range) => {
+                    for (enemy, defence, mut health, tx) in &mut enemies.iter() {
+                        // wrong lane
+                        if enemy.lane != ability.lane {
+                            continue;
+                        }
+
+                        // out of range
+                        // TODO - probably need to include player offset here as well?
+                        if (tx.translation().y() - TARGET_LOCATIONS[ability.lane].1).abs()
+                            > *range as f32
+                        {
+                            continue;
+                        }
+
+                        // resolve combat
+                        // TODO - don't do this in here, as its editing the health from too many places
+                        let result = resolve_combat(
+                            &BaseAttack {
+                                min_attack_damage: data.min_damage,
+                                max_attack_damage: data.max_damage,
+                                ..Default::default()
+                            },
+                            defence,
+                        );
+                        health.target_health -= result.damage as f32;
+                    }
+                }
+                AbilityDetail::Heal(data) => {
+                    for (player, mut health) in &mut players.iter() {
+                        if player.current_lane != ability.lane {
+                            continue;
+                        }
+
+                        health.target_health += data.burst_heal;
+                    }
+                }
+                AbilityDetail::Revive(_) => {
+                    for (player, mut incap) in &mut incapacitated_players.iter() {
+                        if player.current_lane != ability.lane {
+                            continue;
+                        }
+
+                        incap.is_revived = true;
+                    }
+                }
+                AbilityDetail::SpawnAnimation(atlas_id, frame_start, frame_end) => {
+                    let pos: Vec3 = Vec2::from(TARGET_LOCATIONS[ability.lane]).extend(0.);
+                    let atlas = match *atlas_id {
+                        FLAME_WALL_ID => assets.flame_wall_atlas,
+                        HEAL_ID => assets.heal_atlas,
+                        _ => assets.splatter_atlas,
+                    };
+
+                    spawn_animated_spritesheet(
+                        &mut commands,
+                        atlas,
+                        0.1,
+                        vec![(*frame_start, *frame_end)],
+                        pos,
+                        true,
+                    );
+                }
+            };
+
+            // TODO: for some reason this panics, no time to debug
+            // commands.despawn(entity);
         }
     }
 }

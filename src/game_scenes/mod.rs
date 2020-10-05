@@ -84,6 +84,8 @@ impl Plugin for GameStatePlugin {
             .add_system(ability_purchase_interaction.system())
             .add_system(redraw_ability_ui_on_event.system())
             .add_system(ability_ui_updates.system())
+            .add_system(spawn_abilities.system())
+            .add_system(execute_abilities.system())
             // splash1
             .add_system(setup_splash1_scene.system())
             .add_system(run_splash1_scene.system())

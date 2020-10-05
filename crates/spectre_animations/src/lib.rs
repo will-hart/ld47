@@ -19,6 +19,7 @@ pub struct AnimationState {
     pub current_animation: usize,
     pub current_idx: usize,
     pub is_playing: bool,
+    pub one_shot: bool,
 }
 
 impl Default for AnimationState {
@@ -28,6 +29,7 @@ impl Default for AnimationState {
             current_animation: 0,
             current_idx: 0,
             is_playing: false,
+            one_shot: false,
         }
     }
 }
@@ -82,6 +84,7 @@ pub fn spawn_animated_spritesheet(
     frame_duration: f32,
     animation_frames: Vec<(usize, usize)>,
     location: Vec3,
+    one_shot: bool,
 ) -> &mut Commands {
     commands
         .spawn(SpriteSheetComponents {
@@ -95,6 +98,7 @@ pub fn spawn_animated_spritesheet(
             current_animation: 0,
             current_idx: 0,
             is_playing: true,
+            one_shot,
         });
 
     // commands.current_entity().unwrap()

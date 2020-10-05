@@ -86,6 +86,7 @@ fn spawn_enemy(
         vec![(0, 3)],
         Vec2::from(SPAWN_LOCATIONS[lane]).extend(GAME_ELEMENT_LAYER)
             + Vec3::new(RNG::f32_between(-10., 10.), RNG::f32_between(-30., 0.), 0.),
+        false,
     )
     // TODO enum to specify enemy type
     .with_bundle(bundle)
