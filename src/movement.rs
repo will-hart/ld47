@@ -20,7 +20,7 @@ pub fn player_movement(
     mut players: Query<Without<Incapacitated, (&Movement, &mut Player, &mut Transform)>>,
 ) {
     for (movement, mut player, mut transform) in &mut players.iter() {
-        // TODO: handle multiple players in the same lane
+        // TODO: handle multiple players in the same lane properly
         let target_pos = TARGET_LOCATIONS[player.target_lane].0
             + (player.player_id as f32) * PLAYER_OFFSET_X
             - PLAYER_OFFSET_X;
@@ -32,7 +32,7 @@ pub fn player_movement(
         if delta.abs() < 3. {
             player.current_lane = player.target_lane;
             player.is_moving = false;
-            return;
+            continue;
         }
 
         let max_delta = movement.movement_speed.value * time.delta;
