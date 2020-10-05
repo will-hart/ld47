@@ -9,7 +9,7 @@ pub fn player_incapacitation_system(
     mut commands: Commands,
     mut players: Query<Without<Incapacitated, (Entity, &Player, &mut AnimationState, &Health)>>,
 ) {
-    for (ent, player, mut anim_state, health) in &mut players.iter() {
+    for (ent, _, mut anim_state, health) in &mut players.iter() {
         if health.target_health > 0. {
             continue;
         }

@@ -1,4 +1,5 @@
-use crate::components::{Enemy, MainGameSidebarUi, MaterialsAndTextures};
+use crate::assets::MaterialsAndTextures;
+use crate::components::{Enemy, MainGameSidebarUi};
 use crate::player_ui::{spawn_obelisk_ui, spawn_player_ui};
 use crate::{components::HealthBar, constants::*};
 use bevy::prelude::*;

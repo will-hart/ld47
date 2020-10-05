@@ -2,6 +2,7 @@
 // possible there are better ways to do this sort of thing. I'm going for dev speed here,
 // not nice code /shrug
 
+use crate::assets::MaterialsAndTextures;
 use crate::{components::*, constants::*, game_scenes::MyGameScenes};
 use bevy::prelude::*;
 use spectre_core::{Health, Mana};

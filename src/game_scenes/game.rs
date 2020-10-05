@@ -1,7 +1,6 @@
+use crate::assets::MaterialsAndTextures;
 use crate::{
-    components::{
-        GameSceneConfigured, GameSceneEntity, HealthBar, MainGameSidebarUi, MaterialsAndTextures,
-    },
+    components::{GameSceneConfigured, GameSceneEntity, HealthBar, MainGameSidebarUi},
     game_ui::spawn_player_sidebar,
 };
 use bevy::prelude::*;
