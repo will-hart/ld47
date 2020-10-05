@@ -9,13 +9,13 @@ use spectre_core::{Health, Mana};
 use spectre_state::{GameState, GameStatus};
 use spectre_time::{GameSpeedRequest, GameTime};
 
-fn spacer(font_handle: Handle<Font>) -> TextComponents {
+fn text(font_handle: Handle<Font>, value: String, font_size: f32) -> TextComponents {
     TextComponents {
         text: Text {
-            value: "".to_string(), // random spacer
+            value,
             font: font_handle,
             style: TextStyle {
-                font_size: 10.0,
+                font_size,
                 color: Color::rgb(0.8, 0.8, 0.8),
             },
         },
@@ -72,62 +72,21 @@ pub fn spawn_player_ui(
                             },
                             ..Default::default()
                         })
-                        .spawn(TextComponents {
-                            text: Text {
-                                // TODO: Player name
-                                value: format!("Player {}", player_id),
-                                font: assets.main_font,
-                                style: TextStyle {
-                                    font_size: 12.0,
-                                    color: Color::rgb(0.8, 0.8, 0.8),
-                                },
-                            },
-                            ..Default::default()
-                        });
+                        .spawn(text(assets.main_font, format!("Player {}", player_id), 12.));
                 })
-                .spawn(spacer(assets.main_font))
-                .spawn(TextComponents {
-                    text: Text {
-                        value: "  Health ?/?".to_string(),
-                        font: assets.main_font,
-                        style: TextStyle {
-                            font_size: 10.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                    },
-                    ..Default::default()
-                })
+                .spawn(text(assets.main_font, "".to_string(), 10.))
+                .spawn(text(assets.main_font, "  Health ?/?".to_string(), 10.))
                 .with(PlayerHealthLink {
                     player_id,
                     entity: None,
                 })
-                .spawn(TextComponents {
-                    text: Text {
-                        value: "  Mana ?/?".to_string(),
-                        font: assets.main_font,
-                        style: TextStyle {
-                            font_size: 10.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                    },
-                    ..Default::default()
-                })
+                .spawn(text(assets.main_font, "  Mana ?/?".to_string(), 10.))
                 .with(PlayerManaLink {
                     player_id,
                     entity: None,
                 })
-                .spawn(spacer(assets.main_font))
-                .spawn(TextComponents {
-                    text: Text {
-                        value: "Abilities".to_string(),
-                        font: assets.main_font,
-                        style: TextStyle {
-                            font_size: 12.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                    },
-                    ..Default::default()
-                })
+                .spawn(text(assets.main_font, "".to_string(), 10.))
+                .spawn(text(assets.main_font, "Abilities".to_string(), 12.0))
                 .spawn(NodeComponents {
                     style: Style {
                         size: Size::new(Val::Px(320.), Val::Px(80.)),
@@ -158,17 +117,7 @@ pub fn spawn_player_ui(
                             action_number: 1,
                         })
                         .with_children(|button_parent| {
-                            button_parent.spawn(TextComponents {
-                                text: Text {
-                                    value: "1".to_string(),
-                                    font: assets.main_font,
-                                    style: TextStyle {
-                                        font_size: 12.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
-                                },
-                                ..Default::default()
-                            });
+                            button_parent.spawn(text(assets.main_font, "1".to_string(), 12.));
                         })
                         .spawn(ButtonComponents {
                             style: Style {
@@ -187,35 +136,12 @@ pub fn spawn_player_ui(
                             action_number: 2,
                         })
                         .with_children(|button_parent| {
-                            button_parent.spawn(TextComponents {
-                                text: Text {
-                                    value: "2".to_string(),
-                                    font: assets.main_font,
-                                    style: TextStyle {
-                                        font_size: 12.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
-                                },
-                                ..Default::default()
-                            });
-                        });
-                })
-                .spawn(NodeComponents {
-                    style: Style {
-                        size: Size::new(Val::Px(320.), Val::Px(80.)),
-                        flex_direction: FlexDirection::Row,
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        ..Default::default()
-                    },
-                    material: assets.ui_material,
-                    ..Default::default()
-                })
-                .with_children(|lane_change_parent| {
-                    lane_change_parent
+                            button_parent.spawn(text(assets.main_font, "2".to_string(), 12.));
+                        })
+                        .spawn(text(assets.main_font, "  ".to_string(), 10.))
                         .spawn(ButtonComponents {
                             style: Style {
-                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
                                 // horizontally center child text
                                 justify_content: JustifyContent::Center,
                                 // vertically center child text
@@ -226,17 +152,7 @@ pub fn spawn_player_ui(
                             ..Default::default()
                         })
                         .with_children(|button_parent| {
-                            button_parent.spawn(TextComponents {
-                                text: Text {
-                                    value: "<".to_string(),
-                                    font: assets.main_font,
-                                    style: TextStyle {
-                                        font_size: 20.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
-                                },
-                                ..Default::default()
-                            });
+                            button_parent.spawn(text(assets.main_font, "<".to_string(), 12.));
                         })
                         .with(PlayerLaneChangeLink {
                             player_id,
@@ -244,7 +160,7 @@ pub fn spawn_player_ui(
                         })
                         .spawn(ButtonComponents {
                             style: Style {
-                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
+                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
                                 // horizontally center child text
                                 justify_content: JustifyContent::Center,
                                 // vertically center child text
@@ -255,17 +171,7 @@ pub fn spawn_player_ui(
                             ..Default::default()
                         })
                         .with_children(|button_parent| {
-                            button_parent.spawn(TextComponents {
-                                text: Text {
-                                    value: ">".to_string(),
-                                    font: assets.main_font,
-                                    style: TextStyle {
-                                        font_size: 20.0,
-                                        color: Color::rgb(0.8, 0.8, 0.8),
-                                    },
-                                },
-                                ..Default::default()
-                            });
+                            button_parent.spawn(text(assets.main_font, ">".to_string(), 12.));
                         })
                         .with(PlayerLaneChangeLink {
                             player_id,
@@ -277,11 +183,7 @@ pub fn spawn_player_ui(
         .unwrap()
 }
 
-pub fn spawn_obelisk_ui(
-    commands: &mut Commands,
-    assets: &Res<MaterialsAndTextures>,
-    font_handle: Handle<Font>,
-) -> Entity {
+pub fn spawn_obelisk_ui(commands: &mut Commands, assets: &Res<MaterialsAndTextures>) -> Entity {
     commands
         .spawn(NodeComponents {
             style: Style {
@@ -300,7 +202,7 @@ pub fn spawn_obelisk_ui(
             obelisk_parent
                 .spawn(ImageComponents {
                     style: Style {
-                        size: Size::new(Val::Px(32.), Val::Px(32.)),
+                        size: Size::new(Val::Px(64.), Val::Px(64.)),
                         ..Default::default()
                     },
                     material: assets.time_of_day1_material,
@@ -311,17 +213,11 @@ pub fn spawn_obelisk_ui(
                     ..Default::default()
                 })
                 .with(ObeliskStatusImageUiLink)
-                .spawn(TextComponents {
-                    text: Text {
-                        value: "Obelisk heath ? / ?".to_string(),
-                        font: font_handle,
-                        style: TextStyle {
-                            font_size: 12.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                    },
-                    ..Default::default()
-                })
+                .spawn(text(
+                    assets.main_font,
+                    "Obelisk heath ? / ?".to_string(),
+                    12.,
+                ))
                 .with(ObeliskStatusTextUiLink);
         })
         .current_entity()

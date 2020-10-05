@@ -119,7 +119,7 @@ pub fn spawn_player_sidebar(
     commands: &mut Commands,
     assets: &Res<MaterialsAndTextures>,
 ) {
-    let obelisk_ui = spawn_obelisk_ui(commands, assets, assets.main_font);
+    let obelisk_ui = spawn_obelisk_ui(commands, assets);
     let player_2 = spawn_player_ui(commands, assets, assets.char3_portrait_material, 2);
     let player_1 = spawn_player_ui(commands, assets, assets.char2_portrait_material, 1);
     let player_0 = spawn_player_ui(commands, assets, assets.char1_portrait_material, 0);
