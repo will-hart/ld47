@@ -112,6 +112,8 @@ fn spawn_ability_sidebar(
 
     let spacer = commands
         .spawn(text(assets.main_font, " ".to_string(), 10.))
+        .with(AbilityGuiMarker)
+        .with(AbilityGuiSidebarMarker)
         .current_entity()
         .unwrap();
 

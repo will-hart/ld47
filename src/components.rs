@@ -64,12 +64,13 @@ impl Player {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct AbilityActionDetails {
     pub action: Option<u16>,
     pub next_available: f32,
 }
 
+#[derive(Debug)]
 pub struct PlayerAbilityActions {
     pub actions: Vec<AbilityActionDetails>,
 }
