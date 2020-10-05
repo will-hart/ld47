@@ -110,6 +110,11 @@ fn spawn_ability_sidebar(
         .current_entity()
         .unwrap();
 
+    let spacer = commands
+        .spawn(text(assets.main_font, " ".to_string(), 10.))
+        .current_entity()
+        .unwrap();
+
     let abort_button = commands
         .spawn(ButtonComponents {
             style: Style {
@@ -161,9 +166,10 @@ fn spawn_ability_sidebar(
     let heading = commands
         .spawn(NodeComponents {
             style: Style {
-                size: Size::new(Val::Px(310.), Val::Px(40.)),
+                size: Size::new(Val::Px(310.), Val::Px(100.)),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
+                flex_direction: FlexDirection::ColumnReverse,
                 ..Default::default()
             },
             material: assets.ui_material,
@@ -172,17 +178,18 @@ fn spawn_ability_sidebar(
         .with(AbilityGuiMarker)
         .with(AbilityGuiSidebarMarker)
         .with_children(|parent| {
-            parent.spawn(TextComponents {
-                text: Text {
-                    value: "THE STONE GIVES US STRENGTH".to_string(), // random spacer
-                    font: assets.main_font,
-                    style: TextStyle {
-                        font_size: 14.0,
-                        color: Color::rgb(0.8, 0.8, 0.8),
-                    },
-                },
-                ..Default::default()
-            });
+            parent
+                .spawn(text(assets.main_font, "UPGRADES".to_string(), 16.))
+                .spawn(text(
+                    assets.main_font,
+                    "THE STONE GIVES US STRENGTH".to_string(),
+                    12.,
+                ))
+                .spawn(text(
+                    assets.main_font,
+                    "BUT WON'T SET US FREE".to_string(),
+                    12.,
+                ));
         })
         .current_entity()
         .unwrap();
@@ -190,7 +197,9 @@ fn spawn_ability_sidebar(
     commands.push_children(
         parent,
         &[
+            spacer.clone(),
             abort_button,
+            spacer.clone(),
             button,
             player_uis[2],
             player_uis[1],
