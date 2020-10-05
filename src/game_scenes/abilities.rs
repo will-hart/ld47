@@ -4,16 +4,16 @@ use spectre_state::GameStatus;
 
 use crate::{
     abilities::ability_data::AbilityDatabase, abilities::AbilityPurchaseRequest, components::*,
-    game_scenes::MyGameScenes,
+    events::*, game_scenes::MyGameScenes,
 };
 
 pub struct AbilityGuiMarker;
+pub struct AbilityGuiSidebarMarker;
 
 pub fn setup_ability_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    asset_server: ResMut<AssetServer>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    assets: Res<MaterialsAndTextures>,
     mut ability_data: ResMut<AbilityDatabase>,
     mut game_running_components: Query<(Entity, &GameRunningPlayerUi)>,
     mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
@@ -33,18 +33,12 @@ pub fn setup_ability_scene(
     println!("Spawning ability GUI");
     // should only happen once I hope :D
     for (parent, _) in &mut sidebar_components.iter() {
-        let font_handle = asset_server.load("assets/fonts/teletactile.ttf").unwrap();
-        let ui_material = materials.add(Color::NONE.into());
-        let button_material = materials.add(Color::rgba_u8(70, 70, 70, 30).into());
-
         let mut player_uis: Vec<Entity> = Vec::default();
         for player in &mut player_query.iter() {
             player_uis.push(spawn_player_ability_ui(
                 player,
                 &mut commands,
-                ui_material,
-                button_material,
-                font_handle,
+                &assets,
                 &mut ability_data,
             ));
         }
@@ -64,16 +58,17 @@ pub fn setup_ability_scene(
                     align_items: AlignItems::Center,
                     ..Default::default()
                 },
-                material: button_material,
+                material: assets.button_material,
                 ..Default::default()
             })
             .with(AbilityGuiMarker)
+            .with(AbilityGuiSidebarMarker)
             .with(CloseAbilitiesButtonLink)
             .with_children(|button_parent| {
                 button_parent.spawn(TextComponents {
                     text: Text {
                         value: "Done".to_string(),
-                        font: font_handle,
+                        font: assets.main_font,
                         style: TextStyle {
                             font_size: 12.0,
                             color: Color::rgb(0.8, 0.8, 0.8),
@@ -93,15 +88,16 @@ pub fn setup_ability_scene(
                     align_items: AlignItems::Center,
                     ..Default::default()
                 },
-                material: ui_material,
+                material: assets.ui_material,
                 ..Default::default()
             })
             .with(AbilityGuiMarker)
+            .with(AbilityGuiSidebarMarker)
             .with_children(|parent| {
                 parent.spawn(TextComponents {
                     text: Text {
                         value: "Upgrades".to_string(), // random spacer
-                        font: font_handle,
+                        font: assets.main_font,
                         style: TextStyle {
                             font_size: 20.0,
                             color: Color::rgb(0.8, 0.8, 0.8),
@@ -123,9 +119,7 @@ pub fn setup_ability_scene(
 pub fn spawn_player_ability_ui(
     player: &Player,
     commands: &mut Commands,
-    ui_material: Handle<ColorMaterial>,
-    button_material: Handle<ColorMaterial>,
-    font_handle: Handle<Font>,
+    assets: &Res<MaterialsAndTextures>,
     ability_database: &mut ResMut<AbilityDatabase>,
 ) -> Entity {
     commands
@@ -136,15 +130,16 @@ pub fn spawn_player_ability_ui(
                 flex_direction: FlexDirection::ColumnReverse,
                 ..Default::default()
             },
-            material: ui_material,
+            material: assets.ui_material,
             ..Default::default()
         })
         .with(AbilityGuiMarker)
+        .with(AbilityGuiSidebarMarker)
         .with_children(|parent| {
             parent.spawn(TextComponents {
                 text: Text {
                     value: format!("Player {} Upgrades", player.player_id),
-                    font: font_handle,
+                    font: assets.main_font,
                     style: TextStyle {
                         font_size: 14.0,
                         color: Color::rgb(0.8, 0.8, 0.8),
@@ -170,7 +165,7 @@ pub fn spawn_player_ability_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material: button_material,
+                            material: assets.button_material,
                             ..Default::default()
                         })
                         .with(AbilityPurchaseInteraction {
@@ -181,7 +176,7 @@ pub fn spawn_player_ability_ui(
                             parent.spawn(TextComponents {
                                 text: Text {
                                     value: format!("Level {}", lvl), // random spacer
-                                    font: font_handle,
+                                    font: assets.main_font,
                                     style: TextStyle {
                                         font_size: 10.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
@@ -193,7 +188,7 @@ pub fn spawn_player_ability_ui(
                         .spawn(TextComponents {
                             text: Text {
                                 value: ability.description.clone(), // random spacer
-                                font: font_handle,
+                                font: assets.main_font,
                                 style: TextStyle {
                                     font_size: 10.0,
                                     color: Color::rgb(0.8, 0.8, 0.8),
@@ -204,7 +199,7 @@ pub fn spawn_player_ability_ui(
                         .spawn(TextComponents {
                             text: Text {
                                 value: format!("{} XP", ability.xp_cost), // random spacer
-                                font: font_handle,
+                                font: assets.main_font,
                                 style: TextStyle {
                                     font_size: 10.0,
                                     color: Color::rgb(0.8, 0.8, 0.8),

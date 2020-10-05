@@ -8,7 +8,7 @@ use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 // use bevy_easings::EasingsPlugin;
 use bevy_ninepatch::NinePatchPlugin;
 use combat::{dead_enemy_removal_system, enemy_auto_attack_system, player_auto_attack_system};
-use components::{CurrentWave, GameSceneConfigured};
+use components::{CurrentWave, GameSceneConfigured, MaterialsAndTextures};
 use events::*;
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
@@ -84,6 +84,7 @@ fn main() {
         .add_system(close_ability_screen.system())
         .add_system_to_stage("dead_removal", game_over_trigger.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
+        .init_resource::<MaterialsAndTextures>()
         .run();
 }
 

@@ -1,11 +1,9 @@
-use crate::components::{Enemy, MainGameSidebarUi};
+use crate::components::{Enemy, MainGameSidebarUi, MaterialsAndTextures};
 use crate::player_ui::{spawn_obelisk_ui, spawn_player_ui};
 use crate::{components::HealthBar, constants::*};
 use bevy::prelude::*;
 use bevy_ninepatch::{NinePatchBuilder, NinePatchComponents, NinePatchData, NinePatchSize};
 use spectre_core::Health;
-
-use crate::constants::UI_CONTAINER_ID;
 
 pub fn get_ui_box(
     nine_patch_handle: Handle<NinePatchBuilder>,
@@ -30,7 +28,7 @@ pub fn get_ui_box(
 
 pub fn get_node_components(
     size: Size<Val>,
-    material: Handle<ColorMaterial>,
+    assets: &Res<MaterialsAndTextures>,
     is_column: bool,
 ) -> NodeComponents {
     NodeComponents {
@@ -44,21 +42,17 @@ pub fn get_node_components(
             },
             ..Default::default()
         },
-        material,
+        material: assets.ui_material,
         ..Default::default()
     }
 }
 
 pub fn spawn_ui(
     commands: &mut Commands,
-    asset_server: ResMut<AssetServer>,
-    materials: ResMut<Assets<ColorMaterial>>,
+    assets: &Res<MaterialsAndTextures>,
     mut nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
     transparent_material: Handle<ColorMaterial>,
 ) -> Entity {
-    let font_handle = asset_server.load("assets/fonts/teletactile.ttf").unwrap();
-
-    let texture_handle: Handle<Texture> = Handle::from_u128(UI_CONTAINER_ID);
     // TODO: store on a resource and get only once?
     let nine_patch_handle = nine_patches.add(NinePatchBuilder::by_margins(
         UI_SPRITE_MARGIN,
@@ -90,13 +84,13 @@ pub fn spawn_ui(
                 // main content
                 .spawn(get_node_components(
                     Size::new(Val::Percent(75.), Val::Percent(100.)),
-                    transparent_material,
+                    &assets,
                     false,
                 ))
                 .with_children(|main_parent| {
                     main_parent.spawn(get_ui_box(
                         nine_patch_handle,
-                        texture_handle,
+                        assets.nine_patch_texture,
                         Vec2::new(960., 720.),
                     ));
                 });
@@ -104,7 +98,7 @@ pub fn spawn_ui(
             sidebar_entity = outer_parent
                 .spawn(get_node_components(
                     Size::new(Val::Percent(25.), Val::Percent(100.)),
-                    transparent_material,
+                    &assets,
                     true,
                 ))
                 .with(MainGameSidebarUi)
@@ -114,13 +108,7 @@ pub fn spawn_ui(
         .current_entity()
         .unwrap();
 
-    spawn_player_sidebar(
-        sidebar_entity,
-        commands,
-        materials,
-        transparent_material,
-        font_handle,
-    );
+    spawn_player_sidebar(sidebar_entity, commands, &assets);
 
     root_entity
 }
@@ -128,53 +116,12 @@ pub fn spawn_ui(
 pub fn spawn_player_sidebar(
     parent: Entity,
     commands: &mut Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    transparent_material: Handle<ColorMaterial>,
-    font_handle: Handle<Font>,
+    assets: &Res<MaterialsAndTextures>,
 ) {
-    // get the portrait handle for the UI headers
-    let char1_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_1_PORTRAIT);
-    let character1_portrait_material = materials.add(char1_port_handle.into());
-
-    let char2_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_2_PORTRAIT);
-    let character2_portrait_material = materials.add(char2_port_handle.into());
-
-    let char3_port_handle: Handle<Texture> = Handle::from_u128(CHARACTER_3_PORTRAIT);
-    let character3_portrait_material = materials.add(char3_port_handle.into());
-
-    // get the time of day UI items
-    let handle_timeofday: Handle<Texture> = Handle::from_u128(TIME_OF_DAY_SPRITE1_ID);
-    let initial_time_of_day_material = materials.add(handle_timeofday.into());
-
-    let obelisk_ui = spawn_obelisk_ui(
-        commands,
-        transparent_material,
-        initial_time_of_day_material,
-        font_handle,
-    );
-    // player 2
-    let player_2 = spawn_player_ui(
-        commands,
-        transparent_material,
-        character3_portrait_material,
-        font_handle,
-        2,
-    );
-    let player_1 = spawn_player_ui(
-        commands,
-        transparent_material,
-        character2_portrait_material,
-        font_handle,
-        1,
-    );
-    let player_0 = spawn_player_ui(
-        commands,
-        transparent_material,
-        character1_portrait_material,
-        font_handle,
-        0,
-    );
-
+    let obelisk_ui = spawn_obelisk_ui(commands, assets, assets.main_font);
+    let player_2 = spawn_player_ui(commands, assets, assets.char3_portrait_material, 2);
+    let player_1 = spawn_player_ui(commands, assets, assets.char2_portrait_material, 1);
+    let player_0 = spawn_player_ui(commands, assets, assets.char1_portrait_material, 0);
     commands.push_children(parent, &[obelisk_ui, player_2, player_1, player_0]);
 }
 

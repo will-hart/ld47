@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use spectre_core::*;
 
-use crate::constants::TARGET_LOCATIONS;
+use crate::constants::*;
 
 #[derive(Bundle)]
 pub struct EnemyBundle {
@@ -182,4 +182,80 @@ pub struct CloseAbilitiesButtonLink;
 pub struct AbilityPurchaseInteraction {
     pub player_id: u8,
     pub ability_id: u16,
+}
+
+pub struct MaterialsAndTextures {
+    pub ui_material: Handle<ColorMaterial>,
+    pub button_material: Handle<ColorMaterial>,
+
+    pub time_of_day1_material: Handle<ColorMaterial>,
+    pub time_of_day2_material: Handle<ColorMaterial>,
+    pub time_of_day3_material: Handle<ColorMaterial>,
+    pub time_of_day4_material: Handle<ColorMaterial>,
+
+    pub nine_patch_texture: Handle<Texture>,
+
+    pub char1_atlas: Handle<TextureAtlas>,
+    pub char2_atlas: Handle<TextureAtlas>,
+    pub char3_atlas: Handle<TextureAtlas>,
+
+    pub char1_portrait_material: Handle<ColorMaterial>,
+    pub char2_portrait_material: Handle<ColorMaterial>,
+    pub char3_portrait_material: Handle<ColorMaterial>,
+
+    pub canyon_material: Handle<ColorMaterial>,
+    pub boulder_material: Handle<ColorMaterial>,
+
+    pub healthbar_material: Handle<ColorMaterial>,
+
+    pub main_font: Handle<Font>,
+}
+
+impl FromResources for MaterialsAndTextures {
+    fn from_resources(resources: &Resources) -> Self {
+        let mut materials = resources.get_mut::<Assets<ColorMaterial>>().unwrap();
+        let mut texture_atlases = resources.get_mut::<Assets<TextureAtlas>>().unwrap();
+        let asset_server = resources.get_mut::<AssetServer>().unwrap();
+
+        // load sprite atlases for players
+        let handle_player: Handle<Texture> = Handle::from_u128(CHARACTER_1_SPRITE);
+        let texture_atlas_player =
+            TextureAtlas::from_grid(handle_player, Vec2::new(128., 32.), 4, 1);
+        let char1_atlas = texture_atlases.add(texture_atlas_player);
+
+        let handle_player2: Handle<Texture> = Handle::from_u128(CHARACTER_2_SPRITE);
+        let texture_atlas_player2 =
+            TextureAtlas::from_grid(handle_player2, Vec2::new(128., 32.), 4, 1);
+        let char2_atlas = texture_atlases.add(texture_atlas_player2);
+
+        let handle_player3: Handle<Texture> = Handle::from_u128(CHARACTER_3_SPRITE);
+        let texture_atlas_player3 =
+            TextureAtlas::from_grid(handle_player3, Vec2::new(128., 32.), 4, 1);
+        let char3_atlas = texture_atlases.add(texture_atlas_player3);
+
+        MaterialsAndTextures {
+            ui_material: materials.add(Color::NONE.into()),
+            button_material: materials.add(Color::rgba_u8(70, 70, 70, 30).into()),
+            main_font: asset_server.load("assets/fonts/teletactile.ttf").unwrap(),
+
+            time_of_day1_material: materials.add(Handle::from_u128(TIME_OF_DAY_SPRITE1_ID).into()),
+            time_of_day2_material: materials.add(Handle::from_u128(TIME_OF_DAY_SPRITE2_ID).into()),
+            time_of_day3_material: materials.add(Handle::from_u128(TIME_OF_DAY_SPRITE3_ID).into()),
+            time_of_day4_material: materials.add(Handle::from_u128(TIME_OF_DAY_SPRITE4_ID).into()),
+
+            nine_patch_texture: Handle::from_u128(UI_CONTAINER_ID),
+
+            char1_atlas,
+            char2_atlas,
+            char3_atlas,
+
+            char1_portrait_material: materials.add(Handle::from_u128(CHARACTER_1_PORTRAIT).into()),
+            char2_portrait_material: materials.add(Handle::from_u128(CHARACTER_2_PORTRAIT).into()),
+            char3_portrait_material: materials.add(Handle::from_u128(CHARACTER_3_PORTRAIT).into()),
+
+            canyon_material: materials.add(Handle::from_u128(CANYON_SPRITE_ID).into()),
+            boulder_material: materials.add(Handle::from_u128(ROCK_SPRITE_ID).into()),
+            healthbar_material: materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into()),
+        }
+    }
 }

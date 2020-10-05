@@ -26,9 +26,8 @@ fn spacer(font_handle: Handle<Font>) -> TextComponents {
 /// the init_player_ui system to set up
 pub fn spawn_player_ui(
     commands: &mut Commands,
-    material: Handle<ColorMaterial>,
+    assets: &Res<MaterialsAndTextures>,
     portrait_material: Handle<ColorMaterial>,
-    font_handle: Handle<Font>,
     player_id: u8,
 ) -> Entity {
     commands
@@ -41,7 +40,7 @@ pub fn spawn_player_ui(
                 margin: Rect::all(Val::Px(5.)),
                 ..Default::default()
             },
-            material,
+            material: assets.ui_material,
             ..Default::default()
         })
         .with(GameRunningPlayerUi)
@@ -55,7 +54,7 @@ pub fn spawn_player_ui(
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    material,
+                    material: assets.ui_material,
                     ..Default::default()
                 })
                 .with_children(|player_header_parent| {
@@ -76,7 +75,7 @@ pub fn spawn_player_ui(
                             text: Text {
                                 // TODO: Player name
                                 value: format!("Player {}", player_id),
-                                font: font_handle,
+                                font: assets.main_font,
                                 style: TextStyle {
                                     font_size: 12.0,
                                     color: Color::rgb(0.8, 0.8, 0.8),
@@ -85,11 +84,11 @@ pub fn spawn_player_ui(
                             ..Default::default()
                         });
                 })
-                .spawn(spacer(font_handle))
+                .spawn(spacer(assets.main_font))
                 .spawn(TextComponents {
                     text: Text {
                         value: "  Health ?/?".to_string(),
-                        font: font_handle,
+                        font: assets.main_font,
                         style: TextStyle {
                             font_size: 10.0,
                             color: Color::rgb(0.8, 0.8, 0.8),
@@ -104,7 +103,7 @@ pub fn spawn_player_ui(
                 .spawn(TextComponents {
                     text: Text {
                         value: "  Mana ?/?".to_string(),
-                        font: font_handle,
+                        font: assets.main_font,
                         style: TextStyle {
                             font_size: 10.0,
                             color: Color::rgb(0.8, 0.8, 0.8),
@@ -116,11 +115,11 @@ pub fn spawn_player_ui(
                     player_id,
                     entity: None,
                 })
-                .spawn(spacer(font_handle))
+                .spawn(spacer(assets.main_font))
                 .spawn(TextComponents {
                     text: Text {
                         value: "Abilities".to_string(),
-                        font: font_handle,
+                        font: assets.main_font,
                         style: TextStyle {
                             font_size: 12.0,
                             color: Color::rgb(0.8, 0.8, 0.8),
@@ -136,7 +135,7 @@ pub fn spawn_player_ui(
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    material,
+                    material: assets.ui_material,
                     ..Default::default()
                 })
                 .with_children(|ability_button_parent| {
@@ -150,7 +149,7 @@ pub fn spawn_player_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material,
+                            material: assets.ui_material,
                             ..Default::default()
                         })
                         .with(PlayerAbilityButtonInteraction {
@@ -161,7 +160,7 @@ pub fn spawn_player_ui(
                             button_parent.spawn(TextComponents {
                                 text: Text {
                                     value: "1".to_string(),
-                                    font: font_handle,
+                                    font: assets.main_font,
                                     style: TextStyle {
                                         font_size: 12.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
@@ -179,7 +178,7 @@ pub fn spawn_player_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material,
+                            material: assets.button_material,
                             ..Default::default()
                         })
                         .with(PlayerAbilityButtonInteraction {
@@ -190,7 +189,7 @@ pub fn spawn_player_ui(
                             button_parent.spawn(TextComponents {
                                 text: Text {
                                     value: "2".to_string(),
-                                    font: font_handle,
+                                    font: assets.main_font,
                                     style: TextStyle {
                                         font_size: 12.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
@@ -208,7 +207,7 @@ pub fn spawn_player_ui(
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    material,
+                    material: assets.ui_material,
                     ..Default::default()
                 })
                 .with_children(|lane_change_parent| {
@@ -222,14 +221,14 @@ pub fn spawn_player_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material,
+                            material: assets.ui_material,
                             ..Default::default()
                         })
                         .with_children(|button_parent| {
                             button_parent.spawn(TextComponents {
                                 text: Text {
                                     value: "<".to_string(),
-                                    font: font_handle,
+                                    font: assets.main_font,
                                     style: TextStyle {
                                         font_size: 20.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
@@ -251,14 +250,14 @@ pub fn spawn_player_ui(
                                 align_items: AlignItems::Center,
                                 ..Default::default()
                             },
-                            material,
+                            material: assets.button_material,
                             ..Default::default()
                         })
                         .with_children(|button_parent| {
                             button_parent.spawn(TextComponents {
                                 text: Text {
                                     value: ">".to_string(),
-                                    font: font_handle,
+                                    font: assets.main_font,
                                     style: TextStyle {
                                         font_size: 20.0,
                                         color: Color::rgb(0.8, 0.8, 0.8),
@@ -279,8 +278,7 @@ pub fn spawn_player_ui(
 
 pub fn spawn_obelisk_ui(
     commands: &mut Commands,
-    material: Handle<ColorMaterial>,
-    initial_time_of_day_material: Handle<ColorMaterial>,
+    assets: &Res<MaterialsAndTextures>,
     font_handle: Handle<Font>,
 ) -> Entity {
     commands
@@ -293,7 +291,7 @@ pub fn spawn_obelisk_ui(
                 margin: Rect::all(Val::Px(5.)),
                 ..Default::default()
             },
-            material,
+            material: assets.ui_material,
             ..Default::default()
         })
         .with(GameRunningPlayerUi)
@@ -304,7 +302,7 @@ pub fn spawn_obelisk_ui(
                         size: Size::new(Val::Px(32.), Val::Px(32.)),
                         ..Default::default()
                     },
-                    material: initial_time_of_day_material,
+                    material: assets.time_of_day1_material,
                     draw: Draw {
                         is_transparent: true,
                         ..Default::default()

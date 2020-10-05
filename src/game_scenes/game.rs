@@ -1,5 +1,7 @@
 use crate::{
-    components::{GameSceneConfigured, GameSceneEntity, HealthBar, MainGameSidebarUi},
+    components::{
+        GameSceneConfigured, GameSceneEntity, HealthBar, MainGameSidebarUi, MaterialsAndTextures,
+    },
     game_ui::spawn_player_sidebar,
 };
 use bevy::prelude::*;
@@ -15,7 +17,7 @@ use super::MyGameScenes;
 
 fn spawn_player(
     mut commands: &mut Commands,
-    health_bar_material: Handle<ColorMaterial>,
+    assets: &Res<MaterialsAndTextures>,
     texture_atlas_handle: Handle<TextureAtlas>,
     player_id: u8,
     lane: usize,
@@ -35,7 +37,7 @@ fn spawn_player(
 
     commands
         .spawn(SpriteComponents {
-            material: health_bar_material,
+            material: assets.healthbar_material,
             // spawn off screen
             transform: Transform::from_translation(Vec3::new(-1000., -1000., GAME_ELEMENT_LAYER)),
             ..Default::default()
@@ -50,13 +52,10 @@ pub fn setup_game_scene(
     mut commands: Commands,
     mut waves: ResMut<CurrentWave>,
     mut is_configured: ResMut<GameSceneConfigured>,
-    asset_server: ResMut<AssetServer>,
+    assets: Res<MaterialsAndTextures>,
     game_time: Res<GameTime>,
     game_state: Res<GameState<MyGameScenes>>,
     nine_patches: ResMut<Assets<NinePatchBuilder<()>>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    textures: ResMut<Assets<Texture>>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
 ) {
     if !game_state.is_in_scene(&MyGameScenes::Game)
@@ -71,15 +70,7 @@ pub fn setup_game_scene(
         println!("Respawning player GUI");
 
         for (parent, _) in &mut sidebar_components.iter() {
-            let transparent_material = materials.add(Color::NONE.into());
-            spawn_player_sidebar(
-                parent,
-                &mut commands,
-                materials,
-                transparent_material,
-                asset_server.load("assets/fonts/teletactile.ttf").unwrap(),
-            );
-
+            spawn_player_sidebar(parent, &mut commands, &assets);
             break; // really only should be one, need a neater way to do this
         }
 
@@ -96,65 +87,20 @@ pub fn setup_game_scene(
     // start spawning waves some time in the future
     waves.next_wave_time = game_time.elapsed_time + 2.;
 
-    let transparent_material = materials.add(Color::NONE.into());
-
-    // Terrain items
-    let material_canyon = materials.add(Handle::from_u128(CANYON_SPRITE_ID).into());
-    let material_rock = materials.add(Handle::from_u128(ROCK_SPRITE_ID).into());
-    let health_bar_material = materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into());
-
     // spawn the UI
     // NOTE: this moves materials. it shouldn't
-    let entity = spawn_ui(
-        &mut commands,
-        asset_server,
-        materials,
-        nine_patches,
-        transparent_material,
-    );
+    let entity = spawn_ui(&mut commands, &assets, nine_patches, assets.ui_material);
     commands.insert_one(entity, GameSceneEntity); // mark for cleanup
 
     // spawn a sample game entity with easing
-    let handle_player: Handle<Texture> = Handle::from_u128(CHARACTER_1_SPRITE);
-    let texture_player = textures.get(&handle_player).unwrap();
-    let texture_atlas_player = TextureAtlas::from_grid(handle_player, texture_player.size, 4, 1);
-    let texture_atlas_handle_player = texture_atlases.add(texture_atlas_player);
-    spawn_player(
-        &mut commands,
-        health_bar_material,
-        texture_atlas_handle_player,
-        0,
-        0,
-    );
-
-    let handle_player2: Handle<Texture> = Handle::from_u128(CHARACTER_2_SPRITE);
-    let texture_player2 = textures.get(&handle_player2).unwrap();
-    let texture_atlas_player2 = TextureAtlas::from_grid(handle_player2, texture_player2.size, 4, 1);
-    let texture_atlas_handle_player2 = texture_atlases.add(texture_atlas_player2);
-    spawn_player(
-        &mut commands,
-        health_bar_material,
-        texture_atlas_handle_player2,
-        1,
-        1,
-    );
-
-    let handle_player3: Handle<Texture> = Handle::from_u128(CHARACTER_3_SPRITE);
-    let texture_player3 = textures.get(&handle_player3).unwrap();
-    let texture_atlas_player3 = TextureAtlas::from_grid(handle_player3, texture_player3.size, 4, 1);
-    let texture_atlas_handle_player3 = texture_atlases.add(texture_atlas_player3);
-    spawn_player(
-        &mut commands,
-        health_bar_material,
-        texture_atlas_handle_player3,
-        2,
-        2,
-    );
+    spawn_player(&mut commands, &assets, assets.char1_atlas, 0, 0);
+    spawn_player(&mut commands, &assets, assets.char2_atlas, 1, 1);
+    spawn_player(&mut commands, &assets, assets.char3_atlas, 2, 2);
 
     // spawn "world"
     commands
         .spawn(SpriteComponents {
-            material: material_canyon,
+            material: assets.canyon_material,
             transform: Transform::from_translation(Vec3::new(
                 -270.,
                 300.,
@@ -164,7 +110,7 @@ pub fn setup_game_scene(
         })
         .with(GameSceneEntity)
         .spawn(SpriteComponents {
-            material: material_rock,
+            material: assets.boulder_material,
             transform: Transform::from_translation(Vec3::new(50., 150., GAME_ELEMENT_LAYER - 0.5)),
             ..Default::default()
         })
