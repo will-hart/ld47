@@ -78,11 +78,11 @@ impl FromResources for MaterialsAndTextures {
 
         let handle_flame_wall: Handle<Texture> = Handle::from_u128(FLAME_WALL_ID);
         let atlas_flame_wall =
-            TextureAtlas::from_grid(handle_flame_wall, Vec2::new(32. * 6., 32.), 4, 1);
+            TextureAtlas::from_grid(handle_flame_wall, Vec2::new(32. * 10., 96.), 10, 1);
         let flame_wall_atlas = texture_atlases.add(atlas_flame_wall);
 
         let handle_heal: Handle<Texture> = Handle::from_u128(HEAL_ID);
-        let atlas_heal = TextureAtlas::from_grid(handle_heal, Vec2::new(32. * 6., 32.), 4, 1);
+        let atlas_heal = TextureAtlas::from_grid(handle_heal, Vec2::new(64. * 8., 64.), 8, 1);
         let heal_atlas = texture_atlases.add(atlas_heal);
 
         let handle_wolf: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);

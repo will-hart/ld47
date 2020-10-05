@@ -1,7 +1,9 @@
 use crate::assets::MaterialsAndTextures;
+use crate::player_ui::text;
 use bevy::prelude::*;
 use spectre_state::GameState;
 use spectre_state::GameStatus;
+use spectre_time::GameTime;
 
 use crate::{
     abilities::ability_data::AbilityDatabase, abilities::AbilityPurchaseRequest, components::*,
@@ -15,6 +17,7 @@ pub fn setup_ability_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
     assets: Res<MaterialsAndTextures>,
+    player_score: Res<PlayerScore>,
     mut ability_data: ResMut<AbilityDatabase>,
     mut game_running_components: Query<(Entity, &GameRunningPlayerUi)>,
     mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
@@ -38,6 +41,7 @@ pub fn setup_ability_scene(
             parent,
             &mut commands,
             &mut player_query,
+            &player_score,
             &assets,
             &mut ability_data,
         );
@@ -48,6 +52,7 @@ fn spawn_ability_sidebar(
     parent: Entity,
     mut commands: &mut Commands,
     player_query: &mut Query<&Player>,
+    player_score: &Res<PlayerScore>,
     assets: &Res<MaterialsAndTextures>,
     mut ability_data: &mut ResMut<AbilityDatabase>,
 ) {
@@ -98,6 +103,17 @@ fn spawn_ability_sidebar(
         .current_entity()
         .unwrap();
 
+    let available_xp = commands
+        .spawn(text(
+            assets.main_font,
+            format!("{} XP TO SPEND", player_score.xp),
+            12.,
+        ))
+        .with(AbilityGuiMarker)
+        .with(AbilityGuiSidebarMarker)
+        .current_entity()
+        .unwrap();
+
     let heading = commands
         .spawn(NodeComponents {
             style: Style {
@@ -129,7 +145,14 @@ fn spawn_ability_sidebar(
 
     commands.push_children(
         parent,
-        &[button, player_uis[2], player_uis[1], player_uis[0], heading],
+        &[
+            button,
+            player_uis[2],
+            player_uis[1],
+            player_uis[0],
+            available_xp,
+            heading,
+        ],
     );
 }
 
@@ -272,6 +295,7 @@ pub fn ability_purchase_interaction(
 pub fn redraw_ability_ui_on_event(
     mut commands: Commands,
     assets: Res<MaterialsAndTextures>,
+    player_score: Res<PlayerScore>,
     mut state: ResMut<RedrawAbilityUiEventListener>,
     events: Res<Events<RedrawAbilityUiEvent>>,
     mut ability_data: ResMut<AbilityDatabase>,
@@ -302,8 +326,74 @@ pub fn redraw_ability_ui_on_event(
             parent,
             &mut commands,
             &mut player_query,
+            &player_score,
             &assets,
             &mut ability_data,
         );
+    }
+}
+
+fn get_ability_prefix(player_id: u8, slot_id: usize) -> String {
+    match player_id {
+        0 => match slot_id {
+            0 => "[q]".to_string(),
+            1 => "[w]".to_string(),
+            _ => "?".to_string(),
+        },
+        1 => match slot_id {
+            0 => "[e]".to_string(),
+            1 => "[r]".to_string(),
+            _ => "?".to_string(),
+        },
+        2 => match slot_id {
+            0 => "[d]".to_string(),
+            1 => "[f]".to_string(),
+            _ => "?".to_string(),
+        },
+        _ => "-".to_string(),
+    }
+}
+
+fn get_ability_id(player_id: u8, slot_id: usize) -> u16 {
+    (player_id as u16 + 1) * 1000 - 1 + slot_id as u16
+}
+
+pub fn ability_ui_updates(
+    game_time: Res<GameTime>,
+    mut ability_database: ResMut<AbilityDatabase>,
+    mut abilities: Query<(&mut Text, &PlayerAbilityLink)>,
+    mut players: Query<(&Player, &PlayerAbilityActions)>,
+) {
+    for (mut text, link) in &mut abilities.iter() {
+        for (player, actions) in &mut players.iter() {
+            if player.player_id != link.player_id {
+                continue;
+            }
+
+            let slot_action = actions.actions[link.action_number];
+            let ability_data =
+                ability_database.get(get_ability_id(link.player_id, link.action_number));
+
+            if slot_action.action.is_none() {
+                text.value = "".to_string();
+                break;
+            }
+
+            text.value = format!(
+                "{} {}",
+                get_ability_prefix(link.player_id, link.action_number),
+                if game_time.elapsed_time > slot_action.next_available {
+                    ability_data.name.clone()
+                } else {
+                    format!(
+                        "{:.1}s cooldown",
+                        (slot_action.next_available - game_time.elapsed_time) as isize
+                    )
+                }
+            );
+
+            // no need to keep searching
+            break;
+        }
     }
 }

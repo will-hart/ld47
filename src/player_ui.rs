@@ -9,7 +9,7 @@ use spectre_core::{Health, Mana};
 use spectre_state::{GameState, GameStatus};
 use spectre_time::{GameSpeedRequest, GameTime};
 
-fn text(font_handle: Handle<Font>, value: String, font_size: f32) -> TextComponents {
+pub fn text(font_handle: Handle<Font>, value: String, font_size: f32) -> TextComponents {
     TextComponents {
         text: Text {
             value,
@@ -36,7 +36,7 @@ pub fn spawn_player_ui(
             style: Style {
                 size: Size::new(Val::Px(340.), Val::Px(180.)),
                 flex_direction: FlexDirection::ColumnReverse,
-                justify_content: JustifyContent::FlexStart,
+                justify_content: JustifyContent::SpaceAround,
                 align_items: AlignItems::FlexStart,
                 margin: Rect::all(Val::Px(5.)),
                 ..Default::default()
@@ -62,7 +62,7 @@ pub fn spawn_player_ui(
                     player_header_parent
                         .spawn(ImageComponents {
                             style: Style {
-                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
+                                size: Size::new(Val::Px(64.0), Val::Px(64.0)),
                                 ..Default::default()
                             },
                             material: portrait_material,
@@ -87,58 +87,31 @@ pub fn spawn_player_ui(
                 })
                 .spawn(text(assets.main_font, "".to_string(), 10.))
                 .spawn(text(assets.main_font, "Abilities".to_string(), 12.0))
+                .spawn(text(assets.main_font, "".to_string(), 12.))
+                .with(PlayerAbilityLink {
+                    player_id,
+                    action_number: 1,
+                })
+                .spawn(text(assets.main_font, "".to_string(), 12.))
+                .with(PlayerAbilityLink {
+                    player_id,
+                    action_number: 1,
+                })
+                .spawn(text(assets.main_font, "  ".to_string(), 10.))
                 .spawn(NodeComponents {
+                    material: assets.ui_material,
                     style: Style {
-                        size: Size::new(Val::Px(320.), Val::Px(80.)),
+                        size: Size::new(Val::Px(310.), Val::Px(50.)),
                         flex_direction: FlexDirection::Row,
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::Center,
+                        margin: Rect::all(Val::Px(5.)),
                         ..Default::default()
                     },
-                    material: assets.ui_material,
                     ..Default::default()
                 })
-                .with_children(|ability_button_parent| {
-                    ability_button_parent
-                        .spawn(ButtonComponents {
-                            style: Style {
-                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                ..Default::default()
-                            },
-                            material: assets.button_material,
-                            ..Default::default()
-                        })
-                        .with(PlayerAbilityButtonInteraction {
-                            player_id,
-                            action_number: 1,
-                        })
-                        .with_children(|button_parent| {
-                            button_parent.spawn(text(assets.main_font, "1".to_string(), 12.));
-                        })
-                        .spawn(ButtonComponents {
-                            style: Style {
-                                size: Size::new(Val::Px(32.0), Val::Px(32.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                ..Default::default()
-                            },
-                            material: assets.button_material,
-                            ..Default::default()
-                        })
-                        .with(PlayerAbilityButtonInteraction {
-                            player_id,
-                            action_number: 2,
-                        })
-                        .with_children(|button_parent| {
-                            button_parent.spawn(text(assets.main_font, "2".to_string(), 12.));
-                        })
-                        .spawn(text(assets.main_font, "  ".to_string(), 10.))
+                .with_children(|horizontal| {
+                    horizontal
                         .spawn(ButtonComponents {
                             style: Style {
                                 size: Size::new(Val::Px(32.0), Val::Px(32.0)),
@@ -177,7 +150,8 @@ pub fn spawn_player_ui(
                             player_id,
                             delta: 1,
                         });
-                });
+                })
+                .spawn(text(assets.main_font, "  ".to_string(), 32.));
         })
         .current_entity()
         .unwrap()
@@ -202,7 +176,7 @@ pub fn spawn_obelisk_ui(commands: &mut Commands, assets: &Res<MaterialsAndTextur
             obelisk_parent
                 .spawn(ImageComponents {
                     style: Style {
-                        size: Size::new(Val::Px(64.), Val::Px(64.)),
+                        size: Size::new(Val::Px(48.), Val::Px(48.)),
                         ..Default::default()
                     },
                     material: assets.time_of_day1_material,

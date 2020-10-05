@@ -7,6 +7,8 @@
 /// - 1000 - 1999 are healer abilities
 /// - 2000 - 2999 are rogue abilities
 /// - 3000 - 3999 are warrior abilities
+use crate::constants::*;
+
 use super::*;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -125,6 +127,139 @@ impl AbilityDatabase {
                         },
                     }),
                 ],
+            },
+        );
+
+        // flame_wall
+        abilities.insert(
+            1000,
+            AbilityDefinition {
+                id: 1000,
+                xp_cost: 300,
+                prerequisites: vec![],
+                name: "Flame Wall".to_string(),
+                description: "Fire, walled".to_string(),
+                passive: false,
+                slot_number: 1,
+                cooldown: 15.,
+                mana_cost: 30.,
+                effects: vec![
+                    AbilityDetail::AttackArea(
+                        AbilityAttackDetail {
+                            damage_type: DamageType::Fire,
+                            min_damage: 10,
+                            max_damage: 30,
+                        },
+                        96,
+                    ),
+                    AbilityDetail::SpawnAnimation(FLAME_WALL_ID, 0, 9),
+                ],
+            },
+        );
+
+        // flame bash
+        abilities.insert(
+            1001,
+            AbilityDefinition {
+                id: 1001,
+                xp_cost: 200,
+                prerequisites: vec![],
+                name: "Flame Bash".to_string(),
+                description: "Fire, bashed".to_string(),
+                passive: false,
+                slot_number: 2,
+                cooldown: 12.,
+                mana_cost: 30.,
+                effects: vec![AbilityDetail::Attack(AbilityAttackDetail {
+                    damage_type: DamageType::Fire,
+                    min_damage: 30,
+                    max_damage: 60,
+                })],
+            },
+        );
+
+        // heal
+        abilities.insert(
+            2000,
+            AbilityDefinition {
+                id: 2000,
+                xp_cost: 200,
+                prerequisites: vec![],
+                name: "Heal".to_string(),
+                description: "Heal nearby heroes".to_string(),
+                passive: false,
+                slot_number: 1,
+                cooldown: 15.,
+                mana_cost: 30.,
+                effects: vec![
+                    AbilityDetail::Heal(AbilityHealDetail { burst_heal: 50. }),
+                    AbilityDetail::SpawnAnimation(HEAL_ID, 0, 7),
+                ],
+            },
+        );
+
+        // revive
+        abilities.insert(
+            2001,
+            AbilityDefinition {
+                id: 2001,
+                xp_cost: 200,
+                prerequisites: vec![],
+                name: "Revive".to_string(),
+                description: "Revive nearby heroes".to_string(),
+                passive: false,
+                slot_number: 2,
+                cooldown: 20.,
+                mana_cost: 60.,
+                effects: vec![
+                    AbilityDetail::Revive(AbilityReviveDetail { revive_time: 0. }),
+                    AbilityDetail::SpawnAnimation(HEAL_ID, 0, 7),
+                ],
+            },
+        );
+
+        // smash
+        abilities.insert(
+            3000,
+            AbilityDefinition {
+                id: 2001,
+                xp_cost: 200,
+                prerequisites: vec![],
+                name: "Smash".to_string(),
+                description: "Hit a single enemy, very hard".to_string(),
+                passive: false,
+                slot_number: 1,
+                cooldown: 15.,
+                mana_cost: 20.,
+                effects: vec![AbilityDetail::Attack(AbilityAttackDetail {
+                    damage_type: DamageType::Pure,
+                    min_damage: 15,
+                    max_damage: 75,
+                })],
+            },
+        );
+
+        // detonate
+        abilities.insert(
+            3000,
+            AbilityDefinition {
+                id: 2001,
+                xp_cost: 200,
+                prerequisites: vec![],
+                name: "Smash".to_string(),
+                description: "Hit a single enemy, very hard".to_string(),
+                passive: false,
+                slot_number: 2,
+                cooldown: 20.,
+                mana_cost: 20.,
+                effects: vec![AbilityDetail::AttackArea(
+                    AbilityAttackDetail {
+                        damage_type: DamageType::Pure,
+                        min_damage: 20,
+                        max_damage: 50,
+                    },
+                    50,
+                )],
             },
         );
 

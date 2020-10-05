@@ -28,6 +28,17 @@ pub fn get_player(player_id: u8, lane: usize) -> PlayerBundle {
             base_armour: BuffableStatistic::new(1.),
             ..Default::default()
         },
-        // attack_target: AttackTarget::default(),
+        actions: PlayerAbilityActions {
+            actions: vec![
+                AbilityActionDetails {
+                    action: None,
+                    next_available: f32::MAX,
+                },
+                AbilityActionDetails {
+                    action: None,
+                    next_available: f32::MAX,
+                },
+            ],
+        }, // attack_target: AttackTarget::default(),
     }
 }

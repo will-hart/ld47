@@ -12,6 +12,7 @@ pub fn ability_purchase_system(
     mut purchase_requests: Query<(Entity, &AbilityPurchaseRequest)>,
     mut players: Query<(
         &mut Player,
+        &mut PlayerAbilityActions,
         &mut Defence,
         &mut Health,
         &mut Mana,
@@ -32,7 +33,9 @@ pub fn ability_purchase_system(
         }
 
         let mut found: bool = false;
-        for (mut player, mut defence, mut health, mut mana, mut movement) in &mut players.iter() {
+        for (mut player, mut actions, mut defence, mut health, mut mana, mut movement) in
+            &mut players.iter()
+        {
             if player.player_id != request.player_id {
                 continue;
             }
@@ -54,12 +57,15 @@ pub fn ability_purchase_system(
             // register the ability
             player.abilities.push(ability.id);
 
+            // register a slot if not passive
+            if !ability.passive {
+                actions.actions[ability.slot_number].action = Some(ability.id);
+                actions.actions[ability.slot_number].next_available = 0.;
+            }
+
             // apply the effects
             for effect in ability.effects.iter() {
                 match effect {
-                    AbilityDetail::Attack(_) => {
-                        panic!("Not implemented");
-                    }
                     AbilityDetail::Buff(detail) => {
                         match detail.buff_type {
                             BuffType::Armour => {
@@ -79,12 +85,7 @@ pub fn ability_purchase_system(
                             }
                         };
                     }
-                    AbilityDetail::Heal(_) => {
-                        panic!("Not implemented");
-                    }
-                    AbilityDetail::Revive(_) => {
-                        panic!("Not implemented");
-                    }
+                    _ => {}
                 };
             }
 

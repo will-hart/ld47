@@ -20,6 +20,7 @@ pub struct PlayerBundle {
     pub attack: BaseAttack,
     pub defence: Defence,
     pub player: Player,
+    pub actions: PlayerAbilityActions,
     // pub attack_target: AttackTarget, // TODO: post jam
 }
 
@@ -61,6 +62,16 @@ impl Player {
 
         return Some(3);
     }
+}
+
+#[derive(Copy, Clone)]
+pub struct AbilityActionDetails {
+    pub action: Option<u16>,
+    pub next_available: f32,
+}
+
+pub struct PlayerAbilityActions {
+    pub actions: Vec<AbilityActionDetails>,
 }
 
 /// The base attack / defence of a unit. Can be enhanced over time
@@ -166,9 +177,9 @@ pub struct GameSceneEntity;
 #[derive(Default)]
 pub struct GameSceneConfigured(pub bool);
 
-pub struct PlayerAbilityButtonInteraction {
+pub struct PlayerAbilityLink {
     pub player_id: u8,
-    pub action_number: u8,
+    pub action_number: usize,
 }
 
 /// Flags these components as displayed while the game is running

@@ -39,10 +39,11 @@ pub enum DamageType {
 pub enum AbilityDetail {
     Attack(AbilityAttackDetail),
     // TODO: AttackMultiple(AbilityAttackDetail, u32),
-    // TODO: AOEAttack(AbilityAttackDetail, u32),
+    AttackArea(AbilityAttackDetail, u32),
     Buff(AbilityBuffDetail),
     Heal(AbilityHealDetail),
     Revive(AbilityReviveDetail),
+    SpawnAnimation(u128, usize, usize),
 }
 
 #[derive(Deserialize, Serialize)]
