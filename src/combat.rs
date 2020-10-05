@@ -136,7 +136,7 @@ pub fn player_auto_attack_system(
 
 pub fn enemy_target_selection_system(
     mut enemy_query: Query<(&Enemy, &mut AttackTarget, &Transform)>,
-    mut player_query: Query<(Entity, &Player)>,
+    mut player_query: Query<Without<Incapacitated, (Entity, &Player)>>,
 ) {
     for (enemy, mut target, enemy_tx) in &mut enemy_query.iter() {
         match target.entity {
@@ -247,6 +247,11 @@ pub fn enemy_auto_attack_system(
         let defence = player_query.get::<Defence>(target_entity).unwrap();
         let result = resolve_combat(&attack, &defence);
         health.target_health -= result.damage as f32;
+
+        if health.target_health <= 0. {
+            // stop targeting dead/incapacitated enemies
+            target.entity = None;
+        }
 
         // println!(
         //     "COMBAT! {:?}, new health: {} --> {}",
