@@ -47,6 +47,7 @@ pub const GAME_ELEMENT_LAYER: f32 = 3.;
 // pub const GAME_OFFSET_Y: f32 = 360.; // half RESOLUTION_Y
 
 // PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
+pub const OBELISK_Y: f32 = -300.;
 pub const SPAWN_LOCATIONS: [(f32, f32); 3] = [(-480., 365.), (-180., 365.), (120., 365.)];
 pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-480., -200.), (-180., -200.), (120., -200.)];
 

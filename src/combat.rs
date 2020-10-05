@@ -135,10 +135,10 @@ pub fn player_auto_attack_system(
 }
 
 pub fn enemy_target_selection_system(
-    mut enemy_query: Query<(&Enemy, &mut AttackTarget)>,
+    mut enemy_query: Query<(&Enemy, &mut AttackTarget, &Transform)>,
     mut player_query: Query<(Entity, &Player)>,
 ) {
-    for (enemy, mut target) in &mut enemy_query.iter() {
+    for (enemy, mut target, enemy_tx) in &mut enemy_query.iter() {
         match target.entity {
             // just continue here, the auto attack system will reset to None if the player moves lane
             Some(_) => continue,
@@ -155,9 +155,11 @@ pub fn enemy_target_selection_system(
                     })
                     .collect::<Vec<_>>();
 
-                // if nobody is in the lane, target the obelisk
-                target.is_obelisk = players_in_lane.len() == 0;
-                if target.is_obelisk {
+                // if nobody is in the lane, and within melee range of the obelisk target the obelisk
+                let num_players_in_lane = players_in_lane.len();
+                target.is_obelisk = num_players_in_lane == 0
+                    && (enemy_tx.translation().y() - OBELISK_Y).abs() < 105. + MELEE_RANGE;
+                if num_players_in_lane == 0 {
                     continue;
                 }
 
@@ -206,6 +208,8 @@ pub fn enemy_auto_attack_system(
             }
 
             // prevent underflow
+            player_score.last_obelisk_damage = game_time.elapsed_time;
+
             if damage > player_score.obelisk_health {
                 // Game over handled in a separate system
                 player_score.obelisk_health = 0;

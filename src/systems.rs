@@ -9,11 +9,12 @@ pub fn player_incapacitation_system(
     mut commands: Commands,
     mut players: Query<Without<Incapacitated, (Entity, &Player, &mut AnimationState, &Health)>>,
 ) {
-    for (ent, _, mut anim_state, health) in &mut players.iter() {
+    for (ent, player, mut anim_state, health) in &mut players.iter() {
         if health.target_health > 0. {
             continue;
         }
 
+        println!("Disabling player {}", player.player_id);
         commands.insert_one(ent, Incapacitated::default());
         anim_state.set_animation(1); // incapacitated animation
     }
@@ -22,6 +23,7 @@ pub fn player_incapacitation_system(
 pub fn player_revival_system(
     mut commands: Commands,
     entity: Entity,
+    player: &Player,
     incap: &Incapacitated,
     mut anim_state: Mut<AnimationState>,
     mut health: Mut<Health>,
@@ -29,6 +31,8 @@ pub fn player_revival_system(
     if !incap.is_revived {
         return;
     }
+
+    println!("Reviving player {}", player.player_id);
 
     health.target_health = 0.5 * health.max_health.value;
     health.current_health = health.target_health;
