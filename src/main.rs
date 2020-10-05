@@ -86,6 +86,7 @@ fn main() {
         .add_system(player_lane_change_interaction.system())
         .add_system(ability_purchase_system.system())
         .add_system(close_ability_screen.system())
+        .add_system(abort_ability_screen.system())
         .add_system_to_stage("dead_removal", game_over_trigger.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
         .add_system(player_incapacitation_system.system())

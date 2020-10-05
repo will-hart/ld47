@@ -1,7 +1,5 @@
-use crate::components::{Incapacitated, Player};
 use crate::MaterialsAndTextures;
 use bevy::prelude::*;
-use spectre_core::Health;
 use spectre_state::GameState;
 use spectre_time::GameSpeedRequest;
 
@@ -44,8 +42,6 @@ pub fn end_of_day_system(
     audio: Res<AudioOutput>,
     assets: Res<MaterialsAndTextures>,
     mut enemies: Query<With<Enemy, Entity>>,
-    mut players: Query<With<Player, &mut Health>>,
-    mut incapacitated: Query<With<Player, &mut Incapacitated>>,
 ) {
     let mut found = false;
     for _ in state.end_of_day_reader.iter(&events) {
@@ -79,16 +75,6 @@ pub fn end_of_day_system(
 
         println!("Showing end of day UI");
         game_state.set_transition(MyGameScenes::Abilities);
-    }
-
-    // regen all players, its a stuck in the loop theme if I recall :P
-    for mut health in &mut players.iter() {
-        health.current_health = health.max_health.value;
-        health.target_health = health.current_health;
-    }
-
-    for mut incap in &mut incapacitated.iter() {
-        incap.is_revived = true;
     }
 }
 

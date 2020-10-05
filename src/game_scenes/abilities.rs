@@ -110,6 +110,43 @@ fn spawn_ability_sidebar(
         .current_entity()
         .unwrap();
 
+    let abort_button = commands
+        .spawn(ButtonComponents {
+            style: Style {
+                size: Size::new(Val::Px(150.0), Val::Px(32.0)),
+                margin: Rect {
+                    left: Val::Px(107.),
+                    right: Val::Px(107.),
+                    ..Default::default()
+                },
+                // horizontally center child text
+                justify_content: JustifyContent::Center,
+                // vertically center child text
+                align_items: AlignItems::Center,
+                ..Default::default()
+            },
+            material: assets.button_material,
+            ..Default::default()
+        })
+        .with(AbilityGuiMarker)
+        .with(AbilityGuiSidebarMarker)
+        .with(AbortGameButtonLink)
+        .with_children(|button_parent| {
+            button_parent.spawn(TextComponents {
+                text: Text {
+                    value: "Give Up".to_string(),
+                    font: assets.main_font,
+                    style: TextStyle {
+                        font_size: 12.0,
+                        color: Color::rgb(0.8, 0.8, 0.8),
+                    },
+                },
+                ..Default::default()
+            });
+        })
+        .current_entity()
+        .unwrap();
+
     let available_xp = commands
         .spawn(text(
             assets.main_font,
@@ -137,10 +174,10 @@ fn spawn_ability_sidebar(
         .with_children(|parent| {
             parent.spawn(TextComponents {
                 text: Text {
-                    value: "Upgrades".to_string(), // random spacer
+                    value: "THE STONE GIVES US STRENGTH".to_string(), // random spacer
                     font: assets.main_font,
                     style: TextStyle {
-                        font_size: 20.0,
+                        font_size: 14.0,
                         color: Color::rgb(0.8, 0.8, 0.8),
                     },
                 },
@@ -153,6 +190,7 @@ fn spawn_ability_sidebar(
     commands.push_children(
         parent,
         &[
+            abort_button,
             button,
             player_uis[2],
             player_uis[1],

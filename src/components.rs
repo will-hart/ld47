@@ -159,6 +159,7 @@ pub struct PlayerScore {
     pub xp: usize,
     pub obelisk_health: usize,
     pub last_obelisk_damage: f32,
+    pub game_over: bool,
 }
 
 impl FromResources for PlayerScore {
@@ -167,6 +168,7 @@ impl FromResources for PlayerScore {
             xp: 0,
             obelisk_health: 1000,
             last_obelisk_damage: 0.,
+            game_over: false,
         }
     }
 }
@@ -190,6 +192,9 @@ pub struct MainGameSidebarUi;
 
 /// Flags a button to close ability screen and transition back to the game screen
 pub struct CloseAbilitiesButtonLink;
+
+/// Flags when a player aborts the game from the abilities screen
+pub struct AbortGameButtonLink;
 
 /// Used to trigger a purchase when an ability button is clicked
 pub struct AbilityPurchaseInteraction {

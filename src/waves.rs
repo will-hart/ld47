@@ -36,37 +36,37 @@ pub const WAVE_DATA: [WaveData; 8] = [
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([0, 1, 0]),
-        post_wave_delay: 10.,
+        post_wave_delay: 12.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([0, 0, 0]),
-        post_wave_delay: 8.,
+        post_wave_delay: 18.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([1, 1, 1]),
-        post_wave_delay: 5.,
+        post_wave_delay: 15.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([1, 1, 1]),
-        post_wave_delay: 5.,
+        post_wave_delay: 15.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([1, 1, 1]),
-        post_wave_delay: 5.,
+        post_wave_delay: 14.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([1, 1, 1]),
-        post_wave_delay: 5.,
+        post_wave_delay: 12.,
     },
     WaveData {
         wolves: Wave([1, 1, 1]),
         bears: Wave([1, 1, 1]),
-        post_wave_delay: 5.,
+        post_wave_delay: 30.,
     },
 ];
 
@@ -127,10 +127,6 @@ pub fn wave_spawning_system(
         end_of_day.send(EndOfDayEvent(true));
         waves.next_wave_time = f32::MAX;
         return;
-    }
-
-    if waves.wave_idx > 0 && waves.wave_idx % 4 == 0 {
-        end_of_day.send(EndOfDayEvent(false));
     }
 
     let wave_to_spawn = &WAVE_DATA[waves.wave_idx];

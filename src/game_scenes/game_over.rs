@@ -112,6 +112,7 @@ pub fn setup_gameover_scene(
     // reset state to allow replay
     player_score.xp = 0;
     player_score.obelisk_health = 1000;
+    player_score.game_over = false;
     waves.wave_idx = 0;
     waves.next_wave_time = 0.;
     is_configured.0 = false;

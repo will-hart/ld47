@@ -2,7 +2,7 @@
 // possible there are better ways to do this sort of thing. I'm going for dev speed here,
 // not nice code /shrug
 
-use crate::assets::MaterialsAndTextures;
+use crate::{assets::MaterialsAndTextures, events::EndOfDayEvent};
 use crate::{components::*, constants::*, game_scenes::MyGameScenes};
 use bevy::prelude::*;
 use spectre_core::{Health, Mana};
@@ -299,6 +299,7 @@ pub fn update_obelisk_status_text(
 pub fn game_over_trigger(
     mut commands: Commands,
     audio: Res<AudioOutput>,
+    mut end_of_day: ResMut<Events<EndOfDayEvent>>,
     assets: Res<MaterialsAndTextures>,
     mut game_state: ResMut<GameState<MyGameScenes>>,
     player_score: Res<PlayerScore>,
@@ -313,14 +314,18 @@ pub fn game_over_trigger(
     }
 
     if player_score.obelisk_health <= 0 {
-        audio.play(assets.obelisk_fallen_audio);
-
         // stop the game
         commands.spawn((GameSpeedRequest {
             new_game_speed: 0.0,
         },));
 
-        game_state.set_transition(MyGameScenes::GameOver);
+        // trigger end of day to go to ability system
+        if !player_score.game_over {
+            audio.play(assets.obelisk_fallen_audio);
+            end_of_day.send(EndOfDayEvent(false));
+        } else {
+            game_state.set_transition(MyGameScenes::GameOver);
+        }
     }
 }
 
@@ -328,8 +333,11 @@ pub fn close_ability_screen(
     mut commands: Commands,
     game_time: Res<GameTime>,
     mut game_state: ResMut<GameState<MyGameScenes>>,
+    mut player_score: ResMut<PlayerScore>,
     mut current_wave: ResMut<CurrentWave>,
     mut interaction_query: Query<(&Button, Mutated<Interaction>, &CloseAbilitiesButtonLink)>,
+    mut players: Query<With<Player, &mut Health>>,
+    mut incapacitated: Query<With<Player, &mut Incapacitated>>,
 ) {
     for (_, interaction, _) in &mut interaction_query.iter() {
         match *interaction {
@@ -342,7 +350,36 @@ pub fn close_ability_screen(
                     new_game_speed: DEFAULT_GAME_SPEED,
                 },));
 
+                current_wave.wave_idx = 0;
                 current_wave.next_wave_time = game_time.elapsed_time + 2.;
+                player_score.obelisk_health = 1000;
+
+                // regen all players, its a stuck in the loop theme if I recall :P
+                for mut health in &mut players.iter() {
+                    health.current_health = health.max_health.value;
+                    health.target_health = health.current_health;
+                }
+
+                for mut incap in &mut incapacitated.iter() {
+                    incap.is_revived = true;
+                }
+            }
+            _ => {}
+        };
+    }
+}
+
+pub fn abort_ability_screen(
+    mut player_score: ResMut<PlayerScore>,
+    mut game_state: ResMut<GameState<MyGameScenes>>,
+    mut interaction_query: Query<(&Button, Mutated<Interaction>, &AbortGameButtonLink)>,
+) {
+    for (_, interaction, _) in &mut interaction_query.iter() {
+        match *interaction {
+            Interaction::Clicked => {
+                println!("Aborting game");
+                player_score.game_over = true;
+                game_state.set_transition(MyGameScenes::Game);
             }
             _ => {}
         };
