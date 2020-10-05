@@ -211,6 +211,8 @@ pub struct MaterialsAndTextures {
 
     pub canyon_material: Handle<ColorMaterial>,
     pub boulder_material: Handle<ColorMaterial>,
+    pub tree_material: Handle<ColorMaterial>,
+    pub obelisk_material: Handle<ColorMaterial>,
 
     pub healthbar_material: Handle<ColorMaterial>,
 
@@ -295,6 +297,9 @@ impl FromResources for MaterialsAndTextures {
 
             canyon_material: materials.add(Handle::from_u128(CANYON_SPRITE_ID).into()),
             boulder_material: materials.add(Handle::from_u128(ROCK_SPRITE_ID).into()),
+            tree_material: materials.add(Handle::from_u128(TREE_SPRITE_ID).into()),
+            obelisk_material: materials.add(Handle::from_u128(OBELISK_SPRITE_ID).into()),
+
             healthbar_material: materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into()),
 
             splatter_atlas,

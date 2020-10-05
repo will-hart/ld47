@@ -29,6 +29,8 @@ pub const TIME_OF_DAY_SPRITE4_ID: u128 = 407656820985029385;
 
 pub const CANYON_SPRITE_ID: u128 = 3460983409834202;
 pub const ROCK_SPRITE_ID: u128 = 56098709234978;
+pub const TREE_SPRITE_ID: u128 = 3094860398496;
+pub const OBELISK_SPRITE_ID: u128 = 24632467357345;
 
 pub const SPLATTER_ID: u128 = 32409680346893434011111;
 
@@ -46,7 +48,7 @@ pub const GAME_ELEMENT_LAYER: f32 = 3.;
 
 // PROBABLY SHOULDN'T BE HARDCODED, BUT GAME JAM
 pub const SPAWN_LOCATIONS: [(f32, f32); 3] = [(-480., 365.), (-180., 365.), (120., 365.)];
-pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-480., -300.), (-180., -300.), (120., -300.)];
+pub const TARGET_LOCATIONS: [(f32, f32); 3] = [(-480., -200.), (-180., -200.), (120., -200.)];
 
 /// how far the players set up from the target location
 pub const PLAYER_OFFSET_Y: f32 = 40.;

@@ -7,6 +7,7 @@ use crate::{
 use bevy::prelude::*;
 use bevy_ninepatch::NinePatchBuilder;
 use spectre_animations::spawn_animated_spritesheet;
+use spectre_random::RNG;
 use spectre_state::*;
 use spectre_time::{GameSpeedRequest, GameTime};
 
@@ -111,7 +112,119 @@ pub fn setup_game_scene(
         .with(GameSceneEntity)
         .spawn(SpriteComponents {
             material: assets.boulder_material,
-            transform: Transform::from_translation(Vec3::new(50., 150., GAME_ELEMENT_LAYER - 0.5)),
+            transform: Transform::from_translation(Vec3::new(50., 150., GAME_ELEMENT_LAYER + 0.5)),
+            ..Default::default()
+        })
+        .with(GameSceneEntity);
+
+    let trees: [[f32; 4]; 15] = [
+        [
+            -240.,
+            320.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -210.,
+            270.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            80.,
+            170.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            100.,
+            160.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -50.,
+            -220.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            200.,
+            140.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -340.,
+            -110.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -75.,
+            -75.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            250.,
+            -270.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -250.,
+            -220.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -280.,
+            -120.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            110.,
+            270.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            280.,
+            70.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -310.,
+            50.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+        [
+            -450.,
+            -20.,
+            RNG::f32_between(0., 3.14),
+            RNG::f32_between(0.85, 1.05),
+        ],
+    ];
+    trees.iter().for_each(|[x, y, rot, scale]| {
+        commands
+            .spawn(SpriteComponents {
+                material: assets.tree_material,
+                transform: Transform::from_translation(Vec3::new(*x, *y, GAME_ELEMENT_LAYER + 0.5))
+                    .with_rotation(Quat::from_axis_angle(Vec3::unit_z(), *rot))
+                    .with_scale(*scale),
+                ..Default::default()
+            })
+            .with(GameSceneEntity);
+    });
+
+    commands
+        .spawn(SpriteComponents {
+            material: assets.obelisk_material,
+            transform: Transform::from_translation(Vec3::new(-180., -300., GAME_ELEMENT_LAYER)),
             ..Default::default()
         })
         .with(GameSceneEntity);
