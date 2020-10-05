@@ -72,6 +72,8 @@ pub fn resolve_combat(attack: &BaseAttack, defence: &Defence) -> CombatResult {
 /// Loop through all players, find enemies within their range and attack one of them
 pub fn player_auto_attack_system(
     game_time: Res<GameTime>,
+    audio: Res<AudioOutput>,
+    assets: Res<MaterialsAndTextures>,
     mut player_query: Query<(&Player, &mut BaseAttack)>,
     mut enemy_query: Query<(&Enemy, &Transform, &mut Health, &Defence)>,
 ) {
@@ -115,6 +117,8 @@ pub fn player_auto_attack_system(
             Some((mut health, defence)) => {
                 let result = resolve_combat(&attack, defence);
                 health.target_health -= result.damage as f32;
+
+                audio.play(assets.clang_audio);
 
                 // println!(
                 //     "COMBAT! {:?}, new health: {} --> {}",
