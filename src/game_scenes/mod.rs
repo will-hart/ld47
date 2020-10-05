@@ -71,7 +71,8 @@ impl Plugin for GameStatePlugin {
             // ability gui scene - TODO as plugin
             .add_system(setup_ability_scene.system())
             // .add_system(run_ability_scene.system())
-            .add_system(teardown_ability_scene.system());
+            .add_system(teardown_ability_scene.system())
+            .add_system(ability_purchase_interaction.system());
     }
 }
 

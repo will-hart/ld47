@@ -2,7 +2,10 @@ use bevy::prelude::*;
 use spectre_state::GameState;
 use spectre_state::GameStatus;
 
-use crate::{components::*, game_scenes::MyGameScenes};
+use crate::{
+    abilities::ability_data::AbilityDatabase, abilities::AbilityPurchaseRequest, components::*,
+    game_scenes::MyGameScenes,
+};
 
 pub struct AbilityGuiMarker;
 
@@ -11,8 +14,10 @@ pub fn setup_ability_scene(
     game_state: Res<GameState<MyGameScenes>>,
     asset_server: ResMut<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut ability_data: ResMut<AbilityDatabase>,
     mut game_running_components: Query<(Entity, &GameRunningPlayerUi)>,
     mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
+    mut player_query: Query<&Player>,
 ) {
     if !game_state.is_in_scene(&MyGameScenes::Abilities)
         || !game_state.is_in_status(&GameStatus::Entering)
@@ -32,47 +37,17 @@ pub fn setup_ability_scene(
         let ui_material = materials.add(Color::NONE.into());
         let button_material = materials.add(Color::rgba_u8(70, 70, 70, 30).into());
 
-        let player_1 = commands
-            .spawn(NodeComponents {
-                style: Style {
-                    size: Size::new(Val::Px(310.), Val::Px(170.)),
-                    margin: Rect::all(Val::Px(5.)),
-                    ..Default::default()
-                },
-                material: ui_material,
-                ..Default::default()
-            })
-            .with(AbilityGuiMarker)
-            .current_entity()
-            .unwrap();
-
-        let player_2 = commands
-            .spawn(NodeComponents {
-                style: Style {
-                    size: Size::new(Val::Px(310.), Val::Px(170.)),
-                    margin: Rect::all(Val::Px(5.)),
-                    ..Default::default()
-                },
-                material: ui_material,
-                ..Default::default()
-            })
-            .with(AbilityGuiMarker)
-            .current_entity()
-            .unwrap();
-
-        let player_3 = commands
-            .spawn(NodeComponents {
-                style: Style {
-                    size: Size::new(Val::Px(310.), Val::Px(170.)),
-                    margin: Rect::all(Val::Px(5.)),
-                    ..Default::default()
-                },
-                material: ui_material,
-                ..Default::default()
-            })
-            .with(AbilityGuiMarker)
-            .current_entity()
-            .unwrap();
+        let mut player_uis: Vec<Entity> = Vec::default();
+        for player in &mut player_query.iter() {
+            player_uis.push(spawn_player_ability_ui(
+                player,
+                &mut commands,
+                ui_material,
+                button_material,
+                font_handle,
+                &mut ability_data,
+            ));
+        }
 
         let button = commands
             .spawn(ButtonComponents {
@@ -110,8 +85,139 @@ pub fn setup_ability_scene(
             .current_entity()
             .unwrap();
 
-        commands.push_children(parent, &[button, player_3, player_2, player_1]);
+        let heading = commands
+            .spawn(NodeComponents {
+                style: Style {
+                    size: Size::new(Val::Px(310.), Val::Px(40.)),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..Default::default()
+                },
+                material: ui_material,
+                ..Default::default()
+            })
+            .with(AbilityGuiMarker)
+            .with_children(|parent| {
+                parent.spawn(TextComponents {
+                    text: Text {
+                        value: "Upgrades".to_string(), // random spacer
+                        font: font_handle,
+                        style: TextStyle {
+                            font_size: 20.0,
+                            color: Color::rgb(0.8, 0.8, 0.8),
+                        },
+                    },
+                    ..Default::default()
+                });
+            })
+            .current_entity()
+            .unwrap();
+
+        commands.push_children(
+            parent,
+            &[button, player_uis[2], player_uis[1], player_uis[0], heading],
+        );
     }
+}
+
+pub fn spawn_player_ability_ui(
+    player: &Player,
+    commands: &mut Commands,
+    ui_material: Handle<ColorMaterial>,
+    button_material: Handle<ColorMaterial>,
+    font_handle: Handle<Font>,
+    ability_database: &mut ResMut<AbilityDatabase>,
+) -> Entity {
+    commands
+        .spawn(NodeComponents {
+            style: Style {
+                size: Size::new(Val::Px(310.), Val::Px(170.)),
+                margin: Rect::all(Val::Px(5.)),
+                flex_direction: FlexDirection::ColumnReverse,
+                ..Default::default()
+            },
+            material: ui_material,
+            ..Default::default()
+        })
+        .with(AbilityGuiMarker)
+        .with_children(|parent| {
+            parent.spawn(TextComponents {
+                text: Text {
+                    value: format!("Player {} Upgrades", player.player_id),
+                    font: font_handle,
+                    style: TextStyle {
+                        font_size: 14.0,
+                        color: Color::rgb(0.8, 0.8, 0.8),
+                    },
+                },
+                ..Default::default()
+            });
+
+            let next_level = player.get_next_level();
+
+            match next_level {
+                Some(lvl) => {
+                    // level 2 ability is ability id 0
+                    let ability = ability_database.get(lvl - 2);
+
+                    parent
+                        .spawn(ButtonComponents {
+                            style: Style {
+                                size: Size::new(Val::Px(96.0), Val::Px(32.0)),
+                                // horizontally center child text
+                                justify_content: JustifyContent::Center,
+                                // vertically center child text
+                                align_items: AlignItems::Center,
+                                ..Default::default()
+                            },
+                            material: button_material,
+                            ..Default::default()
+                        })
+                        .with(AbilityPurchaseInteraction {
+                            ability_id: ability.id,
+                            player_id: player.player_id,
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextComponents {
+                                text: Text {
+                                    value: format!("Level {}", lvl), // random spacer
+                                    font: font_handle,
+                                    style: TextStyle {
+                                        font_size: 10.0,
+                                        color: Color::rgb(0.8, 0.8, 0.8),
+                                    },
+                                },
+                                ..Default::default()
+                            });
+                        })
+                        .spawn(TextComponents {
+                            text: Text {
+                                value: ability.description.clone(), // random spacer
+                                font: font_handle,
+                                style: TextStyle {
+                                    font_size: 10.0,
+                                    color: Color::rgb(0.8, 0.8, 0.8),
+                                },
+                            },
+                            ..Default::default()
+                        })
+                        .spawn(TextComponents {
+                            text: Text {
+                                value: format!("{} XP", ability.xp_cost), // random spacer
+                                font: font_handle,
+                                style: TextStyle {
+                                    font_size: 10.0,
+                                    color: Color::rgb(0.8, 0.8, 0.8),
+                                },
+                            },
+                            ..Default::default()
+                        });
+                }
+                _ => {}
+            };
+        })
+        .current_entity()
+        .unwrap()
 }
 
 pub fn teardown_ability_scene(
@@ -128,5 +234,25 @@ pub fn teardown_ability_scene(
     println!("Tearing down abilities screen");
     for (entity, _) in &mut menu_scene_items.iter() {
         commands.despawn_recursive(entity);
+    }
+}
+
+pub fn ability_purchase_interaction(
+    mut commands: Commands,
+    mut interaction_query: Query<(&Button, Mutated<Interaction>, &AbilityPurchaseInteraction)>,
+) {
+    for (_, interaction, request) in &mut interaction_query.iter() {
+        match *interaction {
+            Interaction::Clicked => {
+                println!("Requesting ability purchase");
+
+                // spawn the request
+                commands.spawn((AbilityPurchaseRequest {
+                    ability_id: request.ability_id,
+                    player_id: request.player_id,
+                },));
+            }
+            _ => {}
+        };
     }
 }

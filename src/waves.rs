@@ -158,8 +158,7 @@ pub fn wave_spawning_system(
     let texture_atlas = TextureAtlas::from_grid(handle, texture.size, 4, 1);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    let health_bar_handle = Handle::from_u128(HEALTHBAR_SPRITE_ID);
-    let health_bar_material = materials.add(health_bar_handle.into());
+    let health_bar_material = materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into());
 
     wolves
         .0

@@ -90,6 +90,10 @@ pub fn ability_purchase_system(
             // mark it as applied
             player_score.xp -= ability.xp_cost;
             found = true;
+            println!(
+                "Added ability for player {}, they now have {:?}",
+                player.player_id, player.abilities
+            );
             break;
         }
 

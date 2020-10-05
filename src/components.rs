@@ -49,6 +49,20 @@ pub struct Player {
     pub abilities: Vec<u16>,
 }
 
+impl Player {
+    pub fn get_next_level(&self) -> Option<u16> {
+        if self.abilities.len() == 0 {
+            return Some(2);
+        }
+
+        if self.abilities.contains(&2) {
+            return None;
+        }
+
+        return Some(3);
+    }
+}
+
 /// The base attack / defence of a unit. Can be enhanced over time
 #[derive(Default)]
 pub struct BaseAttack {
@@ -163,3 +177,9 @@ pub struct MainGameSidebarUi;
 
 /// Flags a button to close ability screen and transition back to the game screen
 pub struct CloseAbilitiesButtonLink;
+
+/// Used to trigger a purchase when an ability button is clicked
+pub struct AbilityPurchaseInteraction {
+    pub player_id: u8,
+    pub ability_id: u16,
+}
