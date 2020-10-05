@@ -56,6 +56,8 @@ fn main() {
         .init_resource::<WaveSpawnedEventListener>()
         .add_event::<EndOfDayEvent>()
         .init_resource::<EndOfDayEventListener>()
+        .add_event::<RedrawAbilityUiEvent>()
+        .init_resource::<RedrawAbilityUiEventListener>()
         .add_system(wave_spawned_event_system.system())
         .add_system(end_of_day_system.system())
         // setup and plugins

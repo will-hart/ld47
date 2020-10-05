@@ -1,5 +1,5 @@
 use super::*;
-use crate::components::*;
+use crate::{components::*, events::RedrawAbilityUiEvent};
 use ability_data::AbilityDatabase;
 use bevy::prelude::*;
 use spectre_core::{Health, Mana, Movement};
@@ -8,6 +8,7 @@ pub fn ability_purchase_system(
     mut commands: Commands,
     mut abilities: ResMut<AbilityDatabase>,
     mut player_score: ResMut<PlayerScore>,
+    mut ability_redraw_event: ResMut<Events<RedrawAbilityUiEvent>>,
     mut purchase_requests: Query<(Entity, &AbilityPurchaseRequest)>,
     mut players: Query<(
         &mut Player,
@@ -94,6 +95,8 @@ pub fn ability_purchase_system(
                 "Added ability for player {}, they now have {:?}",
                 player.player_id, player.abilities
             );
+
+            ability_redraw_event.send(RedrawAbilityUiEvent);
             break;
         }
 

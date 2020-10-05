@@ -72,7 +72,8 @@ impl Plugin for GameStatePlugin {
             .add_system(setup_ability_scene.system())
             // .add_system(run_ability_scene.system())
             .add_system(teardown_ability_scene.system())
-            .add_system(ability_purchase_interaction.system());
+            .add_system(ability_purchase_interaction.system())
+            .add_system(redraw_ability_ui_on_event.system());
     }
 }
 

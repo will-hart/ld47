@@ -33,87 +33,103 @@ pub fn setup_ability_scene(
     println!("Spawning ability GUI");
     // should only happen once I hope :D
     for (parent, _) in &mut sidebar_components.iter() {
-        let mut player_uis: Vec<Entity> = Vec::default();
-        for player in &mut player_query.iter() {
-            player_uis.push(spawn_player_ability_ui(
-                player,
-                &mut commands,
-                &assets,
-                &mut ability_data,
-            ));
-        }
-
-        let button = commands
-            .spawn(ButtonComponents {
-                style: Style {
-                    size: Size::new(Val::Px(96.0), Val::Px(32.0)),
-                    margin: Rect {
-                        left: Val::Px(107.),
-                        right: Val::Px(107.),
-                        ..Default::default()
-                    },
-                    // horizontally center child text
-                    justify_content: JustifyContent::Center,
-                    // vertically center child text
-                    align_items: AlignItems::Center,
-                    ..Default::default()
-                },
-                material: assets.button_material,
-                ..Default::default()
-            })
-            .with(AbilityGuiMarker)
-            .with(AbilityGuiSidebarMarker)
-            .with(CloseAbilitiesButtonLink)
-            .with_children(|button_parent| {
-                button_parent.spawn(TextComponents {
-                    text: Text {
-                        value: "Done".to_string(),
-                        font: assets.main_font,
-                        style: TextStyle {
-                            font_size: 12.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                    },
-                    ..Default::default()
-                });
-            })
-            .current_entity()
-            .unwrap();
-
-        let heading = commands
-            .spawn(NodeComponents {
-                style: Style {
-                    size: Size::new(Val::Px(310.), Val::Px(40.)),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..Default::default()
-                },
-                material: assets.ui_material,
-                ..Default::default()
-            })
-            .with(AbilityGuiMarker)
-            .with(AbilityGuiSidebarMarker)
-            .with_children(|parent| {
-                parent.spawn(TextComponents {
-                    text: Text {
-                        value: "Upgrades".to_string(), // random spacer
-                        font: assets.main_font,
-                        style: TextStyle {
-                            font_size: 20.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                    },
-                    ..Default::default()
-                });
-            })
-            .current_entity()
-            .unwrap();
-
-        commands.push_children(
+        spawn_ability_sidebar(
             parent,
-            &[button, player_uis[2], player_uis[1], player_uis[0], heading],
+            &mut commands,
+            &mut player_query,
+            &assets,
+            &mut ability_data,
         );
     }
+}
+
+fn spawn_ability_sidebar(
+    parent: Entity,
+    mut commands: &mut Commands,
+    player_query: &mut Query<&Player>,
+    assets: &Res<MaterialsAndTextures>,
+    mut ability_data: &mut ResMut<AbilityDatabase>,
+) {
+    let mut player_uis: Vec<Entity> = Vec::default();
+    for player in &mut player_query.iter() {
+        player_uis.push(spawn_player_ability_ui(
+            player,
+            &mut commands,
+            &assets,
+            &mut ability_data,
+        ));
+    }
+
+    let button = commands
+        .spawn(ButtonComponents {
+            style: Style {
+                size: Size::new(Val::Px(96.0), Val::Px(32.0)),
+                margin: Rect {
+                    left: Val::Px(107.),
+                    right: Val::Px(107.),
+                    ..Default::default()
+                },
+                // horizontally center child text
+                justify_content: JustifyContent::Center,
+                // vertically center child text
+                align_items: AlignItems::Center,
+                ..Default::default()
+            },
+            material: assets.button_material,
+            ..Default::default()
+        })
+        .with(AbilityGuiMarker)
+        .with(AbilityGuiSidebarMarker)
+        .with(CloseAbilitiesButtonLink)
+        .with_children(|button_parent| {
+            button_parent.spawn(TextComponents {
+                text: Text {
+                    value: "Done".to_string(),
+                    font: assets.main_font,
+                    style: TextStyle {
+                        font_size: 12.0,
+                        color: Color::rgb(0.8, 0.8, 0.8),
+                    },
+                },
+                ..Default::default()
+            });
+        })
+        .current_entity()
+        .unwrap();
+
+    let heading = commands
+        .spawn(NodeComponents {
+            style: Style {
+                size: Size::new(Val::Px(310.), Val::Px(40.)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..Default::default()
+            },
+            material: assets.ui_material,
+            ..Default::default()
+        })
+        .with(AbilityGuiMarker)
+        .with(AbilityGuiSidebarMarker)
+        .with_children(|parent| {
+            parent.spawn(TextComponents {
+                text: Text {
+                    value: "Upgrades".to_string(), // random spacer
+                    font: assets.main_font,
+                    style: TextStyle {
+                        font_size: 20.0,
+                        color: Color::rgb(0.8, 0.8, 0.8),
+                    },
+                },
+                ..Default::default()
+            });
+        })
+        .current_entity()
+        .unwrap();
+
+    commands.push_children(
+        parent,
+        &[button, player_uis[2], player_uis[1], player_uis[0], heading],
+    );
 }
 
 pub fn spawn_player_ability_ui(
@@ -249,5 +265,44 @@ pub fn ability_purchase_interaction(
             }
             _ => {}
         };
+    }
+}
+
+pub fn redraw_ability_ui_on_event(
+    mut commands: Commands,
+    assets: Res<MaterialsAndTextures>,
+    mut state: ResMut<RedrawAbilityUiEventListener>,
+    events: Res<Events<RedrawAbilityUiEvent>>,
+    mut ability_data: ResMut<AbilityDatabase>,
+    mut existing_sidebar_items: Query<(Entity, &AbilityGuiSidebarMarker)>,
+    mut sidebar_components: Query<(Entity, &MainGameSidebarUi)>,
+    mut player_query: Query<&Player>,
+) {
+    let mut found = false;
+
+    for _ in state.redraw_gui_reader.iter(&events) {
+        println!("Redrawing ability GUI");
+        found = true;
+        break;
+    }
+
+    if !found {
+        return;
+    }
+
+    // despawn the old GUI
+    for (ent, _) in &mut existing_sidebar_items.iter() {
+        commands.despawn_recursive(ent);
+    }
+
+    // recreate the GUI
+    for (parent, _) in &mut sidebar_components.iter() {
+        spawn_ability_sidebar(
+            parent,
+            &mut commands,
+            &mut player_query,
+            &assets,
+            &mut ability_data,
+        );
     }
 }

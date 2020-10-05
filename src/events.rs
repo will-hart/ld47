@@ -24,6 +24,14 @@ pub struct EndOfDayEventListener {
     pub end_of_day_reader: EventReader<EndOfDayEvent>,
 }
 
+/// Triggered on the end of day, passes true if all waves are complete (VICTORY!)
+pub struct RedrawAbilityUiEvent;
+
+#[derive(Default)]
+pub struct RedrawAbilityUiEventListener {
+    pub redraw_gui_reader: EventReader<RedrawAbilityUiEvent>,
+}
+
 pub fn end_of_day_system(
     mut commands: Commands,
     mut state: ResMut<EndOfDayEventListener>,
