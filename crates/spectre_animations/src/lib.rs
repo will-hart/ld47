@@ -52,12 +52,14 @@ impl AnimationState {
     }
 
     // increments the animation frame
-    pub fn incr(&mut self) {
+    pub fn incr(&mut self) -> u32 {
         if self.current_idx == self.animations[self.current_animation].1 {
             self.current_idx = self.animations[self.current_animation].0;
         } else {
             self.current_idx += 1;
         }
+
+        self.current_idx as u32
     }
 
     pub fn get_frame_index(&self) -> u32 {
@@ -69,11 +71,23 @@ impl AnimationState {
     }
 }
 
-fn animate_sprites(mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &mut AnimationState)>) {
-    for (timer, mut sprite, mut state) in &mut query.iter() {
+fn animate_sprites(
+    mut commands: Commands,
+    mut query: Query<(
+        Entity,
+        &mut Timer,
+        &mut TextureAtlasSprite,
+        &mut AnimationState,
+    )>,
+) {
+    for (entity, timer, mut sprite, mut state) in &mut query.iter() {
         if timer.finished {
-            state.incr();
-            sprite.index = state.get_frame_index();
+            let prev = state.current_idx as u32;
+            sprite.index = state.incr();
+
+            if state.one_shot && sprite.index < prev {
+                commands.despawn(entity);
+            }
         }
     }
 }
