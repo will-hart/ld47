@@ -498,6 +498,8 @@ pub fn spawn_abilities(
         }
 
         let definition = database.get(action.action.unwrap()).clone();
+
+        // TODO: for some reason this doesn't work, but not time to debug
         action.next_available = game_time.elapsed_time + definition.cooldown;
 
         println!("Spawned ability {}", definition.name);
