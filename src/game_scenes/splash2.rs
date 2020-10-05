@@ -1,37 +1,37 @@
 use bevy::prelude::*;
 use spectre_state::*;
 
+use super::splash1::render_line;
 use super::{ButtonMaterials, MyGameScenes};
 
-pub struct MainMenuSceneEntity;
-pub struct MenuButtonText;
+pub struct Splash2SceneEntity;
 
-pub fn run_menu_scene(
+pub fn run_splash2_scene(
     mut game_state: ResMut<GameState<MyGameScenes>>,
     mut interaction_query: Query<(&Button, Mutated<Interaction>)>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu) {
+    if !game_state.is_in_scene(&MyGameScenes::Splash2) {
         return;
     }
 
     for (_button, interaction) in &mut interaction_query.iter() {
         match *interaction {
             Interaction::Clicked => {
-                game_state.set_transition(MyGameScenes::Game);
+                game_state.set_transition(MyGameScenes::Splash3);
             }
             _ => {}
         }
     }
 }
 
-pub fn setup_menu_scene(
+pub fn setup_splash2_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     button_materials: Res<ButtonMaterials>,
     asset_server: Res<AssetServer>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu)
+    if !game_state.is_in_scene(&MyGameScenes::Splash2)
         || !game_state.is_in_status(&GameStatus::Entering)
     {
         return;
@@ -70,7 +70,7 @@ pub fn setup_menu_scene(
                 .with_children(|button_parent| {
                     button_parent.spawn(TextComponents {
                         text: Text {
-                            value: "Again".to_string(),
+                            value: "Next".to_string(),
                             font: font_handle,
                             style: TextStyle {
                                 font_size: 20.0,
@@ -80,39 +80,28 @@ pub fn setup_menu_scene(
                         ..Default::default()
                     });
                 })
-                .spawn(TextComponents {
-                    style: Style {
-                        align_self: AlignSelf::Center,
-                        ..Default::default()
-                    },
-                    text: Text {
-                        value: "THE OBELISK".to_string(),
-                        font: font_handle,
-                        style: TextStyle {
-                            font_size: 20.0,
-                            color: Color::WHITE,
-                        },
-                    },
-                    ..Default::default()
-                })
-                .with(MenuButtonText);
+                .spawn(render_line("the pull of that mysterious stone, before its too late.".to_string(), font_handle))
+                .spawn(render_line("of jungle creatures. They must improve their skills and work together to defeat the hordes and escape".to_string(), font_handle))
+                .spawn(render_line("The adventurers find themselves caught in an endless loop, fighting off wave after wave.".to_string(), font_handle))
+                .spawn(render_line("and the adventurers that seek the treasure for themselves.".to_string(), font_handle))
+                .spawn(render_line("The jungle itself seems to object, the creatures pouring out from the trees to destroy the ancient stones.".to_string(), font_handle));
         })
-        .with(MainMenuSceneEntity);
+        .with(Splash2SceneEntity);
 }
 
-pub fn teardown_menu_scene(
+pub fn teardown_splash2_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    mut menu_scene_items: Query<(Entity, &MainMenuSceneEntity)>,
+    mut splash_scene_items: Query<(Entity, &Splash2SceneEntity)>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu)
+    if !game_state.is_in_scene(&MyGameScenes::Splash2)
         || !game_state.is_in_status(&GameStatus::Exiting)
     {
         return;
     }
 
-    println!("Tearing down loading screen");
-    for (entity, _) in &mut menu_scene_items.iter() {
+    println!("Tearing down splash2 screen");
+    for (entity, _) in &mut splash_scene_items.iter() {
         commands.despawn_recursive(entity);
     }
 }

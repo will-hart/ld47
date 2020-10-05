@@ -3,35 +3,34 @@ use spectre_state::*;
 
 use super::{ButtonMaterials, MyGameScenes};
 
-pub struct MainMenuSceneEntity;
-pub struct MenuButtonText;
+pub struct Splash1SceneEntity;
 
-pub fn run_menu_scene(
+pub fn run_splash1_scene(
     mut game_state: ResMut<GameState<MyGameScenes>>,
     mut interaction_query: Query<(&Button, Mutated<Interaction>)>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu) {
+    if !game_state.is_in_scene(&MyGameScenes::Splash1) {
         return;
     }
 
     for (_button, interaction) in &mut interaction_query.iter() {
         match *interaction {
             Interaction::Clicked => {
-                game_state.set_transition(MyGameScenes::Game);
+                game_state.set_transition(MyGameScenes::Splash2);
             }
             _ => {}
         }
     }
 }
 
-pub fn setup_menu_scene(
+pub fn setup_splash1_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     button_materials: Res<ButtonMaterials>,
     asset_server: Res<AssetServer>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu)
+    if !game_state.is_in_scene(&MyGameScenes::Splash1)
         || !game_state.is_in_status(&GameStatus::Entering)
     {
         return;
@@ -70,7 +69,7 @@ pub fn setup_menu_scene(
                 .with_children(|button_parent| {
                     button_parent.spawn(TextComponents {
                         text: Text {
-                            value: "Again".to_string(),
+                            value: "Next".to_string(),
                             font: font_handle,
                             style: TextStyle {
                                 font_size: 20.0,
@@ -80,39 +79,44 @@ pub fn setup_menu_scene(
                         ..Default::default()
                     });
                 })
-                .spawn(TextComponents {
-                    style: Style {
-                        align_self: AlignSelf::Center,
-                        ..Default::default()
-                    },
-                    text: Text {
-                        value: "THE OBELISK".to_string(),
-                        font: font_handle,
-                        style: TextStyle {
-                            font_size: 20.0,
-                            color: Color::WHITE,
-                        },
-                    },
-                    ..Default::default()
-                })
-                .with(MenuButtonText);
+                .spawn(render_line("The obelisk speaks to them in their dreams, whispering of great treasures and limitless power.".to_string(), font_handle))
+                .spawn(render_line("Bones are scattered at the feet of the obelisk, and mysterious power oozes from the stone's surface.".to_string(), font_handle))
+                .spawn(render_line("In the depths of the forbidden jungle, three adventurers stumble upon an obselisk.".to_string(), font_handle));
         })
-        .with(MainMenuSceneEntity);
+        .with(Splash1SceneEntity);
 }
 
-pub fn teardown_menu_scene(
+pub fn render_line(line: String, font_handle: Handle<Font>) -> TextComponents {
+    TextComponents {
+        style: Style {
+            align_self: AlignSelf::Center,
+            ..Default::default()
+        },
+        text: Text {
+            value: line,
+            font: font_handle,
+            style: TextStyle {
+                font_size: 14.0,
+                color: Color::WHITE,
+            },
+        },
+        ..Default::default()
+    }
+}
+
+pub fn teardown_splash1_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    mut menu_scene_items: Query<(Entity, &MainMenuSceneEntity)>,
+    mut splash_scene_items: Query<(Entity, &Splash1SceneEntity)>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu)
+    if !game_state.is_in_scene(&MyGameScenes::Splash1)
         || !game_state.is_in_status(&GameStatus::Exiting)
     {
         return;
     }
 
-    println!("Tearing down loading screen");
-    for (entity, _) in &mut menu_scene_items.iter() {
+    println!("Tearing down splash1 screen");
+    for (entity, _) in &mut splash_scene_items.iter() {
         commands.despawn_recursive(entity);
     }
 }

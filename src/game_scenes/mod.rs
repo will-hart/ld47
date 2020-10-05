@@ -7,12 +7,18 @@ mod game;
 mod game_over;
 mod loading;
 mod main_menu;
+mod splash1;
+mod splash2;
+mod splash3;
 
 use abilities::*;
 use game::*;
 use game_over::*;
 use loading::*;
 use main_menu::*;
+use splash1::*;
+use splash2::*;
+use splash3::*;
 
 #[derive(Clone, Copy, Debug)]
 #[allow(dead_code)]
@@ -22,6 +28,9 @@ pub enum MyGameScenes {
     Game,
     GameOver,
     Abilities,
+    Splash1,
+    Splash2,
+    Splash3,
 }
 
 pub struct ButtonMaterials {
@@ -73,7 +82,19 @@ impl Plugin for GameStatePlugin {
             // .add_system(run_ability_scene.system())
             .add_system(teardown_ability_scene.system())
             .add_system(ability_purchase_interaction.system())
-            .add_system(redraw_ability_ui_on_event.system());
+            .add_system(redraw_ability_ui_on_event.system())
+            // splash1
+            .add_system(setup_splash1_scene.system())
+            .add_system(run_splash1_scene.system())
+            .add_system(teardown_splash1_scene.system())
+            // splash2
+            .add_system(setup_splash2_scene.system())
+            .add_system(run_splash2_scene.system())
+            .add_system(teardown_splash2_scene.system())
+            // splash3
+            .add_system(setup_splash3_scene.system())
+            .add_system(run_splash3_scene.system())
+            .add_system(teardown_splash3_scene.system());
     }
 }
 
@@ -87,7 +108,7 @@ fn game_state_transitions(
         GameStatus::Running => match game_state.current {
             Some(MyGameScenes::Loading) => {
                 if loading.initial_load_done {
-                    game_state.set_transition(MyGameScenes::Menu);
+                    game_state.set_transition(MyGameScenes::Splash1);
                 }
             }
             _ => {}

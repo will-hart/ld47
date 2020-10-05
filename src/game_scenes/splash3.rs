@@ -1,16 +1,16 @@
 use bevy::prelude::*;
 use spectre_state::*;
 
+use super::splash1::render_line;
 use super::{ButtonMaterials, MyGameScenes};
 
-pub struct MainMenuSceneEntity;
-pub struct MenuButtonText;
+pub struct Splash3SceneEntity;
 
-pub fn run_menu_scene(
+pub fn run_splash3_scene(
     mut game_state: ResMut<GameState<MyGameScenes>>,
     mut interaction_query: Query<(&Button, Mutated<Interaction>)>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu) {
+    if !game_state.is_in_scene(&MyGameScenes::Splash3) {
         return;
     }
 
@@ -24,14 +24,14 @@ pub fn run_menu_scene(
     }
 }
 
-pub fn setup_menu_scene(
+pub fn setup_splash3_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     button_materials: Res<ButtonMaterials>,
     asset_server: Res<AssetServer>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu)
+    if !game_state.is_in_scene(&MyGameScenes::Splash3)
         || !game_state.is_in_status(&GameStatus::Entering)
     {
         return;
@@ -70,7 +70,7 @@ pub fn setup_menu_scene(
                 .with_children(|button_parent| {
                     button_parent.spawn(TextComponents {
                         text: Text {
-                            value: "Again".to_string(),
+                            value: "BEGIN".to_string(),
                             font: font_handle,
                             style: TextStyle {
                                 font_size: 20.0,
@@ -80,13 +80,18 @@ pub fn setup_menu_scene(
                         ..Default::default()
                     });
                 })
+                .spawn(render_line("Protect the obelisk long enough to fight off the hordes of jungle creatures.".to_string(), font_handle))
+                .spawn(render_line("".to_string(), font_handle))
+                .spawn(render_line("fighting to improve fighting skills. ".to_string(), font_handle))
+                .spawn(render_line("to face the jungle creatures. At the end of each day, use the experience gained from the day's".to_string(), font_handle))
+                .spawn(render_line("Three adventurers stand before hordes of enemies. Use the arrow buttons to move the adventurers".to_string(), font_handle))
                 .spawn(TextComponents {
                     style: Style {
                         align_self: AlignSelf::Center,
                         ..Default::default()
                     },
                     text: Text {
-                        value: "THE OBELISK".to_string(),
+                        value: "HOW TO PLAY".to_string(),
                         font: font_handle,
                         style: TextStyle {
                             font_size: 20.0,
@@ -94,25 +99,24 @@ pub fn setup_menu_scene(
                         },
                     },
                     ..Default::default()
-                })
-                .with(MenuButtonText);
+                });
         })
-        .with(MainMenuSceneEntity);
+        .with(Splash3SceneEntity);
 }
 
-pub fn teardown_menu_scene(
+pub fn teardown_splash3_scene(
     mut commands: Commands,
     game_state: Res<GameState<MyGameScenes>>,
-    mut menu_scene_items: Query<(Entity, &MainMenuSceneEntity)>,
+    mut splash_scene_items: Query<(Entity, &Splash3SceneEntity)>,
 ) {
-    if !game_state.is_in_scene(&MyGameScenes::Menu)
+    if !game_state.is_in_scene(&MyGameScenes::Splash3)
         || !game_state.is_in_status(&GameStatus::Exiting)
     {
         return;
     }
 
-    println!("Tearing down loading screen");
-    for (entity, _) in &mut menu_scene_items.iter() {
+    println!("Tearing down splash3 screen");
+    for (entity, _) in &mut splash_scene_items.iter() {
         commands.despawn_recursive(entity);
     }
 }
