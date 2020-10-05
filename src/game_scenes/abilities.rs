@@ -76,7 +76,7 @@ fn spawn_ability_sidebar(
     let button = commands
         .spawn(ButtonComponents {
             style: Style {
-                size: Size::new(Val::Px(96.0), Val::Px(32.0)),
+                size: Size::new(Val::Px(150.0), Val::Px(32.0)),
                 margin: Rect {
                     left: Val::Px(107.),
                     right: Val::Px(107.),
@@ -97,7 +97,7 @@ fn spawn_ability_sidebar(
         .with_children(|button_parent| {
             button_parent.spawn(TextComponents {
                 text: Text {
-                    value: "Done".to_string(),
+                    value: "Start New Loop".to_string(),
                     font: assets.main_font,
                     style: TextStyle {
                         font_size: 12.0,
