@@ -68,4 +68,4 @@ pub const MAX_LANE: usize = 2;
 
 /// reduction in damage when attacking the obelisk
 pub const OBELISK_DAMAGE_MODIFIER: usize = 5;
-pub const DEFAULT_GAME_SPEED: f32 = 5.;
+pub const DEFAULT_GAME_SPEED: f32 = 1.;
