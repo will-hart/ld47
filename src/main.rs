@@ -121,6 +121,8 @@ fn setup(mut commands: Commands) {
                 ("assets/tree.png", TREE_SPRITE_ID),
                 ("assets/obelisk.png", OBELISK_SPRITE_ID),
                 ("assets/splatter.png", SPLATTER_ID),
+                ("assets/flame_wall.png", FLAME_WALL_ID),
+                ("assets/heal.png", HEAL_ID),
             ]
             .into_iter()
             .map(|a| a.into())

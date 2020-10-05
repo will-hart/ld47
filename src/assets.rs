@@ -34,6 +34,8 @@ pub struct MaterialsAndTextures {
     pub main_font: Handle<Font>,
 
     pub splatter_atlas: Handle<TextureAtlas>,
+    pub flame_wall_atlas: Handle<TextureAtlas>,
+    pub heal_atlas: Handle<TextureAtlas>,
 
     pub attacking_obelisk_audio: Handle<AudioSource>,
     pub clang_audio: Handle<AudioSource>,
@@ -73,6 +75,15 @@ impl FromResources for MaterialsAndTextures {
         let atlas_splatter =
             TextureAtlas::from_grid(handle_splatter, Vec2::new(32. * 6., 32.), 4, 1);
         let splatter_atlas = texture_atlases.add(atlas_splatter);
+
+        let handle_flame_wall: Handle<Texture> = Handle::from_u128(FLAME_WALL_ID);
+        let atlas_flame_wall =
+            TextureAtlas::from_grid(handle_flame_wall, Vec2::new(32. * 6., 32.), 4, 1);
+        let flame_wall_atlas = texture_atlases.add(atlas_flame_wall);
+
+        let handle_heal: Handle<Texture> = Handle::from_u128(HEAL_ID);
+        let atlas_heal = TextureAtlas::from_grid(handle_heal, Vec2::new(32. * 6., 32.), 4, 1);
+        let heal_atlas = texture_atlases.add(atlas_heal);
 
         let handle_wolf: Handle<Texture> = Handle::from_u128(ENEMY_WOLF_SPRITE);
         let atlas_wolf = TextureAtlas::from_grid(handle_wolf, Vec2::new(128., 32.), 4, 1);
@@ -118,6 +129,8 @@ impl FromResources for MaterialsAndTextures {
             healthbar_material: materials.add(Handle::from_u128(HEALTHBAR_SPRITE_ID).into()),
 
             splatter_atlas,
+            flame_wall_atlas,
+            heal_atlas,
 
             attacking_obelisk_audio: asset_server
                 .load("assets/audio/attacking_obelisk.mp3")
