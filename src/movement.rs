@@ -14,39 +14,39 @@ impl Plugin for MovementPlugin {
 }
 
 /// moves a player between lanes
-/// TODO: probably an easy way to remove this duplicate, but ... GAME JAM!
+/// ignores incapacitated players
 pub fn player_movement(
     time: Res<GameTime>,
-    movement: &Movement,
-    mut player: Mut<Player>,
-    mut transform: Mut<Transform>,
+    mut players: Query<Without<Incapacitated, (&Movement, &mut Player, &mut Transform)>>,
 ) {
-    // TODO: handle multiple players in the same lane
-    let target_pos = TARGET_LOCATIONS[player.target_lane].0
-        + (player.player_id as f32) * PLAYER_OFFSET_X
-        - PLAYER_OFFSET_X;
-    let current_pos = transform.translation().x();
+    for (movement, mut player, mut transform) in &mut players.iter() {
+        // TODO: handle multiple players in the same lane
+        let target_pos = TARGET_LOCATIONS[player.target_lane].0
+            + (player.player_id as f32) * PLAYER_OFFSET_X
+            - PLAYER_OFFSET_X;
+        let current_pos = transform.translation().x();
 
-    let delta = target_pos - current_pos;
+        let delta = target_pos - current_pos;
 
-    // tick over the current lane once the player arrives
-    if delta.abs() < 3. {
-        player.current_lane = player.target_lane;
-        player.is_moving = false;
-        return;
+        // tick over the current lane once the player arrives
+        if delta.abs() < 3. {
+            player.current_lane = player.target_lane;
+            player.is_moving = false;
+            return;
+        }
+
+        let max_delta = movement.movement_speed.value * time.delta;
+
+        // use abs as delta may be negative, i.e. -665 from target, max is 1.3
+        let mut used_delta = delta.abs().min(max_delta.abs());
+        if delta < 0. {
+            used_delta = -used_delta;
+        }
+
+        // translate minimum of delta and max_delta
+        player.is_moving = true;
+        transform.translate(Vec3::new(used_delta, 0., 0.));
     }
-
-    let max_delta = movement.movement_speed.value * time.delta;
-
-    // use abs as delta may be negative, i.e. -665 from target, max is 1.3
-    let mut used_delta = delta.abs().min(max_delta.abs());
-    if delta < 0. {
-        used_delta = -used_delta;
-    }
-
-    // translate minimum of delta and max_delta
-    player.is_moving = true;
-    transform.translate(Vec3::new(used_delta, 0., 0.));
 }
 
 /// moves an enemy towards their target position.

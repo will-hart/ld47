@@ -186,6 +186,14 @@ pub struct AbilityPurchaseInteraction {
     pub ability_id: u16,
 }
 
+#[derive(Default)]
+pub struct Incapacitated {
+    /// set to 0 to make indefinite
+    pub end_time: f32,
+    pub is_revived: bool,
+}
+
+/// TODO: move out of this file
 pub struct MaterialsAndTextures {
     pub ui_material: Handle<ColorMaterial>,
     pub button_material: Handle<ColorMaterial>,

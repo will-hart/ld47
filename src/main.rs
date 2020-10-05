@@ -10,11 +10,14 @@ use bevy_ninepatch::NinePatchPlugin;
 use combat::{dead_enemy_removal_system, enemy_auto_attack_system, player_auto_attack_system};
 use components::{CurrentWave, GameSceneConfigured, MaterialsAndTextures};
 use events::*;
+use game_scenes::*;
 use movement::MovementPlugin;
 use spectre_animations::prelude::AnimationPlugin;
 use spectre_core::CharacterStatsPlugin;
 use spectre_loaders::{LoadAssets, ResourceLoaderPlugin};
 use spectre_time::GameTimePlugin;
+use systems::*;
+use waves::wave_spawning_system;
 
 mod abilities;
 mod combat;
@@ -28,10 +31,8 @@ mod game_ui;
 mod movement;
 mod player_factory;
 mod player_ui;
+mod systems;
 mod waves;
-
-use game_scenes::*;
-use waves::wave_spawning_system;
 
 fn main() {
     App::build()
@@ -86,6 +87,8 @@ fn main() {
         .add_system(close_ability_screen.system())
         .add_system_to_stage("dead_removal", game_over_trigger.system())
         .add_system_to_stage("dead_removal", dead_enemy_removal_system.system())
+        .add_system(player_incapacitation_system.system())
+        .add_system(player_revival_system.system())
         .init_resource::<MaterialsAndTextures>()
         .run();
 }

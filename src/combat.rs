@@ -70,11 +70,12 @@ pub fn resolve_combat(attack: &BaseAttack, defence: &Defence) -> CombatResult {
 }
 
 /// Loop through all players, find enemies within their range and attack one of them
+/// ignores incapacitated enemies
 pub fn player_auto_attack_system(
     game_time: Res<GameTime>,
     audio: Res<AudioOutput>,
     assets: Res<MaterialsAndTextures>,
-    mut player_query: Query<(&Player, &mut BaseAttack)>,
+    mut player_query: Query<Without<Incapacitated, (&Player, &mut BaseAttack)>>,
     mut enemy_query: Query<(&Enemy, &Transform, &mut Health, &Defence)>,
 ) {
     let player_y_pos = TARGET_LOCATIONS[0].1 + PLAYER_OFFSET_Y;
