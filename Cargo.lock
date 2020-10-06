@@ -2085,6 +2085,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "obelisk"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_easings",
+ "bevy_ninepatch",
+ "serde",
+ "spectre_animations",
+ "spectre_combat",
+ "spectre_core",
+ "spectre_loaders",
+ "spectre_random",
+ "spectre_state",
+ "spectre_time",
+]
+
+[[package]]
 name = "objc"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2517,23 +2534,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fbee7696b84bbf3d89a1c2eccff0850e3047ed46bfcd2e92c29a2d074d57e252"
 dependencies = [
  "serde",
-]
-
-[[package]]
-name = "spectre"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_easings",
- "bevy_ninepatch",
- "serde",
- "spectre_animations",
- "spectre_combat",
- "spectre_core",
- "spectre_loaders",
- "spectre_random",
- "spectre_state",
- "spectre_time",
 ]
 
 [[package]]
